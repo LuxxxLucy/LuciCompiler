@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include "heading.h"
 #include "utility.h"
 #include "error_message.h"
 
@@ -23,9 +24,10 @@ extern FILE *yyin;
 typedef struct intList {int i; struct intList *rest;} *IntList;
 
 static IntList intList(int i, IntList rest)
-{IntList l= checked_malloc(sizeof *l);
- l->i=i; l->rest=rest;
- return l;
+{
+    IntList l = (IntList) checked_malloc(sizeof *l);
+    l->i=i; l->rest=rest;
+    return l;
 }
 
 static IntList linePos=NULL;
@@ -62,4 +64,9 @@ void EM_reset(string fname)
     linePos=intList(0,NULL);
     yyin = fopen(fname,"r");
     if (!yyin) {EM_error(0,"cannot open"); exit(1);}
+}
+
+void Log(char *message)
+{
+    std::cout << message <<std::endl;
 }

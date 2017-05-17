@@ -13,6 +13,7 @@ IS  ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 #include "tokens.h"
 #include "error_message.h"
 
+
 int charPos=1;
 
 int yywrap(void)
@@ -116,7 +117,7 @@ L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT); }
 0[xX]{H}+{P}{FS}?	{ count(); return(CONSTANT); }
 0[xX]{H}*"."{H}+{P}?{FS}?     { count(); return(CONSTANT); }
 0[xX]{H}+"."{H}*{P}?{FS}?     { count(); return(CONSTANT); }
-L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING); }
+L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
 
 "+="			{ count(); return(ADD_ASSIGN); }
 "-="			{ count(); return(SUB_ASSIGN); }
@@ -140,27 +141,30 @@ L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING); }
 ";"			{ count(); return(SEMICOLON); }
 ("{"|"<%")		{ count(); return(LBRACE); }
 ("}"|"%>")		{ count(); return(RBRACE); }
-","			{ count(); return(','); }
-":"			{ count(); return(':'); }
+","			{ count(); return(COMMA); }
+":"			{ count(); return(COLON); }
+"<-"			{ count(); return(ASSIGN); }
+":="			{ count(); return(ASSIGN); }
 "="			{ count(); return(ASSIGN); }
 "("			{ count(); return(LPAREN); }
 ")"			{ count(); return(RPAREN); }
 ("["|"<:")		{ count(); return(LBRACK); }
 ("]"|":>")		{ count(); return(RBRACK); }
-"."			{ count(); return('.'); }
-"&"			{ count(); return('&'); }
-"!"			{ count(); return('!'); }
-"~"			{ count(); return('~'); }
+"."			{ count(); return(DOT); }
+"&"			{ count(); return(AMPERSAND); }
+"!"			{ count(); return(EXCLAMATION); }
+"~"			{ count(); return(TILDE); }
 "-"			{ count(); return(MINUS); }
 "+"			{ count(); return(PLUS); }
-"*"			{ count(); return(TIMES); }
+"*"			{ count(); return(ASTERISK); }
 "/"			{ count(); return(DIVIDE); }
-"%"			{ count(); return('%'); }
+"%"			{ count(); return(MOD); }
 "<"			{ count(); return(LT_OP); }
 ">"			{ count(); return(GT_OP); }
-"^"			{ count(); return('^'); }
-"|"			{ count(); return('|'); }
-"?"			{ count(); return('?'); }
-[ \t\v\n\f]		{ count(); }
+"^"			{ count(); return(POW); }
+"|"			{ count(); return(VERTICAL_BAR); }
+"?"			{ count(); return(QUESTION); }
+[\n]		{ count();yylineno++; }
+[ \t\v\f]		{ count();}
 .			{ /* Add code to complain about unmatched characters */ EM_error(EM_tokPos,"unmatched string!"); }
 %%
