@@ -4,7 +4,7 @@
  */
 
 #include "utility.h"
-// #include "symbol.h" /* symbol table data structures */
+#include "symbol.h" /* symbol table data structures */
 // #include "absyn.h"  /* abstract syntax data structures */
 
 A_var A_SimpleVar(A_pos pos, S_symbol sym)
