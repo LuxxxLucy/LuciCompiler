@@ -126,7 +126,7 @@ int check_type(void)
 {L}({L}|{D})*		{ count(); return(check_type()); }
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
 0[0-7]*{IS}?		{ count(); return(CONSTANT); }
-[1-9]{D}*{IS}?		{ count(); yylval.ival=atoi(yytext);return(CONSTANT); }
+[1-9]{D}*{IS}?		{ count(); yylval.dval=atof(yytext);return(CONSTANT); }
 L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT); }
 {D}+{E}{FS}?		{ count(); return(CONSTANT); }
 {D}*"."{D}+{E}?{FS}?	{ count(); return(CONSTANT); }

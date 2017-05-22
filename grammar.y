@@ -53,7 +53,7 @@ program:
 
 primary_expression
 	: ID { printf("dasda1\n"); }
-	| CONSTANT { std::cout<<" a contant value" << (double)$1 <<std::endl; }
+	| CONSTANT { std::cout<<" a contant value " <<   $1 <<std::endl; }
 	| STRING_LITERAL { printf("dasda3\n"); }
 	| LPAREN expression RPAREN { printf("dasda4\n"); }
 	;

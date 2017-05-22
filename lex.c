@@ -1139,7 +1139,7 @@ YY_RULE_SETUP
 case 29:
 YY_RULE_SETUP
 #line 129 "syntax.lex"
-{ count(); yylval.ival=atoi(yytext);return(CONSTANT); }
+{ count(); yylval.dval=atof(yytext);return(CONSTANT); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP

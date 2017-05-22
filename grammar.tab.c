@@ -2159,7 +2159,7 @@ yyreduce:
 
   case 5:
 #line 56 "grammar.y"
-    { std::cout<<" a contant value" << (double)(yyvsp[(1) - (1)].dval) <<std::endl; ;}
+    { std::cout<<" a contant value" <<   (yyvsp[(1) - (1)].dval) <<std::endl; ;}
     break;
 
   case 6:
