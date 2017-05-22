@@ -34,14 +34,16 @@ typedef enum {
 	A_eqOp, A_neqOp, A_ltOp, A_leOp, A_gtOp, A_geOp
 } A_oper;
 
+
+typedef enum { A_simpleVar, A_fieldVar, A_subscriptVar } varKind;
+
 struct A_var_{
-	// indicate kind of variable
-	enum {
-		A_simpleVar, A_fieldVar, A_subscriptVar
-	} kind;
 	// postion of this in the code
 	A_pos pos;
 
+	varKind kind;
+
+	// indicate kind of variable
 	union {
 		S_symbol simple;
 		struct {
@@ -55,13 +57,15 @@ struct A_var_{
 	     } u;
       };
 
-struct A_exp_{
-	enum {
+typedef enum {
 		A_varExp, A_nilExp, A_intExp, A_stringExp, A_callExp,
 		A_opExp, A_recordExp, A_seqExp, A_assignExp, A_ifExp,
 		A_whileExp, A_forExp, A_breakExp, A_letExp, A_arrayExp
-	} kind;
+	} expKind;
+
+struct A_exp_{
 	A_pos pos;
+	expKind kind;
 	union {
 		A_var var;
 		/* nil; - needs only the pos */
@@ -100,10 +104,12 @@ struct A_exp_{
 	} u;
 };
 
-struct A_dec_ {
-	enum {
+typedef enum {
 		A_functionDec, A_varDec, A_typeDec
-	} kind;
+	} decKind;
+
+struct A_dec_ {
+	decKind kind;
 	A_pos pos;
 	union {
 		A_fundecList function;
@@ -115,8 +121,9 @@ struct A_dec_ {
 	} u;
 };
 
+typedef enum {A_nameTy, A_recordTy, A_arrayTy} tyKind;
 struct A_ty_ {
-	enum {A_nameTy, A_recordTy, A_arrayTy} kind;
+	tyKind kind;
 	A_pos pos;
 	union {
 		S_symbol name;
@@ -146,6 +153,7 @@ struct A_efieldList_ { A_efield head; A_efieldList tail;};
 
 
 /* Function Prototypes */
+
 A_var A_SimpleVar( A_pos pos, S_symbol sym);
 A_var A_FieldVar( A_pos pos, A_var var, S_symbol sym);
 A_var A_SubscriptVar( A_pos pos, A_var var, A_exp exp);

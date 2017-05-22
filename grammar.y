@@ -2,11 +2,15 @@
 %{
 #include "heading.h"
 #include "utility.h"
+#include "abstract_syntax.h"
+#include "symbol.h"
 #include "error_message.h"
+A_exp absyn_root;
+
 int yyerror(char *s);
 int yylex(void);
-%}
 
+%}
 
 
 %token ID CONSTANT STRING_LITERAL SIZEOF
@@ -27,6 +31,7 @@ int yylex(void);
 
 
 %%
+
 primary_expression
 	: ID
 	| CONSTANT

@@ -32,6 +32,14 @@ parse_test.o: parse_test.c error_message.h utility.h
 parse_test: parse_test.o parser.o lex.o error_message.o utility.o
 	$(CC) $(CFLAGS) parse_test.o parser.o lex.o error_message.o utility.o -o parse_test -ll
 
+abstract_syntax.o: abstract_syntax.h symbol.h utility.h 
+	$(CC) $(CFLAGS) -c abstract_syntax.c -o abstract_syntax.o
+
+symbol.o: table.o
+	$(CC) $(CFLAGS) -c symbol.c -o symbol.o
+
+table.o:
+	$(CC) $(CFLAGS) -c table.c -o symbol.o
 
 lex.c: syntax.lex parser.c tokens.h
 	@echo "start building lexical analysis tool using FLEX"
