@@ -6,16 +6,23 @@
 #include <stdio.h>
 #include "utility.h"
 #include "error_message.h"
+#include "symbol.h"
+#include "abstract_syntax.h"
 
 // extern int yyparse(void);
 int yyparse(void);
+extern A_exp abstract_syntax_root;
 
-void parse(string fname)
+A_exp parse(string fname)
 {
     EM_reset(fname);
     if (yyparse() == 0)
+    {
         /* parsing worked */
         fprintf(stderr,"Parsing successful!\n");
+        return abstract_syntax_root;
+    }
+
     else
         fprintf(stderr,"Parsing failed\n");
 }
@@ -29,6 +36,6 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    parse(argv[1]);
+    A_exp result_tree=parse(argv[1]);
     return 0;
 }

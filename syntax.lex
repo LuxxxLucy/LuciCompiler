@@ -10,8 +10,25 @@ IS  ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 #include <stdio.h>
 #include <string.h>
 #include "utility.h"
-#include "tokens.h"
+
+
+#include "symbol.h"
+#include "abstract_syntax.h"
 #include "error_message.h"
+
+typedef union  {
+	int pos;
+	int ival;
+	double dval;
+	string sval;
+	A_var var;
+	A_exp exp;
+} YYSTYPE_CUSTOM;
+
+#define YYSTYPE YYSTYPE_CUSTOM
+#define YY_SKIP_YYWRAP
+
+#include "tokens.h"
 
 
 int charPos=1;

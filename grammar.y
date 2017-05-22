@@ -2,18 +2,32 @@
 %{
 #include "heading.h"
 #include "utility.h"
-#include "abstract_syntax.h"
 #include "symbol.h"
+#include "abstract_syntax.h"
 #include "error_message.h"
-A_exp absyn_root;
+A_exp abstract_syntax_root;
 
 int yyerror(char *s);
 int yylex(void);
 
 %}
 
+%union {
+	int pos;
+	int ival;
+	double dval;
+	string sval;
+	A_var var;
+	A_exp exp;
+	/* et cetera */
+}
 
-%token ID CONSTANT STRING_LITERAL SIZEOF
+%type <exp> program primary_expression
+
+%token <sval>ID
+%token <dval> CONSTANT
+%token <sval> STRING_LITERAL
+%token SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP LT_OP GE_OP GT_OP EQ_OP NEQ_OP ASSIGN
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -27,16 +41,21 @@ int yylex(void);
 %token COMMA SEMICOLON COLON
 %token PLUS TIMES MINUS DIVIDE
 %token EXCLAMATION QUESTION VERTICAL_BAR TILDE MOD POW AMPERSAND ASTERISK DOT
-%start translation_unit
 
+
+%start program
 
 %%
 
+program:
+	| translation_unit { printf("parsing okay");}
+	;
+
 primary_expression
-	: ID
-	| CONSTANT
-	| STRING_LITERAL
-	| LPAREN expression RPAREN
+	: ID { printf("dasda1\n"); }
+	| CONSTANT { std::cout<<" a contant value" << (double)$1 <<std::endl; }
+	| STRING_LITERAL { printf("dasda3\n"); }
+	| LPAREN expression RPAREN { printf("dasda4\n"); }
 	;
 
 postfix_expression

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "utility.h"
 #include "error_message.h"
+#include "symbol.h"
+#include "abstract_syntax.h"
 #include "tokens.h"
 
 

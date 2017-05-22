@@ -6,14 +6,6 @@ typedef char Bool;
 #define TRUE 1
 #define FALSE 0
 
-typedef union  {
-	int pos;
-	int ival;
-	string sval;
-} YYSTYPE_CUSTOM;
-
-#define YYSTYPE YYSTYPE_CUSTOM
-#define YY_SKIP_YYWRAP
 
 // this is used to malloc memory
 void *checked_malloc(int);
