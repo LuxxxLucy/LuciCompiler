@@ -1,5 +1,0 @@
-int main(){
-	int a = 2,b <- 1;
-    int i = 5;
-	i=(a<-3*5,a*4),a;
-}
