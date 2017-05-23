@@ -20,9 +20,9 @@ A_exp parse(string fname)
     {
         /* parsing worked */
         fprintf(stderr,"Parsing successful!\n");
+        /* return the root of abstrac syntax tree */
         return abstract_syntax_root;
     }
-
     else
         fprintf(stderr,"Parsing failed\n");
 }
