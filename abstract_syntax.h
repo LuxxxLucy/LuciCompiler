@@ -60,7 +60,8 @@ struct A_var_{
 typedef enum {
 		A_varExp, A_nilExp, A_intExp, A_doubleExp, A_stringExp, A_callExp,
 		A_opExp, A_recordExp, A_seqExp, A_assignExp, A_ifExp,
-		A_whileExp, A_forExp, A_breakExp, A_letExp, A_arrayExp
+		A_whileExp, A_forExp, A_breakExp, A_letExp, A_arrayExp,
+		A_decExp,A_decListExp
 	} expKind;
 
 struct A_exp_{
@@ -68,6 +69,8 @@ struct A_exp_{
 	expKind kind;
 	union {
 		A_var var;
+		A_dec dec;
+		A_decList decList;
 		/* nil; - needs only the pos */
 		int intt;
 		double doublee;
@@ -177,6 +180,8 @@ A_exp A_ArrayExp( A_pos pos, S_symbol typ, A_exp size, A_exp init);
 A_dec A_FunctionDec( A_pos pos, A_fundecList function);
 A_dec A_VarDec( A_pos pos, S_symbol var, S_symbol typ, A_exp init);
 A_dec A_TypeDec( A_pos pos, A_nametyList type);
+A_exp A_DecExp(A_pos pos, A_dec dec);
+A_exp A_DecListExp(A_pos pos, A_decList decList);
 A_ty A_NameTy( A_pos pos, S_symbol name);
 A_ty A_RecordTy( A_pos pos, A_fieldList record);
 A_ty A_ArrayTy( A_pos pos, S_symbol array);

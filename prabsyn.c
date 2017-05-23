@@ -138,6 +138,7 @@ void pr_exp(FILE *out, A_exp v, int d) {
         pr_exp(out, v->u.array.size, d+1); fprintf(out, ",\n");
         pr_exp(out, v->u.array.init, d+1); fprintf(out, ")");
         break;
+    case A_decList:
     default:
         assert(0);
     }

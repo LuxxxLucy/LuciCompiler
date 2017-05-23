@@ -74,6 +74,22 @@ A_exp A_StringExp(A_pos pos, string s){
     return p;
 }
 
+A_exp A_DecExp(A_pos pos, A_dec dec){
+    A_exp p = (A_exp) checked_malloc(sizeof(*p));
+    p->kind=A_decExp;
+    p->pos=pos;
+    p->u.dec=dec;
+    return p;
+}
+
+A_exp A_DecListExp(A_pos pos, A_decList decList){
+    A_exp p = (A_exp) checked_malloc(sizeof(*p));
+    p->kind=A_decListExp;
+    p->pos=pos;
+    p->u.decList=decList;
+    return p;
+}
+
 A_exp A_CallExp(A_pos pos, S_symbol func, A_expList args){
     A_exp p = (A_exp) checked_malloc(sizeof(*p));
     p->kind=A_callExp;

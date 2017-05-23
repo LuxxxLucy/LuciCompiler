@@ -35,7 +35,14 @@ int yylex(void);
 	/* et cetera */
 }
 
-%type <exp> program primary_expression expression translation_unit postfix_expression assignment_expression unary_expression
+%type <exp> program primary_expression expression translation_unit postfix_expression assignment_expression unary_expression init_declarator direct_declarator declarator initializer
+
+%type <expList> init_declarator_list
+
+%type <decList> declaration
+
+%type <ty> declaration_specifiers type_specifier
+
 
 %token <sval> ID
 %token <dval> CONSTANT
@@ -61,13 +68,14 @@ int yylex(void);
 %%
 
 program:
-	| assignment_expression {std::cout << "\nparsing okay! weaweaw" << std::endl; abstract_syntax_root=$1;}
+	| declaration {std::cout << "\nparsing okay! weaweaw" << std::endl;abstract_syntax_root=A_DecListExp(EM_tokPos,$1);}
+	| assignment_expression { abstract_syntax_root=$1;}
 	| translation_unit {std::cout << "\nparsing okay!" << std::endl; abstract_syntax_root=$1;}
 	;
 
 primary_expression
 	: ID { $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1))); }
-	| CONSTANT { $$=A_DoubleExp(EM_tokPos,yylval.dval);std::cout<<yylval.dval<<std::endl;}
+	| CONSTANT { $$=A_DoubleExp(EM_tokPos,yylval.dval);}
 	| STRING_LITERAL { $$=A_StringExp(EM_tokPos,$1); }
 	| LPAREN expression RPAREN { $$=$2; }
 	;
@@ -216,12 +224,17 @@ constant_expression
 declaration
 	: declaration_specifiers SEMICOLON
 	| declaration_specifiers init_declarator_list SEMICOLON
+		{
+			$$=NULL;
+			for(;$2!=NULL;$2=$2->tail)
+			$$=( A_VarDec(EM_tokPos,$2->head->u.assign.var->u.simple,$1->u.name,$2->head->u.assign.exp),$$);
+		}
 	;
 
 declaration_specifiers
 	: storage_class_specifier
 	| storage_class_specifier declaration_specifiers
-	| type_specifier
+	| type_specifier { $$=A_NameTy( EM_tokPos, S_symbol($1));}
 	| type_specifier declaration_specifiers
 	| type_qualifier
 	| type_qualifier declaration_specifiers
@@ -230,13 +243,16 @@ declaration_specifiers
 	;
 
 init_declarator_list
-	: init_declarator
-	| init_declarator_list COMMA init_declarator
+	: init_declarator { $$=NULL;$$=A_ExpList($1,$$); }
+	| init_declarator_list COMMA init_declarator { $$=A_ExpList($3,$1); }
 	;
 
 init_declarator
-	: declarator
+	: declarator {}
 	| declarator ASSIGN initializer
+	{
+		$$=A_AssignExp(EM_tokPos,$1->u.var,$3);
+	}
 	;
 
 storage_class_specifier
@@ -333,11 +349,15 @@ function_specifier
 
 declarator
 	: pointer direct_declarator
-	| direct_declarator
+	| direct_declarator { $$=$1;}
 	;
 
 direct_declarator
 	: ID
+		{
+			$$ = A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol(yylval.sval)));
+			std::cout<<yylval.sval<<std::endl;
+		}
 	| LPAREN declarator RPAREN
 	| direct_declarator LBRACK type_qualifier_list assignment_expression RBRACK
 	| direct_declarator LBRACK type_qualifier_list RBRACK
@@ -410,7 +430,7 @@ direct_abstract_declarator
 	;
 
 initializer
-	: assignment_expression
+	: assignment_expression { $$=$1; }
 	| LBRACE initializer_list RBRACE
 	| LBRACE initializer_list COMMA RBRACE
 	;

@@ -1,8 +1,10 @@
 *.o
+parser.c
 *.out
 *.lucy
 grammar.*
 !grammar.y
 lexical_test
 parse_test
+
 parser.c
