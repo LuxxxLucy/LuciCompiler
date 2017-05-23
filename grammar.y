@@ -64,10 +64,10 @@ program:
 	;
 
 primary_expression
-	: ID { $$ }
+	: ID { $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1)));std::cout<<" a ID value " << $$->u.var->kind <<$$->u.var->u.simple <<std::endl; }
 	| CONSTANT { std::cout<<" a contant value " <<   $1 <<std::endl; }
 	| STRING_LITERAL { std::cout << " A string " << $1 <<std::endl; }
-	| LPAREN expression RPAREN { std::cout << " a expression" << $2 <<std::endl; }
+	| LPAREN expression RPAREN { std::cout << " a expression" << $$ <<std::endl; }
 	;
 
 postfix_expression
