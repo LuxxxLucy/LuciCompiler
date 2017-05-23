@@ -23,6 +23,18 @@ typedef union  {
 	string sval;
 	A_var var;
 	A_exp exp;
+	A_dec dec;
+	A_ty ty;
+	A_decList decList;
+	A_expList expList;
+	A_field field;
+	A_fieldList fieldList;
+	A_fundec fundec;
+	A_fundecList fundecList;
+	A_namety namety;
+	A_nametyList nametyList;
+	A_efield efield;
+	A_efieldList efieldList;
 } YYSTYPE_CUSTOM;
 
 #define YYSTYPE YYSTYPE_CUSTOM

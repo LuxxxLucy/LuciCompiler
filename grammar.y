@@ -19,12 +19,24 @@ int yylex(void);
 	string sval;
 	A_var var;
 	A_exp exp;
+	A_dec dec;
+	A_ty ty;
+	A_decList decList;
+	A_expList expList;
+	A_field field;
+	A_fieldList fieldList;
+	A_fundec fundec;
+	A_fundecList fundecList;
+	A_namety namety;
+	A_nametyList nametyList;
+	A_efield efield;
+	A_efieldList efieldList;
 	/* et cetera */
 }
 
-%type <exp> program primary_expression
+%type <exp> program primary_expression expression
 
-%token <sval>ID
+%token <sval> ID
 %token <dval> CONSTANT
 %token <sval> STRING_LITERAL
 %token SIZEOF
@@ -52,10 +64,10 @@ program:
 	;
 
 primary_expression
-	: ID { printf("dasda1\n"); }
+	: ID { $$ }
 	| CONSTANT { std::cout<<" a contant value " <<   $1 <<std::endl; }
-	| STRING_LITERAL { printf("dasda3\n"); }
-	| LPAREN expression RPAREN { printf("dasda4\n"); }
+	| STRING_LITERAL { std::cout << " A string " << $1 <<std::endl; }
+	| LPAREN expression RPAREN { std::cout << " a expression" << $2 <<std::endl; }
 	;
 
 postfix_expression
