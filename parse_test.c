@@ -8,6 +8,7 @@
 #include "error_message.h"
 #include "symbol.h"
 #include "abstract_syntax.h"
+#include "prabsyn.h"
 
 // extern int yyparse(void);
 int yyparse(void);
@@ -32,10 +33,11 @@ int main(int argc, char **argv) {
 
     if (argc!=2)
     {
-        fprintf(stderr,"usage: parse_test.out filename\n");
+        fprintf(stderr,"usage: parse_test filename\n");
         exit(1);
     }
 
     A_exp result_tree=parse(argv[1]);
+    pr_exp(stdout,abstract_syntax_root,1);
     return 0;
 }

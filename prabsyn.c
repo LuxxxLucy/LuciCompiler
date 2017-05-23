@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include "heading.h"
 #include "utility.h"
 #include "symbol.h" /* symbol table data structures */
 #include "abstract_syntax.h"  /* abstract syntax data structures */
@@ -62,6 +63,10 @@ static void pr_oper(FILE *out, A_oper d) {
 /* Print A_var types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
  indent(out, d);
+
+ fprintf(out, "print a tree\n");
+ std::cout << v <<std::endl;
+
  switch (v->kind) {
  case A_varExp:
    fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1);
@@ -126,8 +131,8 @@ void pr_exp(FILE *out, A_exp v, int d) {
    break;
  case A_letExp:
    fprintf(out, "letExp(\n");
-   pr_decList(out, v->u.let.decs, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.let.body, d+1); fprintf(out, ")");
+   pr_decList(out, v->u.declare_expression.decs, d+1); fprintf(out, ",\n");
+   pr_exp(out, v->u.declare_expression.body, d+1); fprintf(out, ")");
    break;
  case A_arrayExp:
    fprintf(out, "arrayExp(%s,\n", S_name(v->u.array.typ));

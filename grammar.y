@@ -5,6 +5,7 @@
 #include "symbol.h"
 #include "abstract_syntax.h"
 #include "error_message.h"
+#include "prabsyn.h"
 A_exp abstract_syntax_root;
 
 int yyerror(char *s);
@@ -34,7 +35,7 @@ int yylex(void);
 	/* et cetera */
 }
 
-%type <exp> program primary_expression expression
+%type <exp> program primary_expression expression translation_unit postfix_expression
 
 %token <sval> ID
 %token <dval> CONSTANT
@@ -60,18 +61,18 @@ int yylex(void);
 %%
 
 program:
-	| translation_unit { printf("parsing okay");}
+	| translation_unit {std::cout << "parsing okay!" <<std::endl;abstract_syntax_root=$1;}
 	;
 
 primary_expression
-	: ID { $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1)));std::cout<<" a ID value " << $$->u.var->kind <<$$->u.var->u.simple <<std::endl; }
+	: ID { $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1)));std::cout<<" a ID value kind" << $$->u.var->kind << " a ID value "<<$$->u.var->u.simple <<std::endl; }
 	| CONSTANT { std::cout<<" a contant value " <<   $1 <<std::endl; }
 	| STRING_LITERAL { std::cout << " A string " << $1 <<std::endl; }
-	| LPAREN expression RPAREN { std::cout << " a expression" << $$ <<std::endl; }
+	| LPAREN expression RPAREN { std::cout << " a expression " << std::endl;$$=$2; }
 	;
 
 postfix_expression
-	: primary_expression
+	: primary_expression {$$=$1;}
 	| postfix_expression LBRACK expression RBRACK
 	| postfix_expression LPAREN RPAREN
 	| postfix_expression LPAREN argument_expression_list RPAREN

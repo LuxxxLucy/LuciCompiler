@@ -224,7 +224,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 15 "grammar.y"
+#line 16 "grammar.y"
 {
 	int pos;
 	int ival;

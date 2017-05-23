@@ -29,8 +29,12 @@ parser.o: parser.c	lex.o error_message.o utility.o
 parse_test.o: parse_test.c error_message.h utility.h
 	$(CC) $(CFLAGS) -c parse_test.c -o parse_test.o
 
-parse_test: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o
-	$(CC) $(CFLAGS) parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o -o parse_test -ll
+parse_test: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o
+	$(CC) $(CFLAGS) parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o -o parse_test -ll
+
+prabsyn.o: abstract_syntax.o
+	$(CC) $(CFLAGS) -c prabsyn.c -o prabsyn.o
+
 
 abstract_syntax.o: abstract_syntax.h symbol.h utility.h symbol.o
 	$(CC) $(CFLAGS) -c abstract_syntax.c  symbol.o -o abstract_syntax.o
