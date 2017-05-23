@@ -68,8 +68,10 @@ int yylex(void);
 %%
 
 program:
-	| declaration {std::cout << "\nparsing okay! weaweaw" << std::endl;abstract_syntax_root=A_DecListExp(EM_tokPos,$1);}
-	| assignment_expression { abstract_syntax_root=$1;}
+	| declaration {std::cout << "\nparsing okay! weaweaw" << std::endl;abstract_syntax_root=A_DecListExp(EM_tokPos,$1);
+	pr_exp(stdout,$$,0);
+	}
+	| assignment_expression { abstract_syntax_root=$1; std::cout<< "assign exp" <<std::endl;}
 	| translation_unit {std::cout << "\nparsing okay!" << std::endl; abstract_syntax_root=$1;}
 	;
 
@@ -243,8 +245,16 @@ declaration_specifiers
 	;
 
 init_declarator_list
-	: init_declarator { $$=NULL;$$=A_ExpList($1,$$); }
-	| init_declarator_list COMMA init_declarator { $$=A_ExpList($3,$1); }
+	: init_declarator
+	{
+		$$=NULL;$$=A_ExpList($1,$$);
+		pr_expList(stdout,$$,15);
+	}
+	| init_declarator_list COMMA init_declarator
+	{
+		$$=A_ExpList($3,$1);
+		pr_expList(stdout,$$,4);
+	}
 	;
 
 init_declarator
@@ -356,7 +366,6 @@ direct_declarator
 	: ID
 		{
 			$$ = A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol(yylval.sval)));
-			std::cout<<yylval.sval<<std::endl;
 		}
 	| LPAREN declarator RPAREN
 	| direct_declarator LBRACK type_qualifier_list assignment_expression RBRACK

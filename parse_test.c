@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
     }
 
     A_exp result_tree=parse(argv[1]);
-    pr_exp(stdout,abstract_syntax_root,1);
+    pr_exp(stderr,abstract_syntax_root,0);
+    // fprintf(stderr,"%s\n",S_name(abstract_syntax_root->u.decList->head->u.var.var));
     return 0;
 }

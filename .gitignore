@@ -6,5 +6,6 @@ grammar.*
 !grammar.y
 lexical_test
 parse_test
-
+lex.c
+tokens.h
 parser.c
