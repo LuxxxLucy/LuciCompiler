@@ -35,7 +35,7 @@ int yylex(void);
 	/* et cetera */
 }
 
-%type <exp> program primary_expression expression translation_unit postfix_expression
+%type <exp> program primary_expression expression translation_unit postfix_expression assignment_expression unary_expression
 
 %token <sval> ID
 %token <dval> CONSTANT
@@ -61,14 +61,15 @@ int yylex(void);
 %%
 
 program:
-	| translation_unit {std::cout << "parsing okay!" <<std::endl;abstract_syntax_root=$1;}
+	| assignment_expression {std::cout << "\nparsing okay! weaweaw" << std::endl; abstract_syntax_root=$1;}
+	| translation_unit {std::cout << "\nparsing okay!" << std::endl; abstract_syntax_root=$1;}
 	;
 
 primary_expression
-	: ID { $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1)));std::cout<<" a ID value kind" << $$->u.var->kind << " a ID value "<<$$->u.var->u.simple <<std::endl; }
-	| CONSTANT { std::cout<<" a contant value " <<   $1 <<std::endl; }
-	| STRING_LITERAL { std::cout << " A string " << $1 <<std::endl; }
-	| LPAREN expression RPAREN { std::cout << " a expression " << std::endl;$$=$2; }
+	: ID { $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1))); }
+	| CONSTANT { $$=A_DoubleExp(EM_tokPos,yylval.dval);std::cout<<yylval.dval<<std::endl;}
+	| STRING_LITERAL { $$=A_StringExp(EM_tokPos,$1); }
+	| LPAREN expression RPAREN { $$=$2; }
 	;
 
 postfix_expression
@@ -90,7 +91,7 @@ argument_expression_list
 	;
 
 unary_expression
-	: postfix_expression
+	: postfix_expression { $$=$1;}
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| unary_operator cast_expression
@@ -178,6 +179,15 @@ conditional_expression
 assignment_expression
 	: conditional_expression
 	| unary_expression assignment_operator assignment_expression
+	{
+	switch($1->kind){
+		case A_simpleVar:
+			$$=A_AssignExp(EM_tokPos,$1->u.var,$3);
+			break;
+		default:
+			printf("error");
+		}
+	}
 	;
 
 assignment_operator

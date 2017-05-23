@@ -58,6 +58,14 @@ A_exp A_IntExp(A_pos pos, int i){
     return p;
 }
 
+A_exp A_DoubleExp(A_pos pos, double i){
+    A_exp p = (A_exp) checked_malloc(sizeof(*p));
+    p->kind=A_doubleExp;
+    p->pos=pos;
+    p->u.doublee=i;
+    return p;
+}
+
 A_exp A_StringExp(A_pos pos, string s){
     A_exp p = (A_exp) checked_malloc(sizeof(*p));
     p->kind=A_stringExp;

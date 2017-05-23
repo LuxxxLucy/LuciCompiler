@@ -62,86 +62,85 @@ static void pr_oper(FILE *out, A_oper d) {
 
 /* Print A_var types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
- indent(out, d);
-
- fprintf(out, "print a tree\n");
- std::cout << v <<std::endl;
-
- switch (v->kind) {
- case A_varExp:
-   fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1);
-   fprintf(out, "%s", ")");
-   break;
- case A_nilExp:
-   fprintf(out, "nilExp()");
-   break;
- case A_intExp:
-   fprintf(out, "intExp(%d)", v->u.intt);
-   break;
- case A_stringExp:
-   fprintf(out, "stringExp(%s)", v->u.stringg);
-   break;
- case A_callExp:
-   fprintf(out, "callExp(%s,\n", S_name(v->u.call.func));
-   pr_expList(out, v->u.call.args, d+1); fprintf(out, ")");
-   break;
- case A_opExp:
-   fprintf(out, "opExp(\n");
-   indent(out, d+1); pr_oper(out, v->u.op.oper); fprintf(out, ",\n");
-   pr_exp(out, v->u.op.left, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.op.right, d+1); fprintf(out, ")");
-   break;
- case A_recordExp:
-   fprintf(out, "recordExp(%s,\n", S_name(v->u.record.typ));
-   pr_efieldList(out, v->u.record.fields, d+1); fprintf(out, ")");
-   break;
- case A_seqExp:
-   fprintf(out, "seqExp(\n");
-   pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
-   break;
- case A_assignExp:
-   fprintf(out, "assignExp(\n");
-   pr_var(out, v->u.assign.var, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.assign.exp, d+1); fprintf(out, ")");
-   break;
- case A_ifExp:
-   fprintf(out, "iffExp(\n");
-   pr_exp(out, v->u.iff.test, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.iff.then, d+1);
-   if (v->u.iff.elsee) { /* else is optional */
-      fprintf(out, ",\n");
-      pr_exp(out, v->u.iff.elsee, d+1);
-   }
-   fprintf(out, ")");
-   break;
- case A_whileExp:
-   fprintf(out, "whileExp(\n");
-   pr_exp(out, v->u.whilee.test, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.whilee.body, d+1); fprintf(out, ")\n");
-   break;
- case A_forExp:
-   fprintf(out, "forExp(%s,\n", S_name(v->u.forr.var));
-   pr_exp(out, v->u.forr.lo, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.forr.hi, d+1); fprintf(out, "%s\n", ",");
-   pr_exp(out, v->u.forr.body, d+1); fprintf(out, ",\n");
-   indent(out, d+1); fprintf(out, "%s", v->u.forr.escape ? "TRUE)" : "FALSE)");
-   break;
- case A_breakExp:
-   fprintf(out, "breakExp()");
-   break;
- case A_letExp:
-   fprintf(out, "letExp(\n");
-   pr_decList(out, v->u.declare_expression.decs, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.declare_expression.body, d+1); fprintf(out, ")");
-   break;
- case A_arrayExp:
-   fprintf(out, "arrayExp(%s,\n", S_name(v->u.array.typ));
-   pr_exp(out, v->u.array.size, d+1); fprintf(out, ",\n");
-   pr_exp(out, v->u.array.init, d+1); fprintf(out, ")");
-   break;
- default:
-   assert(0);
- }
+    indent(out, d);
+    switch (v->kind) {
+    case A_varExp:
+        fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1);
+        fprintf(out, "%s", ")\n");
+        break;
+    case A_nilExp:
+        fprintf(out, "nilExp()");
+        break;
+    case A_intExp:
+        fprintf(out, "intExp(%d)", v->u.intt);
+        break;
+    case A_doubleExp:
+        fprintf(out, "doubleExp(%f)", v->u.doublee);
+        break;
+    case A_stringExp:
+        fprintf(out, "stringExp(%s)", v->u.stringg);
+        break;
+    case A_callExp:
+        fprintf(out, "callExp(%s,\n", S_name(v->u.call.func));
+        pr_expList(out, v->u.call.args, d+1); fprintf(out, ")");
+        break;
+    case A_opExp:
+        fprintf(out, "opExp(\n");
+        indent(out, d+1); pr_oper(out, v->u.op.oper); fprintf(out, ",\n");
+        pr_exp(out, v->u.op.left, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.op.right, d+1); fprintf(out, ")");
+        break;
+    case A_recordExp:
+        fprintf(out, "recordExp(%s,\n", S_name(v->u.record.typ));
+        pr_efieldList(out, v->u.record.fields, d+1); fprintf(out, ")");
+    break;
+        case A_seqExp:
+        fprintf(out, "seqExp(\n");
+        pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
+        break;
+    case A_assignExp:
+        fprintf(out, "assignExp(\n");
+        pr_var(out, v->u.assign.var, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.assign.exp, d+1); fprintf(out, ")");
+        break;
+    case A_ifExp:
+        fprintf(out, "iffExp(\n");
+        pr_exp(out, v->u.iff.test, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.iff.then, d+1);
+        if (v->u.iff.elsee) { /* else is optional */
+          fprintf(out, ",\n");
+          pr_exp(out, v->u.iff.elsee, d+1);
+        }
+        fprintf(out, ")");
+        break;
+    case A_whileExp:
+        fprintf(out, "whileExp(\n");
+        pr_exp(out, v->u.whilee.test, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.whilee.body, d+1); fprintf(out, ")\n");
+        break;
+    case A_forExp:
+        fprintf(out, "forExp(%s,\n", S_name(v->u.forr.var));
+        pr_exp(out, v->u.forr.lo, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.forr.hi, d+1); fprintf(out, "%s\n", ",");
+        pr_exp(out, v->u.forr.body, d+1); fprintf(out, ",\n");
+        indent(out, d+1); fprintf(out, "%s", v->u.forr.escape ? "TRUE)" : "FALSE)");
+    break;
+        case A_breakExp:
+        fprintf(out, "breakExp()");
+        break;
+    case A_letExp:
+        fprintf(out, "letExp(\n");
+        pr_decList(out, v->u.declare_expression.decs, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.declare_expression.body, d+1); fprintf(out, ")");
+        break;
+    case A_arrayExp:
+        fprintf(out, "arrayExp(%s,\n", S_name(v->u.array.typ));
+        pr_exp(out, v->u.array.size, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.array.init, d+1); fprintf(out, ")");
+        break;
+    default:
+        assert(0);
+    }
 }
 
 static void pr_dec(FILE *out, A_dec v, int d) {
