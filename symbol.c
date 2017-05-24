@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <string.h>
+#include "heading.h"
 #include "utility.h"
 #include "symbol.h"
 #include "table.h"
 
-struct S_symbol_ {string name; S_symbol next;};
+struct S_symbol_ {std::string name; S_symbol next;};
 
 static S_symbol mksymbol(string name, S_symbol next){
     S_symbol s= (S_symbol) checked_malloc(sizeof(*s));
-    s->name=name; s->next=next;
+    s->name=std::string(name); s->next=next;
     return s;
 }
 
@@ -26,15 +27,15 @@ static unsigned int hash(char *s0){
     return h;
 }
 
-static int streq(string a, string b){
-    return !strcmp(a,b);
+static int streq(std::string a, std::string b){
+    return a==b;
 }
 
 S_symbol S_Symbol(string name){
     int index= hash(name) % SIZE;
     S_symbol syms = hashtable[index], sym;
     for(sym=syms; sym; sym=sym->next)
-        if (streq(sym->name,name))
+        if (streq(sym->name,std::string(name) ) )
             return sym;
     sym = mksymbol(name,syms);
     hashtable[index]=sym;
@@ -42,7 +43,9 @@ S_symbol S_Symbol(string name){
 }
 
 string S_name(S_symbol sym){
-    return sym->name;
+    char * c = new char [sym->name.length()+1];
+    std::strcpy (c, sym->name.c_str());
+    return c;
 }
 
 S_table S_empty(void){

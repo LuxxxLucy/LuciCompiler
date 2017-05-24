@@ -68,8 +68,9 @@ int yylex(void);
 %%
 
 program:
-	| declaration {std::cout << "\nparsing okay! weaweaw" << std::endl;abstract_syntax_root=A_DecListExp(EM_tokPos,$1);
-	pr_exp(stdout,$$,0);
+	| declaration {
+	std::cout << "\nparsing okay! test of pure declaration" << std::endl;
+	abstract_syntax_root=A_DecListExp(EM_tokPos,$1);
 	}
 	| assignment_expression { abstract_syntax_root=$1; std::cout<< "assign exp" <<std::endl;}
 	| translation_unit {std::cout << "\nparsing okay!" << std::endl; abstract_syntax_root=$1;}
@@ -228,8 +229,13 @@ declaration
 	| declaration_specifiers init_declarator_list SEMICOLON
 		{
 			$$=NULL;
+			pr_expList(stdout,$2,15);
+			//pr_ty(stdout,$1,0);
 			for(;$2!=NULL;$2=$2->tail)
-			$$=( A_VarDec(EM_tokPos,$2->head->u.assign.var->u.simple,$1->u.name,$2->head->u.assign.exp),$$);
+			{
+				$$=A_DecList(A_VarDec(EM_tokPos,$2->head->u.assign.var->u.simple,$1->u.name,$2->head->u.assign.exp),$$);
+			}
+			pr_decList(stdout,$$,15);
 		}
 	;
 
@@ -248,12 +254,11 @@ init_declarator_list
 	: init_declarator
 	{
 		$$=NULL;$$=A_ExpList($1,$$);
-		pr_expList(stdout,$$,15);
 	}
 	| init_declarator_list COMMA init_declarator
 	{
 		$$=A_ExpList($3,$1);
-		pr_expList(stdout,$$,4);
+		// pr_expList(stdout,$$,4);
 	}
 	;
 
@@ -261,6 +266,7 @@ init_declarator
 	: declarator {}
 	| declarator ASSIGN initializer
 	{
+		// declarator is a expression
 		$$=A_AssignExp(EM_tokPos,$1->u.var,$3);
 	}
 	;
@@ -359,7 +365,10 @@ function_specifier
 
 declarator
 	: pointer direct_declarator
-	| direct_declarator { $$=$1;}
+	| direct_declarator
+		{
+			$$=$1;
+		}
 	;
 
 direct_declarator
