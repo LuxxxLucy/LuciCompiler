@@ -32,16 +32,19 @@ int yylex(void);
 	A_nametyList nametyList;
 	A_efield efield;
 	A_efieldList efieldList;
+	A_oper op;
 	/* et cetera */
 }
 
-%type <exp> program primary_expression expression translation_unit postfix_expression assignment_expression unary_expression init_declarator direct_declarator declarator initializer
+%type <exp> program primary_expression expression translation_unit postfix_expression assignment_expression unary_expression init_declarator direct_declarator declarator initializer additive_expression multiplicative_expression cast_expression
 
 %type <expList> init_declarator_list
 
 %type <decList> declaration
 
 %type <ty> declaration_specifiers type_specifier
+
+%type <op> unary_operator
 
 
 %token <sval> ID
@@ -113,27 +116,30 @@ unary_expression
 unary_operator
 	: AMPERSAND
 	| ASTERISK
-	| PLUS
-	| MINUS
+	| PLUS { $$=A_plusOp; }
+	| MINUS { $$=A_minusOp; }
 	| TILDE
 	| EXCLAMATION
 	;
 
 cast_expression
-	: unary_expression
-	| LPAREN type_name RPAREN cast_expression
+	: unary_expression { $$=$1; }
+	| LPAREN type_name RPAREN cast_expression { fprintf(stdout,"cast(not done yet)"); }
 	;
 
 multiplicative_expression
-	: cast_expression
+	: cast_expression { $$=$1; }
 	| multiplicative_expression ASTERISK cast_expression
 	| multiplicative_expression DIVIDE cast_expression
 	| multiplicative_expression MOD cast_expression
 	;
 
 additive_expression
-	: multiplicative_expression
+	: multiplicative_expression { $$=$1; }
 	| additive_expression PLUS multiplicative_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_plusOp,$1,$3);
+	}
 	| additive_expression MINUS multiplicative_expression
 	;
 
