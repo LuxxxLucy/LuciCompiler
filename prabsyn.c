@@ -71,7 +71,7 @@ void pr_exp(FILE *out, A_exp v, int d) {
     switch (v->kind) {
     case A_varExp:
         fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1);
-        fprintf(out, "%s", ")\n");
+        fprintf(out, "%s", ")");
         break;
     case A_nilExp:
         fprintf(out, "nilExp()");
@@ -92,7 +92,8 @@ void pr_exp(FILE *out, A_exp v, int d) {
     case A_opExp:
         fprintf(out, "opExp(\n");
         indent(out, d+1); pr_oper(out, v->u.op.oper); fprintf(out, ",\n");
-        pr_exp(out, v->u.op.left, d+1); fprintf(out, ",\n");
+        pr_exp(out, v->u.op.left, d+1);
+        fprintf(out, ",\n");
         pr_exp(out, v->u.op.right, d+1); fprintf(out, ")");
         break;
     case A_recordExp:

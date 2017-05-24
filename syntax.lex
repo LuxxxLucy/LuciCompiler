@@ -9,6 +9,7 @@ IS  ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 %{
 #include <stdio.h>
 #include <string.h>
+#include "heading.h"
 #include "utility.h"
 
 
@@ -101,7 +102,10 @@ int check_type(void)
 /*
 *	it actually will only return IDENTIFIER
 */
-    yylval.sval=yytext;
+	std::string s=std::string(yytext);
+    char * c = new char [s.length()+1];
+    std::strcpy (c, s.c_str());
+    yylval.sval=c;
 	return ID;
 }
 

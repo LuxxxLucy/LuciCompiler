@@ -35,7 +35,7 @@ typedef enum {
 } A_oper;
 
 
-typedef enum { A_simpleVar, A_fieldVar, A_subscriptVar } varKind;
+typedef enum { A_simpleVar, A_fieldVar, A_dotFieldVar, A_subscriptVar } varKind;
 
 struct A_var_{
 	// postion of this in the code
@@ -50,6 +50,10 @@ struct A_var_{
 			A_var var;
 			S_symbol sym;
 		} field;
+		struct {
+			A_var var;
+			S_symbol sym;
+		} dotField;
 		struct {
 			A_var var;
 			A_exp exp;
@@ -158,9 +162,13 @@ struct A_efieldList_ { A_efield head; A_efieldList tail;};
 
 /* Function Prototypes */
 
+/* variables */
 A_var A_SimpleVar( A_pos pos, S_symbol sym);
 A_var A_FieldVar( A_pos pos, A_var var, S_symbol sym);
+A_var A_DotFieldVar( A_pos pos, A_var var, S_symbol sym);
 A_var A_SubscriptVar( A_pos pos, A_var var, A_exp exp);
+
+/* expressions */
 A_exp A_VarExp( A_pos pos, A_var var);
 A_exp A_NilExp( A_pos pos);
 A_exp A_IntExp( A_pos pos, int i);
@@ -177,17 +185,26 @@ A_exp A_ForExp( A_pos pos, S_symbol var, A_exp lo, A_exp hi, A_exp body);
 A_exp A_BreakExp( A_pos pos);
 A_exp A_LetExp( A_pos pos, A_decList decs, A_exp body);
 A_exp A_ArrayExp( A_pos pos, S_symbol typ, A_exp size, A_exp init);
+
+/* declarations */
 A_dec A_FunctionDec( A_pos pos, A_fundecList function);
 A_dec A_VarDec( A_pos pos, S_symbol var, S_symbol typ, A_exp init);
 A_dec A_TypeDec( A_pos pos, A_nametyList type);
+
+/* transfer a declaration to exp (for convienient) */
 A_exp A_DecExp(A_pos pos, A_dec dec);
 A_exp A_DecListExp(A_pos pos, A_decList decList);
+
+/*  */
 A_ty A_NameTy( A_pos pos, S_symbol name);
 A_ty A_RecordTy( A_pos pos, A_fieldList record);
 A_ty A_ArrayTy( A_pos pos, S_symbol array);
+
 A_field A_Field( A_pos pos, S_symbol name, S_symbol typ);
 A_fieldList A_FieldList( A_field head, A_fieldList tail);
+
 A_expList A_ExpList( A_exp head, A_expList tail);
+
 A_fundec A_Fundec( A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body);
 A_fundecList A_FundecList( A_fundec head, A_fundecList tail);
 A_decList A_DecList( A_dec head, A_decList tail);

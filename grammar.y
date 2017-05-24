@@ -36,9 +36,13 @@ int yylex(void);
 	/* et cetera */
 }
 
-%type <exp> program primary_expression expression translation_unit postfix_expression assignment_expression unary_expression init_declarator direct_declarator declarator initializer additive_expression multiplicative_expression cast_expression
+%type <exp> block_item translation_unit statement expression_statement
 
-%type <expList> init_declarator_list
+%type <exp> init_declarator direct_declarator declarator initializer
+
+%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression
+
+%type <expList> program init_declarator_list block_item_list
 
 %type <decList> declaration
 
@@ -71,28 +75,47 @@ int yylex(void);
 %%
 
 program:
-	| declaration {
-	std::cout << "\nparsing okay! test of pure declaration" << std::endl;
-	abstract_syntax_root=A_DecListExp(EM_tokPos,$1);
+	| assignment_expression
+	{
+		abstract_syntax_root=$1; std::cout<< "assign exp" <<std::endl;
 	}
-	| assignment_expression { abstract_syntax_root=$1; std::cout<< "assign exp" <<std::endl;}
-	| translation_unit {std::cout << "\nparsing okay!" << std::endl; abstract_syntax_root=$1;}
+	|
+	block_item_list
+	{
+		abstract_syntax_root=A_SeqExp(EM_tokPos,$1);
+	}
+	| translation_unit
+	{
+		std::cout << "\nparsing okay!" << std::endl; abstract_syntax_root=$1;
+	}
 	;
 
 primary_expression
-	: ID { $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1))); }
+	: ID
+	{
+	 $$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1)));
+	}
 	| CONSTANT { $$=A_DoubleExp(EM_tokPos,yylval.dval);}
 	| STRING_LITERAL { $$=A_StringExp(EM_tokPos,$1); }
 	| LPAREN expression RPAREN { $$=$2; }
 	;
 
 postfix_expression
-	: primary_expression {$$=$1;}
+	: primary_expression { $$=$1;}
 	| postfix_expression LBRACK expression RBRACK
+	{
+		$$= A_VarExp(EM_tokPos, A_SubscriptVar(EM_tokPos,$1->u.var,$3));
+	}
 	| postfix_expression LPAREN RPAREN
 	| postfix_expression LPAREN argument_expression_list RPAREN
 	| postfix_expression DOT ID
+	{
+		$$= A_VarExp(EM_tokPos, A_DotFieldVar(EM_tokPos,$1->u.var,S_Symbol($3)));
+	}
 	| postfix_expression PTR_OP ID
+	{
+		$$= A_VarExp(EM_tokPos, A_FieldVar(EM_tokPos,$1->u.var,S_Symbol($3)));
+	}
 	| postfix_expression INC_OP
 	| postfix_expression DEC_OP
 	| LPAREN type_name RPAREN LBRACE initializer_list RBRACE
@@ -105,7 +128,10 @@ argument_expression_list
 	;
 
 unary_expression
-	: postfix_expression { $$=$1;}
+	: postfix_expression
+	{
+		$$=$1;
+	}
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| unary_operator cast_expression
@@ -223,6 +249,9 @@ assignment_operator
 
 expression
 	: assignment_expression
+	{
+		$$=$1;
+	}
 	| expression COMMA assignment_expression
 	;
 
@@ -257,15 +286,7 @@ declaration_specifiers
 init_declarator_list
 	: init_declarator
 	{
-		$$=NULL;
-		$$=A_ExpList($1,$$);
-		// if($$)
-		// 	$$=A_ExpList($1,$$);
-		// else
-		// {
-		// 	$$=NULL;
-		// 	$$=A_ExpList($1,$$);
-		// }
+		$$=A_ExpList($1,NULL);
 	}
 	| init_declarator_list COMMA init_declarator
 	{
@@ -492,7 +513,7 @@ designator
 statement
 	: labeled_statement
 	| compound_statement
-	| expression_statement
+	| expression_statement { $$=$1;}
 	| selection_statement
 	| iteration_statement
 	| jump_statement
@@ -511,17 +532,33 @@ compound_statement
 
 block_item_list
 	: block_item
+	{
+		$$=A_ExpList($1,NULL);
+	}
 	| block_item_list block_item
+	{
+		fprintf(stdout,"another expression\n");
+		$$=A_ExpList($2,$$);
+	}
 	;
 
 block_item
 	: declaration
+	{
+		$$=A_DecListExp(EM_tokPos,$1);
+	}
 	| statement
+	{
+		$$=$1;
+	}
 	;
 
 expression_statement
 	: SEMICOLON
 	| expression SEMICOLON
+	{
+		$$=$1;
+	}
 	;
 
 selection_statement
