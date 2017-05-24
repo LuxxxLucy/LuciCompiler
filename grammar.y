@@ -228,14 +228,12 @@ declaration
 	: declaration_specifiers SEMICOLON
 	| declaration_specifiers init_declarator_list SEMICOLON
 		{
+			// declaration is a decList
 			$$=NULL;
-			pr_expList(stdout,$2,15);
-			//pr_ty(stdout,$1,0);
 			for(;$2!=NULL;$2=$2->tail)
 			{
 				$$=A_DecList(A_VarDec(EM_tokPos,$2->head->u.assign.var->u.simple,$1->u.name,$2->head->u.assign.exp),$$);
 			}
-			pr_decList(stdout,$$,15);
 		}
 	;
 
@@ -253,7 +251,15 @@ declaration_specifiers
 init_declarator_list
 	: init_declarator
 	{
-		$$=NULL;$$=A_ExpList($1,$$);
+		$$=NULL;
+		$$=A_ExpList($1,$$);
+		// if($$)
+		// 	$$=A_ExpList($1,$$);
+		// else
+		// {
+		// 	$$=NULL;
+		// 	$$=A_ExpList($1,$$);
+		// }
 	}
 	| init_declarator_list COMMA init_declarator
 	{
@@ -263,7 +269,10 @@ init_declarator_list
 	;
 
 init_declarator
-	: declarator {}
+	: declarator
+	{
+		$$=A_AssignExp(EM_tokPos,$1->u.var,A_NilExp(EM_tokPos));
+	}
 	| declarator ASSIGN initializer
 	{
 		// declarator is a expression

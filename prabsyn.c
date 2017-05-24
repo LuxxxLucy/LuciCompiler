@@ -64,6 +64,10 @@ void pr_oper(FILE *out, A_oper d) {
 /* Print A_var types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
     indent(out, d);
+    // if(v)
+    //     fprintf(out, "%s\n","NULL");
+    //     fprintf(out, "%s", ")\n");
+    //     return;
     switch (v->kind) {
     case A_varExp:
         fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1);
@@ -94,8 +98,8 @@ void pr_exp(FILE *out, A_exp v, int d) {
     case A_recordExp:
         fprintf(out, "recordExp(%s,\n", S_name(v->u.record.typ));
         pr_efieldList(out, v->u.record.fields, d+1); fprintf(out, ")");
-    break;
-        case A_seqExp:
+        break;
+    case A_seqExp:
         fprintf(out, "seqExp(\n");
         pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
         break;
@@ -251,7 +255,7 @@ void pr_decList(FILE *out, A_decList v, int d) {
         fprintf(out, ")");
     }
     else {
-        fprintf(out, " a empty decList()");
+        fprintf(out, "end of decList()");
     }
 
 }
