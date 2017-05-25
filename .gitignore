@@ -9,3 +9,10 @@ parse_test
 lex.c
 tokens.h
 parser.c
+
+
+canon.c
+canon.h
+assem.c
+assem.h
+

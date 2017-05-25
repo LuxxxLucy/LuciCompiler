@@ -51,6 +51,14 @@ void pr_var(FILE *out, A_var v, int d)
             pr_var(out, v->u.subscript.var, d+1); fprintf(out, "%s\n", ",");
             pr_exp(out, v->u.subscript.exp, d+1); fprintf(out, "%s", ")");
             break;
+        case A_ptrVar:
+            fprintf(out, "%s\n", "ptr Var(");
+            pr_var(out, v->u.ptr, d+1); 
+            break;
+        case A_addressVar:
+            fprintf(out, "%s\n", "address Var(");
+            pr_var(out, v->u.addres, d+1);
+            break;
         default:
             assert(0);
     }

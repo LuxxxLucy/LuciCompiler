@@ -135,13 +135,27 @@ unary_expression
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| unary_operator cast_expression
+	{
+		switch($1)
+		{
+			case A_addressOp:
+				$$=A_VarExp(EM_tokPos,A_AddressVar(EM_tokPos,$2->u.var));
+				break;
+			case A_ptrOp:
+				$$=A_VarExp(EM_tokPos,A_PtrVar(EM_tokPos,$2->u.var));
+				break;
+			default:
+				fprintf(stdout,"unexpected unary op");
+				assert(0);
+		}
+	}
 	| SIZEOF unary_expression
 	| SIZEOF LPAREN type_name RPAREN
 	;
 
 unary_operator
-	: AMPERSAND
-	| ASTERISK
+	: AMPERSAND { $$=A_addressOp;}
+	| ASTERISK { $$=A_ptrOp;}
 	| PLUS { $$=A_plusOp; }
 	| MINUS { $$=A_minusOp; }
 	| TILDE

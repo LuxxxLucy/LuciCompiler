@@ -44,6 +44,23 @@ A_var A_SubscriptVar(A_pos pos, A_var var, A_exp exp){
     return p;
 }
 
+A_var A_PtrVar( A_pos pos, A_var var)
+{
+    A_var p = (A_var) checked_malloc(sizeof(*p));
+    p->kind=A_ptrVar;
+    p->pos=pos;
+    p->u.ptr=var;
+    return p;
+}
+
+A_var A_AddressVar( A_pos pos, A_var var)
+{
+    A_var p = (A_var) checked_malloc(sizeof(*p));
+    p->kind=A_addressVar;
+    p->pos=pos;
+    p->u.addres=var;
+    return p;
+}
 
 A_exp A_VarExp(A_pos pos, A_var var){
     A_exp p = (A_exp) checked_malloc(sizeof(*p));

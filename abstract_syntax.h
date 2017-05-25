@@ -31,11 +31,13 @@ typedef enum {
 	// binary arithmetic operator
 	A_plusOp, A_minusOp, A_timesOp, A_divideOp,
 	// binary logic operator
-	A_eqOp, A_neqOp, A_ltOp, A_leOp, A_gtOp, A_geOp
+	A_eqOp, A_neqOp, A_ltOp, A_leOp, A_gtOp, A_geOp,
+	// unary operator
+	A_ptrOp, A_addressOp
 } A_oper;
 
 
-typedef enum { A_simpleVar, A_fieldVar, A_dotFieldVar, A_subscriptVar } varKind;
+typedef enum { A_simpleVar, A_fieldVar, A_dotFieldVar, A_subscriptVar,A_ptrVar,A_addressVar } varKind;
 
 struct A_var_{
 	// postion of this in the code
@@ -46,6 +48,8 @@ struct A_var_{
 	// indicate kind of variable
 	union {
 		S_symbol simple;
+		A_var ptr;
+		A_var addres;
 		struct {
 			A_var var;
 			S_symbol sym;
@@ -129,7 +133,7 @@ struct A_dec_ {
 	} u;
 };
 
-typedef enum {A_nameTy, A_recordTy, A_arrayTy} tyKind;
+typedef enum { A_nameTy, A_recordTy, A_arrayTy} tyKind;
 struct A_ty_ {
 	tyKind kind;
 	A_pos pos;
@@ -167,6 +171,8 @@ A_var A_SimpleVar( A_pos pos, S_symbol sym);
 A_var A_FieldVar( A_pos pos, A_var var, S_symbol sym);
 A_var A_DotFieldVar( A_pos pos, A_var var, S_symbol sym);
 A_var A_SubscriptVar( A_pos pos, A_var var, A_exp exp);
+A_var A_PtrVar( A_pos pos, A_var var);
+A_var A_AddressVar( A_pos pos, A_var var);
 
 /* expressions */
 A_exp A_VarExp( A_pos pos, A_var var);
