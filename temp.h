@@ -1,5 +1,5 @@
 /*
- * temp.h 
+ * temp.h
  *
  */
 
@@ -11,6 +11,7 @@ struct Temp_tempList_ { Temp_temp head; Temp_tempList tail;};
 Temp_tempList Temp_TempList(Temp_temp h, Temp_tempList t);
 
 typedef S_symbol Temp_label;
+
 Temp_label Temp_newlabel(void);
 Temp_label Temp_namedlabel(string name);
 string Temp_labelstring(Temp_label s);
@@ -27,4 +28,3 @@ string Temp_look(Temp_map m, Temp_temp t);
 void Temp_dumpMap(FILE *out, Temp_map m);
 
 Temp_map Temp_name(void);
-

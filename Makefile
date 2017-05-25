@@ -1,11 +1,25 @@
 
-OBJS = parser.o lex.o parse_test lexical_test
+OBJS = parser.o lex.o parse_test lexical_test main
 
 CC	= g++
 # CFLAGS	= -g -Wall -ansi -pedantic
 CFLAGS	= -g -w -ansi -pedantic
 
-all:  parser.c parser.o lex.o parse_test lexical_test
+all:  parser.c parser.o lex.o parse_test lexical_test main
+
+main: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o
+	$(CC) $(CFLAGS) parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o -o main -ll
+
+
+types.o: utility.o symbol.o
+	$(CC) $(CFLAGS) -c types.c utility.o symbol.o -o types.o
+
+temp.o: utility.o symbol.o table.o
+	$(CC) $(CFLAGS) -c temp.c utility.o symbol.o table.o -o temp.o
+
+tree.o: temp.o types.o utility.o
+	$(CC) $(CFLAGS) -c tree.c  utility.o temp.o symbol.o -o tree.o
+
 
 error_message.o: error_message.c error_message.h utility.h
 	$(CC) $(CFLAGS) -c error_message.c -o error_message.o
@@ -40,7 +54,7 @@ abstract_syntax.o: abstract_syntax.h symbol.h utility.h symbol.o
 	$(CC) $(CFLAGS) -c abstract_syntax.c  symbol.o -o abstract_syntax.o
 
 symbol.o: table.o
-	$(CC) $(CFLAGS) -c symbol.c -o symbol.o
+	$(CC) $(CFLAGS) -c symbol.c utility.o -o symbol.o
 
 table.o:
 	$(CC) $(CFLAGS) -c table.c -o table.o
