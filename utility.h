@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "heading.h"
 
 typedef char *string;
 typedef char Bool;
@@ -16,3 +17,6 @@ string String(char *);
 typedef struct U_boolList_ *U_boolList;
 struct U_boolList_ {Bool head; U_boolList tail;};
 U_boolList U_BoolList(Bool head, U_boolList tail);
+
+void print(std::string text);
+void print(string text);

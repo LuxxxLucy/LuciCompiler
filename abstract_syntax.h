@@ -29,9 +29,9 @@ typedef struct A_efieldList_ *A_efieldList;
 
 typedef enum {
 	// binary arithmetic operator
-	A_plusOp, A_minusOp, A_timesOp, A_divideOp,
+	A_plusOp, A_minusOp, A_timesOp, A_divideOp, A_modOp ,A_lsOp ,A_rsOp,
 	// binary logic operator
-	A_eqOp, A_neqOp, A_ltOp, A_leOp, A_gtOp, A_geOp,
+	A_eqOp, A_neqOp, A_ltOp, A_leOp, A_gtOp, A_geOp,A_andOp,A_orOp,A_xorOp,
 	// unary operator
 	A_ptrOp, A_addressOp
 } A_oper;
@@ -83,6 +83,7 @@ struct A_exp_{
 		int intt;
 		double doublee;
 		string stringg;
+
 		struct {
 			S_symbol func; A_expList args;
 		} call;
@@ -137,7 +138,8 @@ typedef enum { A_nameTy, A_recordTy, A_arrayTy} tyKind;
 struct A_ty_ {
 	tyKind kind;
 	A_pos pos;
-	union {
+	union
+	{
 		S_symbol name;
 		A_fieldList record;
 		S_symbol array;

@@ -1,14 +1,25 @@
 
-OBJS = parser.o lex.o parse_test lexical_test main
 
 CC	= g++
 # CFLAGS	= -g -Wall -ansi -pedantic
 CFLAGS	= -g -w -ansi -pedantic
 
-all:  parser.c parser.o lex.o parse_test lexical_test main
+all:  parser.c parser.o lex.o parse_test lexical_test main lucc
 
-main: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o
-	$(CC) $(CFLAGS) parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o -o main -ll
+lucc: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o main.o
+	# $(CC) $(CFLAGS) translateBack.c -o lucc
+	@echo "building lucc (lucy's c complier) make not ready please wait..."
+
+
+main: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o main.o translateBack.o
+	$(CC) $(CFLAGS)  main.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o translateBack.o -o main -ll
+
+main.o: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o
+	$(CC) $(CFLAGS) -c main.c parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o -o main.o -ll
+
+translateBack.o:
+	$(CC) $(CFLAGS) -c translateBack.c parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o -o translateBack.o -ll
+
 
 
 types.o: utility.o symbol.o
@@ -77,4 +88,4 @@ lexical_test: lexical_test.o lex.o error_message.o utility.o
 
 .PHONY: clean
 clean:
-	rm -f ./*.o lex.c lex.yy.c grammar.output grammar.tab.c grammar.tab.h grammar.c tokens.h parse_test lexical_test parser.c
+	rm -fr ./*.o lex.c lex.yy.c grammar.output grammar.tab.c grammar.tab.h grammar.c tokens.h parse_test lexical_test parser.c ./main ./lucc *.dSYM

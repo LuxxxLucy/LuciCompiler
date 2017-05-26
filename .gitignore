@@ -4,9 +4,6 @@ parser.c
 *.lucy
 grammar.*
 !grammar.y
-lexical_test
-parse_test
-main
 lex.c
 tokens.h
 parser.c
@@ -16,4 +13,14 @@ canon.c
 canon.h
 assem.c
 assem.h
+printtree.c
+printtree.h
+
+lexical_test
+parse_test
+main
+lucc
+lucc.dSYM
+
+main.o.dSYM
 

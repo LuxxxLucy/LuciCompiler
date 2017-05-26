@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "heading.h"
 #include "utility.h"
 
 void *checked_malloc(int len)
@@ -30,4 +31,14 @@ U_boolList U_BoolList(bool head, U_boolList tail)
     list->head = head;
     list->tail = tail;
     return list;
+}
+
+void print(std::string text)
+{
+    std::cout<<text<<std::endl;
+}
+
+void print(string text)
+{
+    fprintf(stdout, "%s\n", text);
 }

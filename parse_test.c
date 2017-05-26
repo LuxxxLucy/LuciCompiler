@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include "heading.h"
 #include "utility.h"
 #include "error_message.h"
 #include "symbol.h"

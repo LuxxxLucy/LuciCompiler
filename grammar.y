@@ -40,7 +40,7 @@ int yylex(void);
 
 %type <exp> init_declarator direct_declarator declarator initializer
 
-%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression
+%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression
 
 %type <expList> program init_declarator_list block_item_list
 
@@ -170,8 +170,17 @@ cast_expression
 multiplicative_expression
 	: cast_expression { $$=$1; }
 	| multiplicative_expression ASTERISK cast_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_timesOp,$1,$3);
+	}
 	| multiplicative_expression DIVIDE cast_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_divideOp,$1,$3);
+	}
 	| multiplicative_expression MOD cast_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_modOp,$1,$3);
+	}
 	;
 
 additive_expression
@@ -181,60 +190,105 @@ additive_expression
 		$$=A_OpExp(EM_tokPos,A_plusOp,$1,$3);
 	}
 	| additive_expression MINUS multiplicative_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_minusOp,$1,$3);
+	}
 	;
 
 shift_expression
-	: additive_expression
+	: additive_expression { $$=$1; }
 	| shift_expression LEFT_OP additive_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_lsOp,$1,$3);
+	}
 	| shift_expression RIGHT_OP additive_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_rsOp,$1,$3);
+	}
 	;
 
 relational_expression
-	: shift_expression
-	| relational_expression '<' shift_expression
-	| relational_expression '>' shift_expression
+	: shift_expression { $$=$1; }
+	| relational_expression LT_OP shift_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_ltOp,$1,$3);
+	}
+	| relational_expression GT_OP shift_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_gtOp,$1,$3);
+	}
 	| relational_expression LE_OP shift_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_leOp,$1,$3);
+	}
 	| relational_expression GE_OP shift_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_geOp,$1,$3);
+	}
 	;
 
 equality_expression
-	: relational_expression
+	: relational_expression { $$=$1; }
 	| equality_expression EQ_OP relational_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_eqOp,$1,$3);
+	}
 	| equality_expression NEQ_OP relational_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_neqOp,$1,$3);
+	}
 	;
 
 and_expression
-	: equality_expression
+	: equality_expression { $$=$1; }
 	| and_expression AMPERSAND equality_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_andOp,$1,$3);
+	}
 	;
 
 exclusive_or_expression
-	: and_expression
+	: and_expression { $$=$1; }
 	| exclusive_or_expression POW and_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_xorOp,$1,$3);
+	}
 	;
 
 inclusive_or_expression
-	: exclusive_or_expression
+	: exclusive_or_expression { $$=$1; }
 	| inclusive_or_expression VERTICAL_BAR exclusive_or_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_orOp,$1,$3);
+	}
 	;
 
 logical_and_expression
-	: inclusive_or_expression
+	: inclusive_or_expression { $$=$1; }
 	| logical_and_expression AND_OP inclusive_or_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_andOp,$1,$3);
+	}
 	;
 
 logical_or_expression
-	: logical_and_expression
+	: logical_and_expression { $$=$1; }
 	| logical_or_expression OR_OP logical_and_expression
+	{
+		$$=A_OpExp(EM_tokPos,A_orOp,$1,$3);
+	}
 	;
 
 conditional_expression
-	: logical_or_expression
+	: logical_or_expression { $$=$1; }
 	| logical_or_expression QUESTION expression COLON conditional_expression
+	{
+		$$=A_IfExp(EM_tokPos,$1,$3,$5);
+	}
 	;
 
 assignment_expression
-	: conditional_expression
+	: conditional_expression { $$=$1; }
 	| unary_expression assignment_operator assignment_expression
 	{
 	switch($1->kind){
@@ -267,6 +321,11 @@ expression
 		$$=$1;
 	}
 	| expression COMMA assignment_expression
+	{
+		print("dasda");
+		A_expList list = A_ExpList($1,NULL);
+		$$=A_SeqExp(EM_tokPos,A_ExpList($3,list));
+	}
 	;
 
 constant_expression
@@ -281,6 +340,8 @@ declaration
 			$$=NULL;
 			for(;$2!=NULL;$2=$2->tail)
 			{
+				//print(S_name($1->u.name));
+				print("print a type");pr_ty(stdout,$1,14);
 				$$=A_DecList(A_VarDec(EM_tokPos,$2->head->u.assign.var->u.simple,$1->u.name,$2->head->u.assign.exp),$$);
 			}
 		}
@@ -289,7 +350,11 @@ declaration
 declaration_specifiers
 	: storage_class_specifier
 	| storage_class_specifier declaration_specifiers
-	| type_specifier { $$=A_NameTy( EM_tokPos, S_symbol($1));}
+	| type_specifier
+	{
+		print("make a type");
+		$$=A_NameTy( EM_tokPos, S_symbol($1));
+	}
 	| type_specifier declaration_specifiers
 	| type_qualifier
 	| type_qualifier declaration_specifiers
@@ -330,10 +395,10 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID
-	| CHAR
+	: VOID { }
+	| CHAR { }
 	| SHORT
-	| INT
+	| INT { }
 	| LONG
 	| FLOAT
 	| DOUBLE

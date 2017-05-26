@@ -10,13 +10,18 @@ typedef struct Ty_tyList_ *Ty_tyList;
 typedef struct Ty_field_ *Ty_field;
 typedef struct Ty_fieldList_ *Ty_fieldList;
 
-typedef enum {
-		Ty_record, Ty_nil, Ty_int,
-		Ty_string, Ty_array,
-		Ty_name, Ty_void } tyKind;
-struct Ty_ty_ {
+typedef enum
+{
+	Ty_record, Ty_nil, Ty_int,
+	Ty_string, Ty_array,
+	Ty_name, Ty_void
+} tyKind;
+
+struct Ty_ty_
+{
 	tyKind kind;
-	union {
+	union
+	{
 		Ty_fieldList record;
 		Ty_ty array;
 		struct { S_symbol sym; Ty_ty ty;} name;
