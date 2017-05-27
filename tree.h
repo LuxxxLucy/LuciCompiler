@@ -31,16 +31,17 @@ struct T_stm_
 	union
 	{
 		struct { T_stm left, right; } SEQ;
-	    Temp_label LABEL;
+		list_t seq;
+	    Temp_label label;
 	    struct
 		{
 			T_relOp op;
 			Temp_label truee,falsee;
 			T_exp left, right;
-		 } CJUMP;
-	    struct { T_exp exp; Temp_labelList jumps; } JUMP;
-	    struct { T_exp dst, src;} MOVE;
-	    T_exp EXP;
+		} cjump;
+	    struct { T_exp exp; list_t jumps; } jump;
+	    struct { T_exp dst, src;} move;
+	    T_exp exp;
 	    } u;
 };
 
@@ -50,13 +51,13 @@ struct T_exp_ {
 	tExpKind kind;
 	union
 	{
-		struct {T_binOp op; T_exp left, right;} BINOP;
-		T_exp MEM;
-		Temp_temp TEMP;
-		struct {T_stm stm; T_exp exp;} ESEQ;
-		Temp_label NAME;
-		int CONST_;
-		struct {T_exp fun; T_expList args;} CALL;
+		struct {T_binOp op; T_exp left, right;} binop;
+		T_exp mem;
+		Temp_temp tmp;
+		struct {T_stm stm; T_exp exp;} eseq;
+		Temp_label name;
+		int const_;
+		struct {T_exp fun; list_t args;} call;
 	} u;
 };
 
@@ -64,8 +65,9 @@ T_expList T_ExpList ( T_exp head, T_expList tail);
 T_stmList T_StmList ( T_stm head, T_stmList tail);
 
 T_stm T_Seq( T_stm left, T_stm right);
+T_stm T_Seq(list_t seq);
 T_stm T_Label( Temp_label);
-T_stm T_Jump( T_exp exp, Temp_labelList labels);
+T_stm T_Jump( T_exp exp, list_t jumps);
 T_stm T_Cjump( T_relOp op, T_exp left, T_exp right,Temp_label truee, Temp_label falsee);
 T_stm T_Move( T_exp, T_exp);
 T_stm T_Exp( T_exp);
@@ -76,7 +78,7 @@ T_exp T_Temp( Temp_temp);
 T_exp T_Eseq( T_stm, T_exp);
 T_exp T_Name( Temp_label);
 T_exp T_Const( int );
-T_exp T_Call( T_exp, T_expList);
+T_exp T_Call( T_exp, list_t args);
 
 T_relOp T_notRel( T_relOp);  /* a op b    ==     not(a notRel(op) b)  */
 T_relOp T_commute( T_relOp); /* a op b    ==    b commute(op) a       */

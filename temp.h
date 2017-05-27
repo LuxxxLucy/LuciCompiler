@@ -3,6 +3,7 @@
  *
  */
 
+// temps for local varables
 typedef struct Temp_temp_ *Temp_temp;
 Temp_temp Temp_newtemp(void);
 
@@ -11,6 +12,8 @@ struct Temp_tempList_ { Temp_temp head; Temp_tempList tail;};
 Temp_tempList Temp_TempList(Temp_temp h, Temp_tempList t);
 
 typedef S_symbol Temp_label;
+
+// labels for memory address
 
 Temp_label Temp_newlabel(void);
 Temp_label Temp_namedlabel(string name);

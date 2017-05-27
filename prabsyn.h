@@ -1,4 +1,6 @@
 /* function prototype from prabsyn.c */
+void indent(FILE *out, int d);
+void pr_oper(FILE *out, A_oper d);
 void pr_exp(FILE *out, A_exp v, int d);
 void pr_var(FILE *out, A_var v, int d);
 void pr_dec(FILE *out, A_dec v, int d);

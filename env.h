@@ -3,10 +3,10 @@
  *
  * implementing the enviroment
  */
-#include "utility.h"
-#include "symbol.h"
-#include "table.h"
+
+#include "frame.h"
 #include "types.h"
+#include "translate.h"
 typedef TAB_table S_table;
 
 typedef struct E_enventry_ *E_enventry;
@@ -17,8 +17,8 @@ struct E_enventry_ {
     envKind kind;
     union
     {
-        struct { Ty_ty type;} var;
-        struct { Ty_tyList formals; Ty_ty result;} fun;
+        struct { Ty_ty type;tr_access_t access;} var;
+        struct { Ty_tyList formals; Ty_ty result;tr_level_t level;Temp_label label; } fun;
     } u;
 };
 

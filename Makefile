@@ -8,8 +8,8 @@ lucc: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o pr
 	# $(CC) $(CFLAGS) translateBack.c -o lucc
 	@echo "building lucc (lucy's c complier) make not ready please wait..."
 
-main: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o main.o translateBack.o semant.o env.o printtree.o
-	$(CC) $(CFLAGS)  main.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o translateBack.o types.o semant.o  env.o printtree.o -o main -ll
+main: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o main.o translateBack.o semant.o env.o printtree.o translate.o frame.o
+	$(CC) $(CFLAGS)  main.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o translateBack.o types.o semant.o  env.o printtree.o translate.o frame.o -o main -ll
 
 main.o: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o
 	$(CC) $(CFLAGS) -c main.c parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o -o main.o -ll
@@ -17,14 +17,14 @@ main.o: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o 
 translateBack.o:
 	$(CC) $(CFLAGS) -c translateBack.c parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o -o translateBack.o -ll
 
-semant.o:  utility.o tokens.h symbol.o abstract_syntax.o error_message.o temp.o tree.o printtree.o table.o types.o frame.o env.o
-	$(CC) $(CFLAGS) -c semant.c error_message.o utility.o abstract_syntax.o types.o symbol.o table.o printtree.o  temp.o tree.o types.o  frame.o env.o -o semant.o
+semant.o:  utility.o tokens.h symbol.o abstract_syntax.o error_message.o temp.o tree.o printtree.o table.o types.o frame.o env.o prabsyn.o
+	$(CC) $(CFLAGS) -c semant.c error_message.o utility.o abstract_syntax.o types.o symbol.o table.o printtree.o  temp.o tree.o types.o  frame.o env.o prabsyn.o -o semant.o
 
 frame.o: utility.o temp.o tree.o
 	$(CC) $(CFLAGS) -c frame.c utility.o temp.o tree.o types.o -o frame.o
 
-env.o: table.o
-	$(CC) $(CFLAGS) -c env.c table.o types.o -o env.o
+env.o: table.o types.o translate.o symbol.o temp.o tree.o frame.o symbol.o
+	$(CC) $(CFLAGS) -c env.c symbol.o table.o types.o temp.o tree.o frame.o symbol.o translate.o -o env.o
 
 
 printtree.o: utility.o symbol.o temp.o tree.o
@@ -39,6 +39,8 @@ temp.o: utility.o symbol.o table.o
 tree.o: temp.o types.o utility.o
 	$(CC) $(CFLAGS) -c tree.c  utility.o temp.o symbol.o -o tree.o
 
+translate.o:  utility.o symbol.o temp.o tree.o frame.o printtree.o
+	$(CC) $(CFLAGS) -c translate.c  utility.o symbol.o temp.o tree.o frame.o printtree.o -o translate.o
 
 error_message.o: error_message.c error_message.h utility.h
 	$(CC) $(CFLAGS) -c error_message.c -o error_message.o

@@ -24,18 +24,26 @@ T_stm T_Seq(T_stm left, T_stm right)
  return p;
 }
 
+T_stm T_Seq(list_t seq)
+{
+    T_stm p = (T_stm) checked_malloc(sizeof(*p));
+    p->kind = T_SEQ;
+    p->u.seq = seq;
+    return p;
+}
+
 T_stm T_Label(Temp_label label)
 {T_stm p = (T_stm) checked_malloc(sizeof *p);
  p->kind=T_LABEL;
- p->u.LABEL=label;
+ p->u.label=label;
  return p;
 }
 
-T_stm T_Jump(T_exp exp, Temp_labelList labels)
+T_stm T_Jump(T_exp exp, list_t jumps)
 {T_stm p = (T_stm) checked_malloc(sizeof *p);
  p->kind=T_JUMP;
- p->u.JUMP.exp=exp;
- p->u.JUMP.jumps=labels;
+ p->u.jump.exp=exp;
+ p->u.jump.jumps=jumps;
  return p;
 }
 
@@ -43,77 +51,77 @@ T_stm T_Cjump(T_relOp op, T_exp left, T_exp right,
 	      Temp_label truee, Temp_label falsee)
 {T_stm p = (T_stm) checked_malloc(sizeof *p);
  p->kind=T_CJUMP;
- p->u.CJUMP.op=op; p->u.CJUMP.left=left; p->u.CJUMP.right=right;
- p->u.CJUMP.truee=truee;
- p->u.CJUMP.falsee=falsee;
+ p->u.cjump.op=op; p->u.cjump.left=left; p->u.cjump.right=right;
+ p->u.cjump.truee=truee;
+ p->u.cjump.falsee=falsee;
  return p;
 }
 
 T_stm T_Move(T_exp dst, T_exp src)
 {T_stm p = (T_stm) checked_malloc(sizeof *p);
  p->kind=T_MOVE;
- p->u.MOVE.dst=dst;
- p->u.MOVE.src=src;
+ p->u.move.dst=dst;
+ p->u.move.src=src;
  return p;
 }
 
 T_stm T_Exp(T_exp exp)
 {T_stm p = (T_stm) checked_malloc(sizeof *p);
  p->kind=T_EXP;
- p->u.EXP=exp;
+ p->u.exp=exp;
  return p;
 }
 
 T_exp T_Binop(T_binOp op, T_exp left, T_exp right)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_BINOP;
- p->u.BINOP.op=op;
- p->u.BINOP.left=left;
- p->u.BINOP.right=right;
+ p->u.binop.op=op;
+ p->u.binop.left=left;
+ p->u.binop.right=right;
  return p;
 }
 
 T_exp T_Mem(T_exp exp)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_MEM;
- p->u.MEM=exp;
+ p->u.mem=exp;
  return p;
 }
 
 T_exp T_Temp(Temp_temp temp)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_TEMP;
- p->u.TEMP=temp;
+ p->u.tmp=temp;
  return p;
 }
 
 T_exp T_Eseq(T_stm stm, T_exp exp)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_ESEQ;
- p->u.ESEQ.stm=stm;
- p->u.ESEQ.exp=exp;
+ p->u.eseq.stm=stm;
+ p->u.eseq.exp=exp;
  return p;
 }
 
 T_exp T_Name(Temp_label name)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_NAME;
- p->u.NAME=name;
+ p->u.name=name;
  return p;
 }
 
 T_exp T_Const(int consti)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_CONST;
- p->u.CONST_=consti;
+ p->u.const_=consti;
  return p;
 }
 
-T_exp T_Call(T_exp fun, T_expList args)
+T_exp T_Call(T_exp fun, list_t args)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_CALL;
- p->u.CALL.fun=fun;
- p->u.CALL.args=args;
+ p->u.call.fun=fun;
+ p->u.call.args=args;
  return p;
 }
 

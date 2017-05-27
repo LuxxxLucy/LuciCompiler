@@ -2,25 +2,17 @@
  * main.c
  */
 
-#include <stdio.h>
-#include "utility.h"
-#include "symbol.h"
-#include "abstract_syntax.h"
-#include "error_message.h"
-#include "temp.h" /* needed by translate.h */
-#include "tree.h" /* needed by frame.h */
-// #include "assem.h"
-// #include "frame.h" /* needed by translate.h and printfrags prototype */
-#include "semant.h" /* function prototype for transProg */
-// #include "canon.h"
-#include "prabsyn.h"
-#include "printtree.h"
-// #include "escape.h"
-#include "tokens.h"
 // #include "codegen.h"
 
+#include "env.h"
+#include "abstract_syntax.h"
+#include "error_message.h"
+#include "tokens.h"
+#include "prabsyn.h"
+#include "printtree.h"
+//#include "translate.h"
+#include "semant.h"
 #include "translateBack.h"
-
 extern bool anyErrors;
 
 /* print the assembly language instructions to filename.s */
