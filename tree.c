@@ -105,7 +105,7 @@ T_exp T_Name(Temp_label name)
 T_exp T_Const(int consti)
 {T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_CONST;
- p->u.CONST=consti;
+ p->u.CONST_=consti;
  return p;
 }
 

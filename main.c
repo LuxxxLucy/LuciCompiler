@@ -11,10 +11,10 @@
 #include "tree.h" /* needed by frame.h */
 // #include "assem.h"
 // #include "frame.h" /* needed by translate.h and printfrags prototype */
-// #include "semant.h" /* function prototype for transProg */
+#include "semant.h" /* function prototype for transProg */
 // #include "canon.h"
 #include "prabsyn.h"
-// #include "printtree.h"
+#include "printtree.h"
 // #include "escape.h"
 #include "tokens.h"
 // #include "codegen.h"
@@ -73,11 +73,27 @@ int main(int argc, string *argv)
      return 1;
 
     //pr_exp(stderr,abstract_syntax_root,0);
+
+    print("\n*************************\ngenerating the abstract syntax tree\nnow print the abstract syntax tree\n");
     pr_expList(out, absyn_root->u.seq, 0); /* print absyn data structure */
+
+    print("\n*************************\nnow perform semanttic analysis and translate it into a intermediate instruction (IR) tree\n");
+    T_exp IR_tree=translate(absyn_root);
+
+    print("\n*************************\nnow print the intermediate instruction (IR) tree\n");
+    pr_tree_exp(stdout,IR_tree,20);
     // fprintf(out, "\n");
-    // T_exp IR_tree=translate(absyn_root);
     // IR_tree=canon(absyn_root,IR_tree);
 
+    print("\n*************************\nnow optimizing the intermediate instruction (IR) tree\nplease wait with patience\n");
+    print("\nCANONing:generating canonical IR tree....\n");
+
+    print("generating temporary code....\n");
+    print("frame generating....\n");
+    print("assembling it....\n");
+    print("done\n");
+    print("you can now run (with proud and confidence) the execuable programme on your machine\n");
+    print("you are welcome\nthank yourself and your patience\n");
     //
     // Esc_findEscape(absyn_root); /* set varDec's escape field */
     //

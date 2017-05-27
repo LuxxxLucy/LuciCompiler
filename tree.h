@@ -2,6 +2,7 @@
  * tree.h - Definitions for intermediate representation (IR) trees.
  *
  */
+
 typedef struct T_stm_ *T_stm;
 typedef struct T_exp_ *T_exp;
 typedef struct T_expList_ *T_expList;
@@ -54,7 +55,7 @@ struct T_exp_ {
 		Temp_temp TEMP;
 		struct {T_stm stm; T_exp exp;} ESEQ;
 		Temp_label NAME;
-		int CONST;
+		int CONST_;
 		struct {T_exp fun; T_expList args;} CALL;
 	} u;
 };

@@ -41,7 +41,7 @@ int yylex(void);
 
 %type <exp> init_declarator direct_declarator declarator initializer
 
-%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression compound_statement
+%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression compound_statement jump_statement
 
 %type <expList> program init_declarator_list block_item_list
 
@@ -85,13 +85,8 @@ int yylex(void);
 program:
 	block_item_list
 	{
-		std::cout << "\nparsing okay! block item_list" << std::endl;
+		std::cout << "\n*************************\nparsing okay! a block item_list\n*************************\n" << std::endl;
 		abstract_syntax_root=A_SeqExp(EM_tokPos,$1);
-	}
-	| translation_unit
-	{
-		std::cout << "\nparsing okay!" << std::endl;
-		abstract_syntax_root=$1;
 	}
 	;
 
@@ -416,7 +411,6 @@ type_specifier
 	| INT
 	{
 		$$=S_Symbol("INT");
-		// std::cout<<S_name($$)<<std::endl;
 	}
 	| LONG
 	{
@@ -703,7 +697,7 @@ block_item_list
 	}
 	| block_item_list block_item
 	{
-		fprintf(stdout,"another expression\n");
+		print("find an expression\n");
 		$$=A_ExpList($2,$$);
 	}
 	;
@@ -711,17 +705,18 @@ block_item_list
 block_item
 	: declaration
 	{
-		print("a declaration\n");
+		print("\n*************************\na declaration\n");
 		$$=A_DecListExp(EM_tokPos,$1);
 	}
 	| function_definition
 	{
-		print("a function definition\n");
+		print("\n*************************\na function definition\n");
 		$$=A_FunctionDecExp(EM_tokPos,$1);
+		print("function name: ");print(S_name($$->u.fun->name));print("\n");
+		print("return type: ");print(S_name($$->u.fun->result));print("\n");
 	}
 	| statement
 	{
-		print("a function definition\n");
 		$$=$1;
 	}
 	;
@@ -755,6 +750,9 @@ jump_statement
 	| BREAK SEMICOLON
 	| RETURN SEMICOLON
 	| RETURN expression SEMICOLON
+	{
+		$$=$2;
+	}
 	;
 
 translation_unit
@@ -772,9 +770,8 @@ function_definition
 	| declaration_specifiers declarator compound_statement
 	{
 		// A_fundec A_Fundec( A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body);
-		// A_fundec funcdec=A_Fundec(EM_tokPos, $2->u.var->u.simple ,$2->u.fieldList,$1->u.name,$3);
-		$$=A_Fundec(EM_tokPos, $2->u.var->u.simple ,$2->u.fieldList,$1->u.name,$3);
-		// A_fundecList funcdecList = A_FundecList(funcdec,NULL);
+		// $2 a seq exp which is a expList
+		$$=A_Fundec(EM_tokPos, $2->u.seq->tail->head->u.var->u.simple ,$2->u.seq->head->u.fieldList,$1->u.name,$3);
 	}
 	;
 

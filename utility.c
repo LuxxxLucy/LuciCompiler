@@ -40,5 +40,5 @@ void print(std::string text)
 
 void print(string text)
 {
-    fprintf(stdout, "%s\n", text);
+    fprintf(stdout, "%s", text);
 }
