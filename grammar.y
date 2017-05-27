@@ -33,6 +33,7 @@ int yylex(void);
 	A_efield efield;
 	A_efieldList efieldList;
 	A_oper op;
+	S_symbol sym;
 	/* et cetera */
 }
 
@@ -40,15 +41,22 @@ int yylex(void);
 
 %type <exp> init_declarator direct_declarator declarator initializer
 
-%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression
+%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression compound_statement
 
 %type <expList> program init_declarator_list block_item_list
 
 %type <decList> declaration
 
-%type <ty> declaration_specifiers type_specifier
+%type <field> parameter_declaration
+%type <fieldList> parameter_type_list parameter_list
+
+%type <fundec> function_definition
+
+%type <ty> declaration_specifiers
+%type <sym> type_specifier
 
 %type <op> unary_operator
+
 
 
 %token <sval> ID
@@ -75,18 +83,15 @@ int yylex(void);
 %%
 
 program:
-	| assignment_expression
-	{
-		abstract_syntax_root=$1; std::cout<< "assign exp" <<std::endl;
-	}
-	|
 	block_item_list
 	{
+		std::cout << "\nparsing okay! block item_list" << std::endl;
 		abstract_syntax_root=A_SeqExp(EM_tokPos,$1);
 	}
 	| translation_unit
 	{
-		std::cout << "\nparsing okay!" << std::endl; abstract_syntax_root=$1;
+		std::cout << "\nparsing okay!" << std::endl;
+		abstract_syntax_root=$1;
 	}
 	;
 
@@ -322,7 +327,6 @@ expression
 	}
 	| expression COMMA assignment_expression
 	{
-		print("dasda");
 		A_expList list = A_ExpList($1,NULL);
 		$$=A_SeqExp(EM_tokPos,A_ExpList($3,list));
 	}
@@ -341,7 +345,7 @@ declaration
 			for(;$2!=NULL;$2=$2->tail)
 			{
 				//print(S_name($1->u.name));
-				print("print a type");pr_ty(stdout,$1,14);
+				//pr_ty(stdout,$1,14);
 				$$=A_DecList(A_VarDec(EM_tokPos,$2->head->u.assign.var->u.simple,$1->u.name,$2->head->u.assign.exp),$$);
 			}
 		}
@@ -352,8 +356,7 @@ declaration_specifiers
 	| storage_class_specifier declaration_specifiers
 	| type_specifier
 	{
-		print("make a type");
-		$$=A_NameTy( EM_tokPos, S_symbol($1));
+		$$=A_NameTy(EM_tokPos, $1);
 	}
 	| type_specifier declaration_specifiers
 	| type_qualifier
@@ -395,21 +398,81 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID { }
-	| CHAR { }
+	: VOID
+	{
+	 	$$=S_Symbol("VOID");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
+	| CHAR
+	{
+		$$=S_Symbol("CHAR");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| SHORT
-	| INT { }
+	{
+		$$=S_Symbol("SHORT");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
+	| INT
+	{
+		$$=S_Symbol("INT");
+		// std::cout<<S_name($$)<<std::endl;
+	}
 	| LONG
+	{
+		$$=S_Symbol("LONG");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| FLOAT
+	{
+		$$=S_Symbol("FLOAT");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| DOUBLE
+	{
+		$$=S_Symbol("DOUBLE");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| SIGNED
+	{
+		$$=S_Symbol("SIGNED");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| UNSIGNED
+	{
+		$$=S_Symbol("UNSINED");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| BOOL
+	{
+		$$=S_Symbol("BOOL");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| COMPLEX
+	{
+		$$=S_Symbol("COMPLEX");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| IMAGINARY
+	{
+		$$=S_Symbol("IMAGINARY");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| struct_or_union_specifier
+	{
+		$$=S_Symbol("STRUCT");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| enum_specifier
+	{
+		$$=S_Symbol("ENUM");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	| TYPE_NAME
+	{
+		$$=S_Symbol("CUSTOM_TYPE");
+		fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
 	;
 
 struct_or_union_specifier
@@ -488,9 +551,9 @@ declarator
 
 direct_declarator
 	: ID
-		{
-			$$ = A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol(yylval.sval)));
-		}
+	{
+		$$ = A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol(yylval.sval)));
+	}
 	| LPAREN declarator RPAREN
 	| direct_declarator LBRACK type_qualifier_list assignment_expression RBRACK
 	| direct_declarator LBRACK type_qualifier_list RBRACK
@@ -501,7 +564,16 @@ direct_declarator
 	| direct_declarator LBRACK ASTERISK RBRACK
 	| direct_declarator LBRACK RBRACK
 	| direct_declarator LPAREN parameter_type_list RPAREN
+	{
+		// $3 field list, $1 a varExp
+		A_expList id_and_params=A_ExpList(A_FieldListExp(EM_tokPos,$3),NULL);
+		id_and_params=A_ExpList($1,id_and_params);
+		$$=A_SeqExp(EM_tokPos,id_and_params);
+	}
 	| direct_declarator LPAREN identifier_list RPAREN
+	{
+		print("call func of list params")
+	}
 	| direct_declarator LPAREN RPAREN
 	;
 
@@ -518,20 +590,32 @@ type_qualifier_list
 	;
 
 parameter_type_list
-	: parameter_list
+	: parameter_list { $$=$1; }
 	| parameter_list COMMA ELLIPSIS
 	;
 
 parameter_list
 	: parameter_declaration
+	{
+		$$=A_FieldList($1,NULL);
+	}
 	| parameter_list COMMA parameter_declaration
+	{
+		$$=A_FieldList($3,$1);
+	}
 	;
 
 parameter_declaration
 	: declaration_specifiers declarator
+	{
+		// A_field A_Field( A_pos pos, S_symbol name, S_symbol typ);
+		$$=A_Field(EM_tokPos,$2->u.var->u.simple,$1->u.name);
+		// pr_field(stdout,$$,20);
+	}
 	| declaration_specifiers abstract_declarator
 	| declaration_specifiers
 	;
+
 identifier_list
 	: ID
 	| identifier_list COMMA ID
@@ -607,6 +691,9 @@ labeled_statement
 compound_statement
 	: LBRACE RBRACE
 	| LBRACE block_item_list RBRACE
+	{
+		$$=A_SeqExp(EM_tokPos,$2);
+	}
 	;
 
 block_item_list
@@ -624,10 +711,17 @@ block_item_list
 block_item
 	: declaration
 	{
+		print("a declaration\n");
 		$$=A_DecListExp(EM_tokPos,$1);
+	}
+	| function_definition
+	{
+		print("a function definition\n");
+		$$=A_FunctionDecExp(EM_tokPos,$1);
 	}
 	| statement
 	{
+		print("a function definition\n");
 		$$=$1;
 	}
 	;
@@ -676,6 +770,12 @@ external_declaration
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement
 	| declaration_specifiers declarator compound_statement
+	{
+		// A_fundec A_Fundec( A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body);
+		// A_fundec funcdec=A_Fundec(EM_tokPos, $2->u.var->u.simple ,$2->u.fieldList,$1->u.name,$3);
+		$$=A_Fundec(EM_tokPos, $2->u.var->u.simple ,$2->u.fieldList,$1->u.name,$3);
+		// A_fundecList funcdecList = A_FundecList(funcdec,NULL);
+	}
 	;
 
 declaration_list

@@ -117,6 +117,44 @@ A_exp A_DecListExp(A_pos pos, A_decList decList){
     return p;
 }
 
+A_exp A_FieldExp(A_pos pos, A_field field)
+{
+    A_exp p = (A_exp) checked_malloc(sizeof(*p));
+    p->kind=A_fieldExp;
+    p->pos=pos;
+    p->u.field=field;
+    return p;
+}
+
+A_exp A_FieldListExp(A_pos pos, A_fieldList fieldList)
+{
+    A_exp p = (A_exp) checked_malloc(sizeof(*p));
+    p->kind=A_fieldListExp;
+    p->pos=pos;
+    p->u.fieldList=fieldList;
+    return p;
+}
+
+A_exp A_FunctionDecExp(A_pos pos, A_fundec fun)
+{
+    A_exp p = (A_exp) checked_malloc(sizeof(*p));
+    p->kind=A_functionDecExp;
+    p->pos=pos;
+    p->u.fun=fun;
+    return p;
+
+}
+
+A_exp A_FunctionDecListExp(A_pos pos, A_fundecList funList)
+{
+    A_exp p = (A_exp) checked_malloc(sizeof(*p));
+    p->kind=A_functionDecListExp;
+    p->pos=pos;
+    p->u.funList=funList;
+    return p;
+}
+
+
 A_exp A_CallExp(A_pos pos, S_symbol func, A_expList args){
     A_exp p = (A_exp) checked_malloc(sizeof(*p));
     p->kind=A_callExp;
@@ -282,8 +320,16 @@ A_field A_Field(A_pos pos, S_symbol name, S_symbol typ){
 A_fieldList A_FieldList(A_field head, A_fieldList tail){
     A_fieldList p = (A_fieldList) checked_malloc(sizeof(*p));
     p->head=head;
-    p->tail=tail;
-    return p;
+    p->tail=NULL;
+    if(!tail){
+        return p;
+    }
+    A_fieldList origin=tail;
+    while(tail->tail){
+        tail=tail->tail;
+    }
+    tail->tail=p;
+    return origin;
 }
 
 A_expList A_ExpList(A_exp head, A_expList tail){

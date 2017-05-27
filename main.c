@@ -73,7 +73,7 @@ int main(int argc, string *argv)
      return 1;
 
     //pr_exp(stderr,abstract_syntax_root,0);
-    pr_exp(out, absyn_root, 0); /* print absyn data structure */
+    pr_expList(out, absyn_root->u.seq, 0); /* print absyn data structure */
     // fprintf(out, "\n");
     // T_exp IR_tree=translate(absyn_root);
     // IR_tree=canon(absyn_root,IR_tree);

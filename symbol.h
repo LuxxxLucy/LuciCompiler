@@ -5,7 +5,7 @@
 
 typedef struct S_symbol_ *S_symbol;
 
-/* Make a unique symbol from a given string.
+/*  Make a unique symbol from a given string.
  *  Different calls to S_Symbol("foo") will yield the same S_symbol
  *  value, even if the "foo" strings are at different locations.
  */

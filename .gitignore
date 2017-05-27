@@ -9,12 +9,16 @@ tokens.h
 parser.c
 
 
-canon.c
-canon.h
-assem.c
-assem.h
 printtree.c
 printtree.h
+translate.h
+translate.c
+canon.c
+canon.h
+frame.c
+frame.h
+assem.c
+assem.h
 
 lexical_test
 parse_test

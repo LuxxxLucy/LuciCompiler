@@ -5,11 +5,17 @@
 #include "symbol.h"
 #include "table.h"
 
-struct S_symbol_ {std::string name; S_symbol next;};
+struct S_symbol_
+{
+    string name; S_symbol next;
+};
 
 static S_symbol mksymbol(string name, S_symbol next){
     S_symbol s= (S_symbol) checked_malloc(sizeof(*s));
-    s->name=std::string(name); s->next=next;
+    std::string temp_s=std::string(name);
+    s->name= new char [temp_s.length()+1];
+    std::strcpy (s->name, temp_s.c_str());
+    s->next=next;
     return s;
 }
 
@@ -43,8 +49,9 @@ S_symbol S_Symbol(string name){
 }
 
 string S_name(S_symbol sym){
-    char * c = new char [sym->name.length()+1];
-    std::strcpy (c, sym->name.c_str());
+    std::string temp_s=std::string(sym->name);
+    char * c = new char [temp_s.length()+1];
+    std::strcpy (c, temp_s.c_str());
     return c;
 }
 

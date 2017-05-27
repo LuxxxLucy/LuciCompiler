@@ -12,7 +12,7 @@ lucc: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o pr
 
 
 main: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o main.o translateBack.o
-	$(CC) $(CFLAGS)  main.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o translateBack.o -o main -ll
+	$(CC) $(CFLAGS)  main.o parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o translateBack.o types.o -o main -ll
 
 main.o: parse_test.o parser.o lex.o error_message.o utility.o abstract_syntax.o prabsyn.o types.o tree.o temp.o
 	$(CC) $(CFLAGS) -c main.c parser.o lex.o error_message.o utility.o abstract_syntax.o  symbol.o table.o prabsyn.o  temp.o tree.o -o main.o -ll
