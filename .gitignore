@@ -9,8 +9,6 @@ tokens.h
 parser.c
 
 
-printtree.c
-printtree.h
 translate.h
 translate.c
 canon.c
