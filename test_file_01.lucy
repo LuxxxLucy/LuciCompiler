@@ -1,7 +1,9 @@
 int i=3;
 int a=4;
 a=i+1;
+//print("能年玲奈=可爱");
 
+//print("dadas");
 //int i=3;
 
 // int f(int i)

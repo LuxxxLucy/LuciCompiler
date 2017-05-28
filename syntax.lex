@@ -11,8 +11,8 @@ IS  ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 #include <ctype.h>
 #include <string.h>
 
-#include "ast.h"
-#include "errmsg.h"
+#include "abstract_syntax.h"
+#include "error_message.h"
 #include "symbol.h"
 #include "parser.h"
 #include "utils.h"
@@ -127,6 +127,8 @@ L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT); }
 0[xX]{H}*"."{H}+{P}?{FS}?     { count(); return(CONSTANT); }
 0[xX]{H}+"."{H}*{P}?{FS}?     { count(); return(CONSTANT); }
 L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
+
+
 
 "+="			{ count(); return(ADD_ASSIGN); }
 "-="			{ count(); return(SUB_ASSIGN); }

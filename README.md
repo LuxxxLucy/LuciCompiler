@@ -17,14 +17,15 @@ To run the program you need to install the following software
 
 1. `flex`
 2. `bison`
-3. `g++`
+3. `gcc`
 
 ### compile the compiler
 
 type the shell command to build
 
 ```
-make all;
+cmake .
+make lucc;
 ```
 
 or
@@ -40,7 +41,39 @@ make lucc
 type the shell code
 
 ```
-./lucc sourceCode.lucy output.exe
+./lucc sourceCode.lucy
 ```
+
+sample
+
+```
+int i=3;
+int a=4;
+a=i+1;
+```
+
+the IR tree and fragments are like
+
+```
+SEQ(
+      MOVE(
+          TEMP t100
+          CONST 3
+      )
+      MOVE(
+          TEMP t102
+          CONST 4
+      )
+      MOVE(
+          TEMP t102
+          BINOP(PLUS
+              TEMP t100
+              CONST 1
+          )
+      )
+  )
+```
+
+and I even accomplish the print function using a special trick(which would be presented later in the class). It allows me to even
 
 then you can run your own C-like code as executable!(congrats!)

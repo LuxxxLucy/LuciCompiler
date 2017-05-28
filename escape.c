@@ -21,11 +21,11 @@ static escape_entry_t escape_entry(int depth, booll *escape)
 static int _depth;
 static table_t _env;
 
-static void traverse_decl(ast_decl_t decl);
-static void traverse_expr(ast_expr_t expr);
-static void traverse_var(ast_var_t var);
+static void traverse_decl(AST_decl_t decl);
+static void traverse_expr(AST_expr_t expr);
+static void traverse_var(AST_var_t var);
 
-static void traverse_decl(ast_decl_t decl)
+static void traverse_decl(AST_decl_t decl)
 {
     switch (decl->kind)
     {
@@ -33,14 +33,14 @@ static void traverse_decl(ast_decl_t decl)
             list_t p = decl->u.funcs;
             for (; p; p = p->next)
             {
-                ast_func_t func = p->data;
+                AST_func_t func = p->data;
                 list_t q;
 
                 _depth++;
                 sym_begin_scope(_env);
                 for (q = func->params; q; q = q->next)
                 {
-                    ast_field_t field = q->data;
+                    AST_field_t field = q->data;
                     sym_enter(_env,
                               field->name,
                               escape_entry(_depth, &field->escape));
@@ -64,7 +64,7 @@ static void traverse_decl(ast_decl_t decl)
     }
 }
 
-static void traverse_expr(ast_expr_t expr)
+static void traverse_expr(AST_expr_t expr)
 {
     list_t p;
 
@@ -93,7 +93,7 @@ static void traverse_expr(ast_expr_t expr)
 
         case AST_RECORD_EXPR:
             for (p = expr->u.record.efields; p; p = p->next)
-                traverse_expr(((ast_efield_t) p->data)->expr);
+                traverse_expr(((AST_efield_t) p->data)->expr);
             break;
 
         case AST_ARRAY_EXPR:
@@ -147,7 +147,7 @@ static void traverse_expr(ast_expr_t expr)
     }
 }
 
-static void traverse_var(ast_var_t var)
+static void traverse_var(AST_var_t var)
 {
     switch (var->kind)
     {
@@ -169,7 +169,7 @@ static void traverse_var(ast_var_t var)
     }
 }
 
-void esc_find_escape(ast_expr_t expr)
+void esc_find_escape(AST_expr_t expr)
 {
     _depth = 0;
     _env = sym_empty();

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "errmsg.h"
+#include "error_message.h"
 
 booll em_any_errors = false;
 int em_tok_pos = 0;

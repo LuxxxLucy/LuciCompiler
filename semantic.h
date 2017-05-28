@@ -1,8 +1,8 @@
 #ifndef INCLUDE__SEMANTIC_H
 #define INCLUDE__SEMANTIC_H
 
-#include "ast.h"
+#include "abstract_syntax.h"
 
-void sem_trans_prog(ast_expr_t prog);
+void sem_trans_prog(AST_expr_t prog);
 
 #endif

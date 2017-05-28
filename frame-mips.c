@@ -113,7 +113,7 @@ fr_frag_t fr_string_frag(tmp_label_t label, string_t string)
     return p;
 }
 
-fr_frag_t fr_proc_frag(ir_stmt_t stmt, frame_t frame)
+fr_frag_t fr_proc_frag(tree_stmt_t stmt, frame_t frame)
 {
     fr_frag_t p = checked_malloc(sizeof(*p));
     p->kind = FR_PROC_FRAG;
@@ -160,27 +160,27 @@ temp_t fr_rv(void)
     return _rv;
 }
 
-ir_expr_t fr_expr(fr_access_t access, ir_expr_t frame_ptr)
+tree_expr_t fr_expr(fr_access_t access, tree_expr_t frame_ptr)
 {
     switch (access->kind)
     {
         case FR_IN_FRAME:
-            return ir_mem_expr(ir_binop_expr(
+            return tree_mem_expr(tree_binop_expr(
                 IR_PLUS,
-                ir_const_expr(access->u.offset),
+                tree_const_expr(access->u.offset),
                 frame_ptr));
 
         case FR_IN_REG:
-            return ir_tmp_expr(access->u.reg);
+            return tree_tmp_expr(access->u.reg);
     }
 
     assert(0);
     return NULL;
 }
 
-ir_expr_t fr_external_call(string_t name, list_t args)
+tree_expr_t fr_external_call(string_t name, list_t args)
 {
-    return ir_call_expr(ir_name_expr(tmp_named_label(name)), args);
+    return tree_call_expr(tree_name_expr(tmp_named_label(name)), args);
 }
 
 void fr_pp_frags(FILE *out)
@@ -207,7 +207,7 @@ void fr_pp_frags(FILE *out)
     fprintf(out, "\n");
 }
 
-ir_stmt_t fr_proc_entry_exit_1(frame_t fr, ir_stmt_t stmt)
+tree_stmt_t fr_proc_entry_exit_1(frame_t fr, tree_stmt_t stmt)
 {
     return stmt;
 }

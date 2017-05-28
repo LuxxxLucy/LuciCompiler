@@ -11,26 +11,26 @@ add_flex_bison_dependency(LEXER PARSER)
 set_source_files_properties(lexer.l parser.y PROPERTIES HEADER_FILE_ONLY TRUE)
 
 add_executable(lucc
-    ast.c
-    ast.h
+    abstract_syntax.c
+    abstract_syntax.h
     env.c
     env.h
-    errmsg.c
-    errmsg.h
+    error_message.c
+    error_message.h
     escape.c
     escape.h
     frame.h
     frame-mips.c
-    ir.c
-    ir.h
+    tree.c
+    tree.h
     lexer.l
     main.c
     parser-wrap.h
     parser.y
-    ppast.c
-    ppast.h
-    ppir.c
-    ppir.h
+    ppAST.c
+    ppAST.h
+    pptree.c
+    pptree.h
     semantic.c
     semantic.h
     symbol.c

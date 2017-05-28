@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ast.h"
-#include "errmsg.h"
+#include "abstract_syntax.h"
+#include "error_message.h"
 #include "symbol.h"
 #include "utils.h"
 
@@ -17,11 +17,11 @@ void yyerror(char *msg);
     string_t str;
     list_t list;
     symbol_t sym;
-    ast_decl_t decl;
-    ast_expr_t expr;
-    ast_type_t type;
-    ast_var_t var;
-    ast_func_t func;
+    AST_decl_t decl;
+    AST_expr_t expr;
+    AST_type_t type;
+    AST_var_t var;
+    AST_func_t func;
 }
 
 %{
@@ -46,7 +46,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 #define LVALUE_ACTION(target, prev, elem) \
     do \
     { \
-        ast_var_t p, var = (elem); \
+        AST_var_t p, var = (elem); \
         (target) = p = (prev); \
         if (p) \
         { \
@@ -59,7 +59,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
     } \
     while (false)
 
-static ast_expr_t _program;
+static AST_expr_t _program;
 %}
 
 %debug
@@ -103,69 +103,69 @@ program:
 
 expr:
     lvalue
-    { $$ = ast_var_expr($1->pos, $1); }
+    { $$ = AST_var_expr($1->pos, $1); }
 |   NIL
-    { $$ = ast_nil_expr($1); }
+    { $$ = AST_nil_expr($1); }
 |   expr expr_seq
-    { $$ = ast_seq_expr($1->pos, list($1, $2)); }
+    { $$ = AST_seq_expr($1->pos, list($1, $2)); }
 |   LPAREN RPAREN
-    { $$ = ast_seq_expr($1, NULL); }
+    { $$ = AST_seq_expr($1, NULL); }
 |   LPAREN expr RPAREN
     { $$ = $2; }
 |   INT
-    { $$ = ast_num_expr(em_tok_pos, $1); }
+    { $$ = AST_num_expr(em_tok_pos, $1); }
 |   STRING
-    { $$ = ast_string_expr(em_tok_pos, $1); }
+    { $$ = AST_string_expr(em_tok_pos, $1); }
 |   MINUS expr %prec UMINUS
-    { $$ = ast_op_expr($1, ast_num_expr($1, 0), AST_MINUS, $2); }
+    { $$ = AST_op_expr($1, AST_num_expr($1, 0), AST_MINUS, $2); }
 |   id LPARAN RPARAN
-    { $$ = ast_call_expr($2, $1, NULL); }
+    { $$ = AST_call_expr($2, $1, NULL); }
 |   id LPARAN expr arg_seq RPARAN
-    { $$ = ast_call_expr($2, $1, list($3, $4)); }
+    { $$ = AST_call_expr($2, $1, list($3, $4)); }
 |   expr PLUS expr
-    { $$ = ast_op_expr($2, $1, AST_PLUS, $3); }
+    { $$ = AST_op_expr($2, $1, AST_PLUS, $3); }
 |   expr MINUS expr
-    { $$ = ast_op_expr($2, $1, AST_MINUS, $3); }
+    { $$ = AST_op_expr($2, $1, AST_MINUS, $3); }
 |   expr TIMES expr
-    { $$ = ast_op_expr($2, $1, AST_TIMES, $3); }
+    { $$ = AST_op_expr($2, $1, AST_TIMES, $3); }
 |   expr DIVIDE expr
-    { $$ = ast_op_expr($2, $1, AST_DIVIDE, $3); }
+    { $$ = AST_op_expr($2, $1, AST_DIVIDE, $3); }
 |   expr EQ_OP expr
-    { $$ = ast_op_expr($2, $1, AST_EQ, $3); }
+    { $$ = AST_op_expr($2, $1, AST_EQ, $3); }
 |   expr NEQ_OP expr
-    { $$ = ast_op_expr($2, $1, AST_NEQ, $3); }
+    { $$ = AST_op_expr($2, $1, AST_NEQ, $3); }
 |   expr LT_OP expr
-    { $$ = ast_op_expr($2, $1, AST_LT, $3); }
+    { $$ = AST_op_expr($2, $1, AST_LT, $3); }
 |   expr LE_OP expr
-    { $$ = ast_op_expr($2, $1, AST_LE, $3); }
+    { $$ = AST_op_expr($2, $1, AST_LE, $3); }
 |   expr GT_OP expr
-    { $$ = ast_op_expr($2, $1, AST_GT, $3); }
+    { $$ = AST_op_expr($2, $1, AST_GT, $3); }
 |   expr GE_OP expr
-    { $$ = ast_op_expr($2, $1, AST_GE, $3); }
+    { $$ = AST_op_expr($2, $1, AST_GE, $3); }
 |   expr AND_OP expr
-    { $$ = ast_if_expr($2, $1, $3, ast_num_expr($2, 0)); }
+    { $$ = AST_if_expr($2, $1, $3, AST_num_expr($2, 0)); }
 |   expr OR_OP expr
-    { $$ = ast_if_expr($2, $1, ast_num_expr($2, 1), $3); }
+    { $$ = AST_if_expr($2, $1, AST_num_expr($2, 1), $3); }
 |   id LBRACE RBRACE
-    { $$ = ast_record_expr($2, $1, NULL); }
+    { $$ = AST_record_expr($2, $1, NULL); }
 |   id LBRACE id EQ_OP expr efield_seq RBRACE
-    { $$ = ast_record_expr($2, $1, list(ast_efield($4, $3, $5), $6)); }
+    { $$ = AST_record_expr($2, $1, list(AST_efield($4, $3, $5), $6)); }
 |   id LBRACK expr RBRACK OF expr
-    { $$ = ast_array_expr($2, $1, $3, $6); }
+    { $$ = AST_array_expr($2, $1, $3, $6); }
 |   lvalue ASSIGN expr
-    { $$ = ast_assign_expr($2, $1, $3); }
+    { $$ = AST_assign_expr($2, $1, $3); }
 |   IF expr THEN expr
-    { $$ = ast_if_expr($1, $2, $4, NULL); }
+    { $$ = AST_if_expr($1, $2, $4, NULL); }
 |   IF expr THEN expr ELSE expr
-    { $$ = ast_if_expr($1, $2, $4, $6); }
+    { $$ = AST_if_expr($1, $2, $4, $6); }
 |   WHILE expr DO expr
-    { $$ = ast_while_expr($1, $2, $4); }
+    { $$ = AST_while_expr($1, $2, $4); }
 |   FOR id ASSIGN expr TO expr DO expr
-    { $$ = ast_for_expr($1, $2, $4, $6, $8); }
+    { $$ = AST_for_expr($1, $2, $4, $6, $8); }
 |   BREAK
-    { $$ = ast_break_expr($1); }
+    { $$ = AST_break_expr($1); }
 |   LET decls IN expr END
-    { $$ = ast_let_expr($1, $2, $4); }
+    { $$ = AST_let_expr($1, $2, $4); }
 
 decls:
     /* empty */
@@ -175,36 +175,36 @@ decls:
 
 decl:
     types_decl
-    { $$ = ast_types_decl(((ast_type_t) $1->data)->pos, $1); }
+    { $$ = AST_types_decl(((AST_type_t) $1->data)->pos, $1); }
 |   var_decl
 |   funcs_decl
-    { $$ = ast_funcs_decl(((ast_func_t) $1->data)->pos, $1); }
+    { $$ = AST_funcs_decl(((AST_func_t) $1->data)->pos, $1); }
 
 types_decl:
     TYPE id EQ_OP type
-    { $$ = list(ast_nametype($2, $4), NULL); }
+    { $$ = list(AST_nametype($2, $4), NULL); }
 |   types_decl TYPE id EQ_OP type
-    { LIST_ACTION($$, $1, ast_nametype($3, $5)); }
+    { LIST_ACTION($$, $1, AST_nametype($3, $5)); }
 
 type:
     id
-    { $$ = ast_name_type(em_tok_pos, $1); }
+    { $$ = AST_name_type(em_tok_pos, $1); }
 |   LBRACE fields RBRACE
-    { $$ = ast_record_type($1, $2); }
+    { $$ = AST_record_type($1, $2); }
 |   ARRAY OF id
-    { $$ = ast_array_type($1, $3); }
+    { $$ = AST_array_type($1, $3); }
 
 fields:
     /* empty */
     { $$ = NULL; }
 |   id COLON id field_seq
-    { $$ = list(ast_field($1, $3), $4); }
+    { $$ = list(AST_field($1, $3), $4); }
 
 var_decl:
     VAR id ASSIGN expr
-    { $$ = ast_var_decl($1, $2, NULL, $4); }
+    { $$ = AST_var_decl($1, $2, NULL, $4); }
 |   VAR id COLON id ASSIGN expr
-    { $$ = ast_var_decl($1, $2, $4, $6); }
+    { $$ = AST_var_decl($1, $2, $4, $6); }
 
 funcs_decl:
     func_decl
@@ -214,9 +214,9 @@ funcs_decl:
 
 func_decl:
     FUNCTION id LPARAN fields RPARAN EQ_OP expr
-    { $$ = ast_func($1, $2, $4, NULL, $7); }
+    { $$ = AST_func($1, $2, $4, NULL, $7); }
 |   FUNCTION id LPARAN fields RPARAN COLON id EQ_OP expr
-    { $$ = ast_func($1, $2, $4, $7, $9); }
+    { $$ = AST_func($1, $2, $4, $7, $9); }
 
 expr_seq:
     SEMICOLON expr
@@ -234,25 +234,25 @@ efield_seq:
     /* empty */
     { $$ = NULL; }
 |   efield_seq COMMA id EQ_OP expr
-    { LIST_ACTION($$, $1, ast_efield($4, $3, $5)); }
+    { LIST_ACTION($$, $1, AST_efield($4, $3, $5)); }
 
 field_seq:
     /* empty */
     { $$ = NULL; }
 |   field_seq COMMA id COLON id
-    { LIST_ACTION($$, $1, ast_field($3, $5)); }
+    { LIST_ACTION($$, $1, AST_field($3, $5)); }
 
 lvalue:
     id lvalue_
-    { LVALUE_ACTION($$, $2, ast_simple_var(em_tok_pos, $1)); }
+    { LVALUE_ACTION($$, $2, AST_simple_var(em_tok_pos, $1)); }
 
 lvalue_:
     /* empty */
     { $$ = NULL; }
 |   DOT id lvalue_
-    { LVALUE_ACTION($$, $3, ast_field_var($1, NULL, $2)); }
+    { LVALUE_ACTION($$, $3, AST_field_var($1, NULL, $2)); }
 |   LBRACK expr RBRACK lvalue_
-    { LVALUE_ACTION($$, $4, ast_sub_var($1, NULL, $2)); }
+    { LVALUE_ACTION($$, $4, AST_sub_var($1, NULL, $2)); }
 
 id:
     ID
@@ -279,7 +279,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value)
     }
 }
 
-ast_expr_t parse(string_t filename)
+AST_expr_t parse(string_t filename)
 {
     em_reset(filename);
     if (yyparse() == 0)

@@ -123,32 +123,32 @@ lucc/fast:
 	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/build
 .PHONY : lucc/fast
 
-ast.o: ast.c.o
+abstract_syntax.o: abstract_syntax.c.o
 
-.PHONY : ast.o
+.PHONY : abstract_syntax.o
 
 # target to build an object file
-ast.c.o:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ast.c.o
-.PHONY : ast.c.o
+abstract_syntax.c.o:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/abstract_syntax.c.o
+.PHONY : abstract_syntax.c.o
 
-ast.i: ast.c.i
+abstract_syntax.i: abstract_syntax.c.i
 
-.PHONY : ast.i
+.PHONY : abstract_syntax.i
 
 # target to preprocess a source file
-ast.c.i:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ast.c.i
-.PHONY : ast.c.i
+abstract_syntax.c.i:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/abstract_syntax.c.i
+.PHONY : abstract_syntax.c.i
 
-ast.s: ast.c.s
+abstract_syntax.s: abstract_syntax.c.s
 
-.PHONY : ast.s
+.PHONY : abstract_syntax.s
 
 # target to generate assembly for a file
-ast.c.s:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ast.c.s
-.PHONY : ast.c.s
+abstract_syntax.c.s:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/abstract_syntax.c.s
+.PHONY : abstract_syntax.c.s
 
 env.o: env.c.o
 
@@ -177,32 +177,32 @@ env.c.s:
 	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/env.c.s
 .PHONY : env.c.s
 
-errmsg.o: errmsg.c.o
+error_message.o: error_message.c.o
 
-.PHONY : errmsg.o
+.PHONY : error_message.o
 
 # target to build an object file
-errmsg.c.o:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/errmsg.c.o
-.PHONY : errmsg.c.o
+error_message.c.o:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/error_message.c.o
+.PHONY : error_message.c.o
 
-errmsg.i: errmsg.c.i
+error_message.i: error_message.c.i
 
-.PHONY : errmsg.i
+.PHONY : error_message.i
 
 # target to preprocess a source file
-errmsg.c.i:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/errmsg.c.i
-.PHONY : errmsg.c.i
+error_message.c.i:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/error_message.c.i
+.PHONY : error_message.c.i
 
-errmsg.s: errmsg.c.s
+error_message.s: error_message.c.s
 
-.PHONY : errmsg.s
+.PHONY : error_message.s
 
 # target to generate assembly for a file
-errmsg.c.s:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/errmsg.c.s
-.PHONY : errmsg.c.s
+error_message.c.s:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/error_message.c.s
+.PHONY : error_message.c.s
 
 escape.o: escape.c.o
 
@@ -257,33 +257,6 @@ frame-mips.s: frame-mips.c.s
 frame-mips.c.s:
 	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame-mips.c.s
 .PHONY : frame-mips.c.s
-
-ir.o: ir.c.o
-
-.PHONY : ir.o
-
-# target to build an object file
-ir.c.o:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ir.c.o
-.PHONY : ir.c.o
-
-ir.i: ir.c.i
-
-.PHONY : ir.i
-
-# target to preprocess a source file
-ir.c.i:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ir.c.i
-.PHONY : ir.c.i
-
-ir.s: ir.c.s
-
-.PHONY : ir.s
-
-# target to generate assembly for a file
-ir.c.s:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ir.c.s
-.PHONY : ir.c.s
 
 lexer.o: lexer.c.o
 
@@ -366,59 +339,59 @@ parser.c.s:
 	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/parser.c.s
 .PHONY : parser.c.s
 
-ppast.o: ppast.c.o
+ppAST.o: ppAST.c.o
 
-.PHONY : ppast.o
-
-# target to build an object file
-ppast.c.o:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppast.c.o
-.PHONY : ppast.c.o
-
-ppast.i: ppast.c.i
-
-.PHONY : ppast.i
-
-# target to preprocess a source file
-ppast.c.i:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppast.c.i
-.PHONY : ppast.c.i
-
-ppast.s: ppast.c.s
-
-.PHONY : ppast.s
-
-# target to generate assembly for a file
-ppast.c.s:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppast.c.s
-.PHONY : ppast.c.s
-
-ppir.o: ppir.c.o
-
-.PHONY : ppir.o
+.PHONY : ppAST.o
 
 # target to build an object file
-ppir.c.o:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppir.c.o
-.PHONY : ppir.c.o
+ppAST.c.o:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppAST.c.o
+.PHONY : ppAST.c.o
 
-ppir.i: ppir.c.i
+ppAST.i: ppAST.c.i
 
-.PHONY : ppir.i
+.PHONY : ppAST.i
 
 # target to preprocess a source file
-ppir.c.i:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppir.c.i
-.PHONY : ppir.c.i
+ppAST.c.i:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppAST.c.i
+.PHONY : ppAST.c.i
 
-ppir.s: ppir.c.s
+ppAST.s: ppAST.c.s
 
-.PHONY : ppir.s
+.PHONY : ppAST.s
 
 # target to generate assembly for a file
-ppir.c.s:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppir.c.s
-.PHONY : ppir.c.s
+ppAST.c.s:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppAST.c.s
+.PHONY : ppAST.c.s
+
+pptree.o: pptree.c.o
+
+.PHONY : pptree.o
+
+# target to build an object file
+pptree.c.o:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/pptree.c.o
+.PHONY : pptree.c.o
+
+pptree.i: pptree.c.i
+
+.PHONY : pptree.i
+
+# target to preprocess a source file
+pptree.c.i:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/pptree.c.i
+.PHONY : pptree.c.i
+
+pptree.s: pptree.c.s
+
+.PHONY : pptree.s
+
+# target to generate assembly for a file
+pptree.c.s:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/pptree.c.s
+.PHONY : pptree.c.s
 
 semantic.o: semantic.c.o
 
@@ -555,6 +528,33 @@ translate.c.s:
 	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/translate.c.s
 .PHONY : translate.c.s
 
+tree.o: tree.c.o
+
+.PHONY : tree.o
+
+# target to build an object file
+tree.c.o:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/tree.c.o
+.PHONY : tree.c.o
+
+tree.i: tree.c.i
+
+.PHONY : tree.i
+
+# target to preprocess a source file
+tree.c.i:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/tree.c.i
+.PHONY : tree.c.i
+
+tree.s: tree.c.s
+
+.PHONY : tree.s
+
+# target to generate assembly for a file
+tree.c.s:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/tree.c.s
+.PHONY : tree.c.s
+
 types.o: types.c.o
 
 .PHONY : types.o
@@ -618,24 +618,21 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... lucc"
-	@echo "... ast.o"
-	@echo "... ast.i"
-	@echo "... ast.s"
+	@echo "... abstract_syntax.o"
+	@echo "... abstract_syntax.i"
+	@echo "... abstract_syntax.s"
 	@echo "... env.o"
 	@echo "... env.i"
 	@echo "... env.s"
-	@echo "... errmsg.o"
-	@echo "... errmsg.i"
-	@echo "... errmsg.s"
+	@echo "... error_message.o"
+	@echo "... error_message.i"
+	@echo "... error_message.s"
 	@echo "... escape.o"
 	@echo "... escape.i"
 	@echo "... escape.s"
 	@echo "... frame-mips.o"
 	@echo "... frame-mips.i"
 	@echo "... frame-mips.s"
-	@echo "... ir.o"
-	@echo "... ir.i"
-	@echo "... ir.s"
 	@echo "... lexer.o"
 	@echo "... lexer.i"
 	@echo "... lexer.s"
@@ -645,12 +642,12 @@ help:
 	@echo "... parser.o"
 	@echo "... parser.i"
 	@echo "... parser.s"
-	@echo "... ppast.o"
-	@echo "... ppast.i"
-	@echo "... ppast.s"
-	@echo "... ppir.o"
-	@echo "... ppir.i"
-	@echo "... ppir.s"
+	@echo "... ppAST.o"
+	@echo "... ppAST.i"
+	@echo "... ppAST.s"
+	@echo "... pptree.o"
+	@echo "... pptree.i"
+	@echo "... pptree.s"
 	@echo "... semantic.o"
 	@echo "... semantic.i"
 	@echo "... semantic.s"
@@ -666,6 +663,9 @@ help:
 	@echo "... translate.o"
 	@echo "... translate.i"
 	@echo "... translate.s"
+	@echo "... tree.o"
+	@echo "... tree.i"
+	@echo "... tree.s"
 	@echo "... types.o"
 	@echo "... types.i"
 	@echo "... types.s"

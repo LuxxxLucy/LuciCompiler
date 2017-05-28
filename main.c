@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ast.h"
-#include "errmsg.h"
+#include "abstract_syntax.h"
+#include "error_message.h"
 #include "escape.h"
 #include "parser-wrap.h"
-#include "ppast.h"
+#include "ppAST.h"
 #include "semantic.h"
 #include "utils.h"
 
 int main(int argc, char **argv)
 {
-    ast_expr_t prog;
+    AST_expr_t prog;
 
     print("parsing the code...\n");
 

@@ -29,8 +29,8 @@ env_entry_t env_func_entry(tr_level_t level,
 table_t env_base_tenv(void)
 {
     table_t tab = sym_empty();
-    sym_enter(tab, symbol("int"), ty_int());
-    sym_enter(tab, symbol("string"), ty_string());
+    sym_enter(tab, symbol("INT"), ty_int());
+    sym_enter(tab, symbol("STRING"), ty_string());
     return tab;
 }
 

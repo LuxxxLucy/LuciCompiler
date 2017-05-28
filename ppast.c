@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include "ppast.h"
+#include "ppAST.h"
 #include "symbol.h"
 #include "utils.h"
 
@@ -18,7 +18,7 @@ static char _ops[][12] = {
     "AND", "OR"
 };
 
-static void pp_op(FILE *fp, ast_binop_t op)
+static void pp_op(FILE *fp, AST_binop_t op)
 {
     fprintf(fp, "%s\n", _ops[op]);
 }
@@ -33,7 +33,7 @@ void pp_list(FILE *fp, int d, list_t list, string_t name, pp_func_t func)
     fprintf(fp, ")\n");
 }
 
-void pp_decl(FILE *fp, int d, ast_decl_t decl)
+void pp_decl(FILE *fp, int d, AST_decl_t decl)
 {
     indent(fp, d);
     switch (decl->kind)
@@ -62,7 +62,7 @@ void pp_decl(FILE *fp, int d, ast_decl_t decl)
     }
 }
 
-void pp_expr(FILE *fp, int d, ast_expr_t expr)
+void pp_expr(FILE *fp, int d, AST_expr_t expr)
 {
     indent(fp, d);
     if(!expr){print("null value\n");return;}
@@ -166,7 +166,7 @@ void pp_expr(FILE *fp, int d, ast_expr_t expr)
     }
 }
 
-void pp_type(FILE *fp, int d, ast_type_t type)
+void pp_type(FILE *fp, int d, AST_type_t type)
 {
     indent(fp, d);
     switch (type->kind)
@@ -185,7 +185,7 @@ void pp_type(FILE *fp, int d, ast_type_t type)
     }
 }
 
-void pp_var(FILE *fp, int d, ast_var_t var)
+void pp_var(FILE *fp, int d, AST_var_t var)
 {
     indent(fp, d);
     switch (var->kind)
@@ -213,7 +213,7 @@ void pp_var(FILE *fp, int d, ast_var_t var)
     }
 }
 
-void pp_efield(FILE *fp, int d, ast_efield_t efield)
+void pp_efield(FILE *fp, int d, AST_efield_t efield)
 {
     indent(fp, d);
     if (efield)
@@ -227,7 +227,7 @@ void pp_efield(FILE *fp, int d, ast_efield_t efield)
         fprintf(fp, "efield()\n");
 }
 
-void pp_field(FILE *fp, int d, ast_field_t field)
+void pp_field(FILE *fp, int d, AST_field_t field)
 {
     indent(fp, d);
     fprintf(fp, "field(%s\n", sym_name(field->name));
@@ -239,7 +239,7 @@ void pp_field(FILE *fp, int d, ast_field_t field)
     fprintf(fp, ")\n");
 }
 
-void pp_func(FILE *fp, int d, ast_func_t func)
+void pp_func(FILE *fp, int d, AST_func_t func)
 {
     indent(fp, d);
     fprintf(fp, "func(%s\n", sym_name(func->name));
@@ -255,7 +255,7 @@ void pp_func(FILE *fp, int d, ast_func_t func)
     fprintf(fp, ")\n");
 }
 
-void pp_nametype(FILE *fp, int d, ast_nametype_t nametype)
+void pp_nametype(FILE *fp, int d, AST_nametype_t nametype)
 {
     indent(fp, d);
     fprintf(fp, "nametype(%s\n", sym_name(nametype->name));

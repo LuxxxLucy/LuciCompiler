@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ast.h"
-#include "ppast.h"
-#include "errmsg.h"
+#include "abstract_syntax.h"
+#include "ppAST.h"
+#include "error_message.h"
 #include "symbol.h"
 #include "utils.h"
 
@@ -19,12 +19,12 @@ void yyerror(char *msg);
     string_t str;
     list_t list;
     symbol_t sym;
-    ast_decl_t dec;
-    ast_expr_t exp;
-    ast_type_t ty;
-    ast_var_t var;
-    ast_func_t fun;
-    ast_binop_t op;
+    AST_decl_t dec;
+    AST_expr_t exp;
+    AST_type_t ty;
+    AST_var_t var;
+    AST_func_t fun;
+    AST_binop_t op;
 }
 
 %{
@@ -49,7 +49,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 #define LVALUE_ACTION(target, prev, elem) \
     do \
     { \
-        ast_var_t p, var = (elem); \
+        AST_var_t p, var = (elem); \
         (target) = p = (prev); \
         if (p) \
         { \
@@ -62,18 +62,19 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
     } \
     while (false)
 
-static ast_expr_t _program;
+static AST_expr_t _program;
 %}
 
 %type <exp> program
 
 %type <exp> block_item translation_unit statement expression_statement
 
-%type <exp>  direct_declarator declarator initializer
+%type <exp>  dtreeect_declarator declarator initializer
 %type <dec> init_declarator
 
 
-%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression compound_statement jump_statement
+%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cAST_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression compound_statement jump_statement selection_statement iteration_statement
+
 
 %type <list>  init_declarator_list block_item_list
 
@@ -117,7 +118,7 @@ program:
 	| block_item_list statement
     {
         print("all statements\n");
-        _program=ast_let_expr(em_tok_pos,$1,$2);
+        _program=AST_let_expr(em_tok_pos,$1,$2);
     }
 	;
 
@@ -125,16 +126,20 @@ primary_expression
 	: ID
 	{
         fprintf(stdout,"exp: a id %s\n",$1);
-        $$ = ast_var_expr(em_tok_pos, ast_simple_var(em_tok_pos, symbol($1) ));
+        $$ = AST_var_expr(em_tok_pos, AST_simple_var(em_tok_pos, symbol($1) ));
         pp_expr(stdout,0,$$);
 	}
 	| CONSTANT
 	{
         fprintf(stdout,"exp: a constant value %f\n",$1);
-		$$=ast_num_expr(em_tok_pos,$1);
+		$$=AST_num_expr(em_tok_pos,$1);
+        pp_expr(stdout,0,$$);
 	}
 	| STRING_LITERAL
 	{
+        print("find a string\n");
+        print($1);
+        $$=AST_string_expr(em_tok_pos,$1);
 	}
 	| LPAREN expression RPAREN { $$=$2; }
 	;
@@ -173,7 +178,7 @@ unary_expression
 	}
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
-	| unary_operator cast_expression
+	| unary_operator cAST_expression
 	| SIZEOF unary_expression
 	| SIZEOF LPAREN type_name RPAREN
 	;
@@ -187,22 +192,22 @@ unary_operator
 	| EXCLAMATION
 	;
 
-cast_expression
+cAST_expression
 	: unary_expression { $$=$1; }
-	| LPAREN type_name RPAREN cast_expression
-    { fprintf(stdout,"cast(not done yet)"); }
+	| LPAREN type_name RPAREN cAST_expression
+    { fprintf(stdout,"cAST(not done yet)"); }
 	;
 
 multiplicative_expression
-	: cast_expression { $$=$1; }
-	| multiplicative_expression ASTERISK cast_expression
+	: cAST_expression { $$=$1; }
+	| multiplicative_expression ASTERISK cAST_expression
 	{
 
 	}
-	| multiplicative_expression DIVIDE cast_expression
+	| multiplicative_expression DIVIDE cAST_expression
 	{
 	}
-	| multiplicative_expression MOD cast_expression
+	| multiplicative_expression MOD cAST_expression
 	{
 	}
 	;
@@ -211,7 +216,7 @@ additive_expression
 	: multiplicative_expression { $$=$1; }
 	| additive_expression PLUS multiplicative_expression
 	{
-        $$ = ast_op_expr(em_tok_pos, $1, AST_PLUS, $3);
+        $$ = AST_op_expr(em_tok_pos, $1, AST_PLUS, $3);
 	}
 	| additive_expression MINUS multiplicative_expression
 	{
@@ -300,7 +305,7 @@ assignment_expression
 	: conditional_expression { $$=$1; }
 	| unary_expression assignment_operator assignment_expression
 	{
-        $$=ast_assign_expr(em_tok_pos,$1->u.var,$3);
+        $$=AST_assign_expr(em_tok_pos,$1->u.var,$3);
 	}
 	;
 
@@ -335,23 +340,20 @@ constant_expression
 declaration
 	: declaration_specifiers SEMICOLON
     {
-        //$$ = ast_var_decl(em_tok_pos, $1->id, $1->ty, NULL);
+        //$$ = AST_var_decl(em_tok_pos, $1->id, $1->ty, NULL);
         print("null declaratior");
     }
 	| declaration_specifiers init_declarator_list SEMICOLON
 	{
         // dec_specifier is a symbol
         // init dec list is a list of dec(type symbol of the dec is not determined yet )
-
-        //pp_decl(stdout,20, (ast_decl_t) $2->data);
-
         print("declaratior with initial\n");
 
         list_t p=$2;
-        ast_decl_t q;
+        AST_decl_t q;
         for(;p;p=p->next)
         {
-            q=(ast_decl_t) p->data;
+            q=(AST_decl_t) p->data;
             q->u.var.type=$1;
             //pp_decl(stdout,20, q);
         }
@@ -392,11 +394,11 @@ init_declarator
 	: declarator
 	{
         print("A pure declarator\n");
-        $$ = ast_var_decl(em_tok_pos, $1, NULL, NULL);
+        $$ = AST_var_decl(em_tok_pos, $1, NULL, NULL);
 	}
 	| declarator ASSIGN initializer
 	{
-        $$ = ast_var_decl(em_tok_pos, $1->u.var->u.simple, NULL, $3);
+        $$ = AST_var_decl(em_tok_pos, $1->u.var->u.simple, NULL, $3);
 	}
 	;
 
@@ -424,7 +426,7 @@ type_specifier
 	}
 	| INT
 	{
-		$$=symbol("int");
+		$$=symbol("INT");
 	}
 	| LONG
 	{
@@ -528,35 +530,36 @@ function_specifier
 	;
 
 declarator
-	: pointer direct_declarator
-	| direct_declarator
+	: pointer dtreeect_declarator
+	| dtreeect_declarator
 		{
 			$$=$1;
 		}
 	;
 
-direct_declarator
+dtreeect_declarator
 	: ID
 	{
         fprintf(stdout,"exp: a id %s\n",$1);
-        $$ = ast_var_expr(em_tok_pos, ast_simple_var(em_tok_pos, symbol($1)));
+        $$ = AST_var_expr(em_tok_pos, AST_simple_var(em_tok_pos, symbol($1)));
 	}
 	| LPAREN declarator RPAREN
-	| direct_declarator LBRACK type_qualifier_list assignment_expression RBRACK
-	| direct_declarator LBRACK type_qualifier_list RBRACK
-	| direct_declarator LBRACK assignment_expression RBRACK
-	| direct_declarator LBRACK STATIC type_qualifier_list assignment_expression RBRACK
-	| direct_declarator LBRACK type_qualifier_list STATIC assignment_expression RBRACK
-	| direct_declarator LBRACK type_qualifier_list ASTERISK RBRACK
-	| direct_declarator LBRACK ASTERISK RBRACK
-	| direct_declarator LBRACK RBRACK
-	| direct_declarator LPAREN parameter_type_list RPAREN
+	| dtreeect_declarator LBRACK type_qualifier_list assignment_expression RBRACK
+	| dtreeect_declarator LBRACK type_qualifier_list RBRACK
+	| dtreeect_declarator LBRACK assignment_expression RBRACK
+	| dtreeect_declarator LBRACK STATIC type_qualifier_list assignment_expression RBRACK
+	| dtreeect_declarator LBRACK type_qualifier_list STATIC assignment_expression RBRACK
+	| dtreeect_declarator LBRACK type_qualifier_list ASTERISK RBRACK
+	| dtreeect_declarator LBRACK ASTERISK RBRACK
+	| dtreeect_declarator LBRACK RBRACK
+	| dtreeect_declarator LPAREN parameter_type_list RPAREN
+	{
+        //$$ = AST_func(em_tok_pos, $1->u.var->u.simple, $4, NULL, $7);
+	}
+	| dtreeect_declarator LPAREN identifier_list RPAREN
 	{
 	}
-	| direct_declarator LPAREN identifier_list RPAREN
-	{
-	}
-	| direct_declarator LPAREN RPAREN
+	| dtreeect_declarator LPAREN RPAREN
 	;
 
 pointer
@@ -605,22 +608,22 @@ type_name
 
 abstract_declarator
 	: pointer
-	| direct_abstract_declarator
-	| pointer direct_abstract_declarator
+	| dtreeect_abstract_declarator
+	| pointer dtreeect_abstract_declarator
 	;
 
-direct_abstract_declarator
+dtreeect_abstract_declarator
 	: LPAREN abstract_declarator RPAREN
 	| LBRACK RBRACK
 	| LBRACK assignment_expression RBRACK
-	| direct_abstract_declarator LBRACK RBRACK
-	| direct_abstract_declarator LBRACK assignment_expression RBRACK
+	| dtreeect_abstract_declarator LBRACK RBRACK
+	| dtreeect_abstract_declarator LBRACK assignment_expression RBRACK
 	| LBRACK ASTERISK RBRACK
-	| direct_abstract_declarator LBRACK ASTERISK RBRACK
+	| dtreeect_abstract_declarator LBRACK ASTERISK RBRACK
 	| LPAREN RPAREN
 	| LPAREN parameter_type_list RPAREN
-	| direct_abstract_declarator LPAREN RPAREN
-	| direct_abstract_declarator LPAREN parameter_type_list RPAREN
+	| dtreeect_abstract_declarator LPAREN RPAREN
+	| dtreeect_abstract_declarator LPAREN parameter_type_list RPAREN
 	;
 
 initializer
@@ -669,7 +672,7 @@ compound_statement
 	: LBRACE RBRACE
 	| LBRACE block_item_list RBRACE
 	{
-        $$=ast_seq_expr(em_tok_pos,$2);
+        $$=AST_seq_expr(em_tok_pos,$2);
 	}
 	;
 
@@ -689,7 +692,7 @@ block_item
 	{
         pp_decl(stdout,20,$1->data);
         $$=$1->data;
-        //$$=ast_seq_expr(em_tok_pos,$1);
+        //$$=AST_seq_expr(em_tok_pos,$1);
         //$$=$1->data;
 	}
 	| function_definition
@@ -710,13 +713,25 @@ expression_statement
 
 selection_statement
 	: IF LPAREN expression RPAREN statement
+    {
+        $$ = AST_if_expr(em_tok_pos, $3, $5, NULL);
+    }
 	| IF LPAREN expression RPAREN statement ELSE statement
+    {
+        $$ = AST_if_expr(em_tok_pos, $3, $5, $7);
+    }
 	| SWITCH LPAREN expression RPAREN statement
 	;
 
 iteration_statement
 	: WHILE LPAREN expression RPAREN statement
+    {
+        $$ = AST_while_expr(em_tok_pos, $3, $5);
+    }
 	| DO statement WHILE LPAREN expression RPAREN SEMICOLON
+    {
+        $$ = AST_while_expr(em_tok_pos, $5, $2);
+    }
 	| FOR LPAREN expression_statement expression_statement RPAREN statement
 	| FOR LPAREN expression_statement expression_statement expression RPAREN statement
 	| FOR LPAREN declaration expression_statement RPAREN statement
@@ -759,10 +774,10 @@ declaration_list
 	| declaration_list declaration
     {
         list_t p = $2;
-        ast_decl_t q;
+        AST_decl_t q;
         for(;p;p=p->next)
         {
-            q= (ast_decl_t) p->data;
+            q= (AST_decl_t) p->data;
             LIST_ACTION($1,$1,q);
         }
     }
@@ -788,7 +803,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value)
     }
 }
 
-ast_expr_t parse(string_t filename)
+AST_expr_t parse(string_t filename)
 {
     em_reset(filename);
     if (yyparse() == 0)

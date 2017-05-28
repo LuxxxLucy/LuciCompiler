@@ -5,8 +5,8 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "ast.h"
-#include "errmsg.h"
+#include "abstract_syntax.h"
+#include "error_message.h"
 #include "symbol.h"
 #include "parser.h"
 #include "utils.h"

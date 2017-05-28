@@ -2,7 +2,7 @@
 #define INCLUDE__TRANSLATE_H
 
 #include "frame.h"
-#include "ir.h"
+#include "tree.h"
 #include "temp.h"
 #include "utils.h"
 
@@ -40,7 +40,7 @@ tr_expr_t tr_field_var(tr_expr_t record, int index);
 void tr_pp_expr(tr_expr_t expr);
 typedef struct cx_s cx_t;
 cx_t un_cx(tr_expr_t expr);
-ir_stmt_t un_nx(tr_expr_t expr);
-ir_expr_t un_ex(tr_expr_t expr);
+tree_stmt_t un_nx(tr_expr_t expr);
+tree_expr_t un_ex(tr_expr_t expr);
 
 #endif

@@ -1,11 +1,11 @@
-#include "ppir.h"
+#include "pptree.h"
 
 #include <assert.h>
 
-#include "ir.h"
+#include "tree.h"
 #include "temp.h"
 
-static void pp_expr(FILE *out, int d, ir_expr_t expr);
+static void pp_expr(FILE *out, int d, tree_expr_t expr);
 
 static void indent(FILE *out, int d)
 {
@@ -43,7 +43,7 @@ static char const* relops[] = {
     "UGE",
 };
 
-static void pp_stmt(FILE *out, int d, ir_stmt_t stmt)
+static void pp_stmt(FILE *out, int d, tree_stmt_t stmt)
 {
     switch (stmt->kind)
     {
@@ -108,7 +108,7 @@ static void pp_stmt(FILE *out, int d, ir_stmt_t stmt)
     }
 }
 
-void pp_expr(FILE *out, int d, ir_expr_t expr)
+void pp_expr(FILE *out, int d, tree_expr_t expr)
 {
     switch (expr->kind)
     {
