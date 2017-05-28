@@ -2,7 +2,7 @@
 
 #include "env.h"
 
-env_entry_t env_var_entry(tr_access_t access, type_t type, bool for_)
+env_entry_t env_var_entry(tr_access_t access, type_t type, booll for_)
 {
     env_entry_t p = checked_malloc(sizeof(*p));
     p->kind = ENV_VAR_ENTRY;

@@ -1,15 +1,29 @@
+D  [0-9]
+L   [a-zA-Z_]
+H   [a-fA-F0-9]
+E   ([Ee][+-]?{D}+)
+P   ([Pp][+-]?{D}+)
+FS  (f|F|l|L)
+IS  ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
+
 %{
 
 #define YY_NO_UNISTD_H
 
 #include <ctype.h>
 #include <string.h>
+//#include <iostream>
 
 #include "ast.h"
 #include "errmsg.h"
 #include "symbol.h"
 #include "parser.h"
 #include "utils.h"
+
+
+//typedef union  { int pos; int ival; double dval; string_t sval; } YYSTYPE_CUSTOM;
+//#define YYSTYPE YYSTYPE_CUSTOM
+//#define YY_SKIP_YYWRAP
 
 static int _char_pos = 1;
 
@@ -32,6 +46,70 @@ static int _str_cap;
 static void init_buf(void);
 static void append_char(char ch);
 
+int charPos=1;
+
+int yywrap(void)
+{
+    charPos=1;
+    return 1;
+}
+
+void adjust(void)
+{
+    em_tok_pos=charPos;
+    charPos+=yyleng;
+}
+
+void comment(void)
+{
+	char c, prev = 0;
+	while ((c = getchar()) != 0)      /* (EOF maps to 0) */
+	{
+		if (c == '/' && prev == '*')
+			return;
+		prev = c;
+	}
+	em_error(charPos,"unterminated comment");
+}
+
+int column = 0;
+
+void count(void)
+{
+	int i;
+	for (i = 0; yytext[i] != '\0'; i++)
+		if (yytext[i] == '\n')
+			column = 0;
+		else if (yytext[i] == '\t')
+			column += 8 - (column % 8);
+		else
+			column++;
+	// ECHO;
+    adjust();
+    return;
+}
+
+
+int check_type(void)
+{
+/*
+* pseudo code --- this is what it should check
+*
+*	if (yytext == type_name)
+*		return TYPE_NAME;
+*
+*	return IDENTIFIER;
+*/
+/*
+*	it actually will only return IDENTIFIER
+*/
+	//std::string s=std::string(yytext);
+    yylval.str = (char*) checked_malloc( sizeof(char)*20);
+    strcpy (yylval.str, yytext);
+	return ID;
+}
+
+
 %}
 
 %option nounput
@@ -41,99 +119,96 @@ static void append_char(char ch);
 
 %%
 
-[ \t\f\v\r]             { ADJ; }
-\n                      { ADJ; em_newline(); }
+"/*"			{ comment(); }
+"//"[^\n]*      { /* consume //-comment */ }
+"break"			{ count(); return(BREAK); }
+"case"			{ count(); return(CASE); }
+"char"			{ count(); return(CHAR); }
+"const"			{ count(); return(CONST); }
+"continue"		{ count(); return(CONTINUE); }
+"default"		{ count(); return(DEFAULT); }
+"do"			{ count(); return(DO); }
+"double"		{ count(); return(DOUBLE); }
+"else"			{ count(); return(ELSE); }
+"float"			{ count(); return(FLOAT); }
+"for"			{ count(); return(FOR); }
+"goto"			{ count(); return(GOTO); }
+"if"			{ count(); return(IF); }
+"int"			{ count(); return(INT); }
+"long"			{ count(); return(LONG); }
+"return"		{ count(); return(RETURN); }
+"sizeof"		{ count(); return(SIZEOF); }
+"static"		{ count(); return(STATIC); }
+"struct"		{ count(); return(STRUCT); }
+"switch"		{ count(); return(SWITCH); }
+"typedef"		{ count(); return(TYPEDEF); }
+"void"			{ count(); return(VOID); }
+"while"			{ count(); return(WHILE); }
 
-"/*"                    { ADJ; _comment_level = 1; BEGIN(COMMENT); }
-<COMMENT>[^*/\n]*       { ADJ; }
-<COMMENT>"*"+[^*/\n]*   { ADJ; }
-<COMMENT>"/"+[^*/\n]*   { ADJ; }
-<COMMENT>\n             { ADJ; em_newline(); }
-<COMMENT>"/"+"*"        { ADJ; _comment_level++; }
-<COMMENT>"*"+"/"        {
-    ADJ;
-    _comment_level--;
-    if (_comment_level <= 0)
-        BEGIN(INITIAL);
-}
+{L}({L}|{D})*		{ count(); return(check_type()); }
+0[xX]{H}+{IS}?		{ count();yylval.dval=atof(yytext); return(CONSTANT); }
+0[0-7]*{IS}?		{ count();yylval.dval=atof(yytext); return(CONSTANT); }
+[1-9]{D}*{IS}?		{ count(); yylval.dval=atof(yytext);return(CONSTANT); }
+L?'(\\.|[^\\'\n])+'	{ count();yylval.dval=atof(yytext); return(CONSTANT); }
+{D}+{E}{FS}?		{ count();yylval.dval=atof(yytext); return(CONSTANT); }
+{D}*"."{D}+{E}?{FS}?	{ count(); return(CONSTANT); }
+{D}+"."{D}*{E}?{FS}?	{ count(); return(CONSTANT); }
+0[xX]{H}+{P}{FS}?	{ count();yylval.dval=atof(yytext); return(CONSTANT); }
+0[xX]{H}*"."{H}+{P}?{FS}?     { count();yylval.dval=atof(yytext); return(CONSTANT); }
+0[xX]{H}+"."{H}*{P}?{FS}?     { count();yylval.dval=atof(yytext); return(CONSTANT); }
+L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
 
-","                     { ADJ; return COMMA; }
-":"                     { ADJ; return COLON; }
-";"                     { ADJ; return SEMICOLON; }
-"("                     { ADJ; return LPAREN; }
-")"                     { ADJ; return RPAREN; }
-"["                     { ADJ; return LBRACK; }
-"]"                     { ADJ; return RBRACK; }
-"{"                     { ADJ; return LBRACE; }
-"}"                     { ADJ; return RBRACE; }
-"."                     { ADJ; return DOT; }
-"+"                     { ADJ; return PLUS; }
-"-"                     { ADJ; return MINUS; }
-"*"                     { ADJ; return TIMES; }
-"/"                     { ADJ; return DIVIDE; }
-"=="                     { ADJ; return EQ_OP; }
-"!="                    { ADJ; return NEQ_OP; }
-"<"                     { ADJ; return LT_OP; }
-"<="                    { ADJ; return LE_OP; }
-">"                     { ADJ; return GT_OP; }
-">="                    { ADJ; return GE_OP; }
-"&&"                     { ADJ; return AND_OP; }
-"||"                     { ADJ; return OR_OP; }
-":="                    { ADJ; return ASSIGN; }
-
-if                      { ADJ; return IF; }
-then                    { ADJ; return THEN; }
-else                    { ADJ; return ELSE; }
-while                   { ADJ; return WHILE; }
-for                     { ADJ; return FOR; }
-to                      { ADJ; return TO; }
-do                      { ADJ; return DO; }
-in                      { ADJ; return IN; }
-break                   { ADJ; return BREAK; }
-NULL                     { ADJ; return NIL; }
-
-[0-9]+                  { ADJ; yylval.num = atoi(yytext); return INT; }
-[_a-zA-Z][_a-zA-Z0-9]*  { ADJ; yylval.str = string(yytext); return ID; }
-
-\"                      { ADJ; init_buf(); BEGIN(STRING); }
-<STRING>\"              {
-    ADJ;
-    BEGIN(INITIAL);
-    yylval.str = _str_buf;
-    return STRING;
-}
-<STRING>\n              { ADJ; em_newline(); }
-<STRING>\\[0-9]{3}      {
-    int result;
-
-    ADJ;
-    sscanf(yytext + 1, "%d", &result);
-    if (result > 0xFF)
-        em_error(em_tok_pos, "character out of range");
-    append_char(result);
-}
-<STRING>\\n             { ADJ; append_char('\n'); }
-<STRING>\\t             { ADJ; append_char('\t'); }
-<STRING>\\\"            { ADJ; append_char('\"'); }
-<STRING>\\\\            { ADJ; append_char('\\'); }
-<STRING>\\(.|\n)        { ADJ; append_char(yytext[1]); }
-<STRING>[^\\\n\"]+      {
-    char *p = yytext;
-
-    ADJ;
-    while (*p)
-        append_char(*p++);
-}
-
-.                       { ADJ; em_error(em_tok_pos, "illegal token"); }
+"+="			{ count(); return(ADD_ASSIGN); }
+"-="			{ count(); return(SUB_ASSIGN); }
+"*="			{ count(); return(MUL_ASSIGN); }
+"/="			{ count(); return(DIV_ASSIGN); }
+"%="			{ count(); return(MOD_ASSIGN); }
+"&="			{ count(); return(AND_ASSIGN); }
+"^="			{ count(); return(XOR_ASSIGN); }
+"|="			{ count(); return(OR_ASSIGN); }
+">>"			{ count(); return(RIGHT_OP); }
+"<<"			{ count(); return(LEFT_OP); }
+"++"			{ count(); return(INC_OP); }
+"--"			{ count(); return(DEC_OP); }
+"->"			{ count(); return(PTR_OP); }
+"&&"			{ count(); return(AND_OP); }
+"||"			{ count(); return(OR_OP); }
+"<="			{ count(); return(LE_OP); }
+">="			{ count(); return(GE_OP); }
+"=="			{ count(); return(EQ_OP); }
+"!="			{ count(); return(NEQ_OP); }
+";"			{ count(); return(SEMICOLON); }
+("{"|"<%")		{ count(); return(LBRACE); }
+("}"|"%>")		{ count(); return(RBRACE); }
+","			{ count(); return(COMMA); }
+":"			{ count(); return(COLON); }
+"<-"			{ count(); return(ASSIGN); }
+":="			{ count(); return(ASSIGN); }
+"="			{ count(); return(ASSIGN); }
+"("			{ count(); return(LPAREN); }
+")"			{ count(); return(RPAREN); }
+("["|"<:")		{ count(); return(LBRACK); }
+("]"|":>")		{ count(); return(RBRACK); }
+"."			{ count(); return(DOT); }
+"&"			{ count(); return(AMPERSAND); }
+"!"			{ count(); return(EXCLAMATION); }
+"~"			{ count(); return(TILDE); }
+"-"			{ count(); return(MINUS); }
+"+"			{ count(); return(PLUS); }
+"*"			{ count(); return(ASTERISK); }
+"/"			{ count(); return(DIVIDE); }
+"%"			{ count(); return(MOD); }
+"<"			{ count(); return(LT_OP); }
+">"			{ count(); return(GT_OP); }
+"^"			{ count(); return(POW); }
+"|"			{ count(); return(VERTICAL_BAR); }
+"?"			{ count(); return(QUESTION); }
+[\n]		{ count();yylineno++; }
+[ \t\v\f]		{ count();}
+.			{ /* Add code to complain about unmatched characters */ em_error(em_tok_pos,"unmatched string!"); }
 
 %%
 
-int yywrap(void)
-{
-    _char_pos = 1;
-    return 1;
-}
 
 static void init_buf(void)
 {

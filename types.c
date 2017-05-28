@@ -76,7 +76,7 @@ type_t ty_actual(type_t type)
     return type;
 }
 
-bool ty_match(type_t type1, type_t type2)
+booll ty_match(type_t type1, type_t type2)
 {
     type1 = ty_actual(type1);
     type2 = ty_actual(type2);

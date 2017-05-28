@@ -5,10 +5,10 @@ typedef struct escape_entry_s *escape_entry_t;
 struct escape_entry_s
 {
     int depth;
-    bool *escape;
+    booll *escape;
 };
 
-static escape_entry_t escape_entry(int depth, bool *escape)
+static escape_entry_t escape_entry(int depth, booll *escape)
 {
     assert(escape);
     escape_entry_t p = checked_malloc(sizeof(*p));

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "ast.h"
+#include "ppast.h"
 #include "errmsg.h"
 #include "symbol.h"
 #include "utils.h"
@@ -14,14 +15,16 @@ void yyerror(char *msg);
 %union {
     int pos;
     int num;
+    double dval;
     string_t str;
     list_t list;
     symbol_t sym;
-    ast_decl_t decl;
-    ast_expr_t expr;
-    ast_type_t type;
+    ast_decl_t dec;
+    ast_expr_t exp;
+    ast_type_t ty;
     ast_var_t var;
-    ast_func_t func;
+    ast_func_t fun;
+    ast_binop_t op;
 }
 
 %{
@@ -62,204 +65,682 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 static ast_expr_t _program;
 %}
 
-%debug
+%type <exp> _program
 
-%token <str> TK_ID TK_STRING
-%token <num> TK_INT
+%type <exp> block_item translation_unit statement expression_statement
 
-%token <pos>
-    TK_COMMA TK_COLON TK_LPARAN TK_RPARAN TK_LBRACK TK_RBRACK
-    TK_LBRACE TK_RBRACE TK_DOT
-    TK_ARRAY TK_IF TK_THEN TK_ELSE TK_WHILE TK_FOR TK_TO TK_LET TK_IN
-    TK_END TK_OF TK_BREAK TK_NIL
-    TK_FUNCTION TK_VAR TK_TYPE
+%type <exp> init_declarator direct_declarator declarator initializer
 
-%left <pos> TK_SEMICOLON
-%nonassoc <pos> TK_DO
-%nonassoc <pos> TK_ASSIGN
-%left <pos> TK_OR
-%left <pos> TK_AND
-%nonassoc <pos> TK_EQ TK_NEQ TK_LT TK_LE TK_GT TK_GE
-%left <pos> TK_PLUS TK_MINUS
-%left <pos> TK_TIMES TK_DIVIDE
-%left <pos> TK_UMINUS
+%type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression compound_statement jump_statement
 
-%type <decl> decl var_decl
-%type <expr> program expr
-%type <type> type
-%type <var> lvalue lvalue_
-%type <list> expr_seq arg_seq efield_seq decls funcs_decl types_decl fields
-%type <list> field_seq
-%type <func> func_decl
-%type <sym> id
+%type <list>  init_declarator_list block_item_list
 
-%start program
+%type <dec> declaration
 
-%%
+%type <list> parameter_type_list parameter_list
 
-program:
-    expr
-    { _program = $1; }
+%type <fun> function_definition
 
-expr:
-    lvalue
-    { $$ = ast_var_expr($1->pos, $1); }
-|   TK_NIL
-    { $$ = ast_nil_expr($1); }
-|   expr expr_seq
-    { $$ = ast_seq_expr($1->pos, list($1, $2)); }
-|   TK_LPARAN TK_RPARAN
-    { $$ = ast_seq_expr($1, NULL); }
-|   TK_LPARAN expr TK_RPARAN
-    { $$ = $2; }
-|   TK_INT
-    { $$ = ast_num_expr(em_tok_pos, $1); }
-|   TK_STRING
-    { $$ = ast_string_expr(em_tok_pos, $1); }
-|   TK_MINUS expr %prec TK_UMINUS
-    { $$ = ast_op_expr($1, ast_num_expr($1, 0), AST_MINUS, $2); }
-|   id TK_LPARAN TK_RPARAN
-    { $$ = ast_call_expr($2, $1, NULL); }
-|   id TK_LPARAN expr arg_seq TK_RPARAN
-    { $$ = ast_call_expr($2, $1, list($3, $4)); }
-|   expr TK_PLUS expr
-    { $$ = ast_op_expr($2, $1, AST_PLUS, $3); }
-|   expr TK_MINUS expr
-    { $$ = ast_op_expr($2, $1, AST_MINUS, $3); }
-|   expr TK_TIMES expr
-    { $$ = ast_op_expr($2, $1, AST_TIMES, $3); }
-|   expr TK_DIVIDE expr
-    { $$ = ast_op_expr($2, $1, AST_DIVIDE, $3); }
-|   expr TK_EQ expr
-    { $$ = ast_op_expr($2, $1, AST_EQ, $3); }
-|   expr TK_NEQ expr
-    { $$ = ast_op_expr($2, $1, AST_NEQ, $3); }
-|   expr TK_LT expr
-    { $$ = ast_op_expr($2, $1, AST_LT, $3); }
-|   expr TK_LE expr
-    { $$ = ast_op_expr($2, $1, AST_LE, $3); }
-|   expr TK_GT expr
-    { $$ = ast_op_expr($2, $1, AST_GT, $3); }
-|   expr TK_GE expr
-    { $$ = ast_op_expr($2, $1, AST_GE, $3); }
-|   expr TK_AND expr
-    { $$ = ast_if_expr($2, $1, $3, ast_num_expr($2, 0)); }
-|   expr TK_OR expr
-    { $$ = ast_if_expr($2, $1, ast_num_expr($2, 1), $3); }
-|   id TK_LBRACE TK_RBRACE
-    { $$ = ast_record_expr($2, $1, NULL); }
-|   id TK_LBRACE id TK_EQ expr efield_seq TK_RBRACE
-    { $$ = ast_record_expr($2, $1, list(ast_efield($4, $3, $5), $6)); }
-|   id TK_LBRACK expr TK_RBRACK TK_OF expr
-    { $$ = ast_array_expr($2, $1, $3, $6); }
-|   lvalue TK_ASSIGN expr
-    { $$ = ast_assign_expr($2, $1, $3); }
-|   TK_IF expr TK_THEN expr
-    { $$ = ast_if_expr($1, $2, $4, NULL); }
-|   TK_IF expr TK_THEN expr TK_ELSE expr
-    { $$ = ast_if_expr($1, $2, $4, $6); }
-|   TK_WHILE expr TK_DO expr
-    { $$ = ast_while_expr($1, $2, $4); }
-|   TK_FOR id TK_ASSIGN expr TK_TO expr TK_DO expr
-    { $$ = ast_for_expr($1, $2, $4, $6, $8); }
-|   TK_BREAK
-    { $$ = ast_break_expr($1); }
-|   TK_LET decls TK_IN expr TK_END
-    { $$ = ast_let_expr($1, $2, $4); }
+%type <ty> declaration_specifiers
+%type <sym> type_specifier
 
-decls:
-    /* empty */
-    { $$ = NULL; }
-|   decls decl
-    { LIST_ACTION($$, $1, $2); }
+//%type <op> unary_operator
 
-decl:
-    types_decl
-    { $$ = ast_types_decl(((ast_type_t) $1->data)->pos, $1); }
-|   var_decl
-|   funcs_decl
-    { $$ = ast_funcs_decl(((ast_func_t) $1->data)->pos, $1); }
 
-types_decl:
-    TK_TYPE id TK_EQ type
-    { $$ = list(ast_nametype($2, $4), NULL); }
-|   types_decl TK_TYPE id TK_EQ type
-    { LIST_ACTION($$, $1, ast_nametype($3, $5)); }
 
-type:
-    id
-    { $$ = ast_name_type(em_tok_pos, $1); }
-|   TK_LBRACE fields TK_RBRACE
-    { $$ = ast_record_type($1, $2); }
-|   TK_ARRAY TK_OF id
-    { $$ = ast_array_type($1, $3); }
+%token <str> ID
+%token <dval> CONSTANT
+%token <str> STRING_LITERAL
+%token SIZEOF
+%token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP LT_OP GE_OP GT_OP EQ_OP NEQ_OP ASSIGN
+%token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
+%token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
+%token XOR_ASSIGN OR_ASSIGN TYPE_NAME
+%token TYPEDEF EXTERN STATIC AUTO REGISTER INLINE RESTRICT
+%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
+%token BOOL COMPLEX IMAGINARY
+%token STRUCT UNION ENUM ELLIPSIS
+%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+%token LBRACK RBRACK LBRACE RBRACE LPAREN RPAREN
+%token COMMA SEMICOLON COLON
+%token PLUS TIMES MINUS DIVIDE
+%token EXCLAMATION QUESTION VERTICAL_BAR TILDE MOD POW AMPERSAND ASTERISK DOT
+%token THEN TO IN NIL
 
-fields:
-    /* empty */
-    { $$ = NULL; }
-|   id TK_COLON id field_seq
-    { $$ = list(ast_field($1, $3), $4); }
 
-var_decl:
-    TK_VAR id TK_ASSIGN expr
-    { $$ = ast_var_decl($1, $2, NULL, $4); }
-|   TK_VAR id TK_COLON id TK_ASSIGN expr
-    { $$ = ast_var_decl($1, $2, $4, $6); }
-
-funcs_decl:
-    func_decl
-    { $$ = list($1, NULL); }
-|   funcs_decl func_decl
-    { LIST_ACTION($$, $1, $2); }
-
-func_decl:
-    TK_FUNCTION id TK_LPARAN fields TK_RPARAN TK_EQ expr
-    { $$ = ast_func($1, $2, $4, NULL, $7); }
-|   TK_FUNCTION id TK_LPARAN fields TK_RPARAN TK_COLON id TK_EQ expr
-    { $$ = ast_func($1, $2, $4, $7, $9); }
-
-expr_seq:
-    TK_SEMICOLON expr
-    { $$ = list($2, NULL); }
-|   expr_seq TK_SEMICOLON expr
-    { LIST_ACTION($$, $1, $3); }
-
-arg_seq:
-    /* empty */
-    { $$ = NULL; }
-|   arg_seq TK_COMMA expr
-    { LIST_ACTION($$, $1, $3); }
-
-efield_seq:
-    /* empty */
-    { $$ = NULL; }
-|   efield_seq TK_COMMA id TK_EQ expr
-    { LIST_ACTION($$, $1, ast_efield($4, $3, $5)); }
-
-field_seq:
-    /* empty */
-    { $$ = NULL; }
-|   field_seq TK_COMMA id TK_COLON id
-    { LIST_ACTION($$, $1, ast_field($3, $5)); }
-
-lvalue:
-    id lvalue_
-    { LVALUE_ACTION($$, $2, ast_simple_var(em_tok_pos, $1)); }
-
-lvalue_:
-    /* empty */
-    { $$ = NULL; }
-|   TK_DOT id lvalue_
-    { LVALUE_ACTION($$, $3, ast_field_var($1, NULL, $2)); }
-|   TK_LBRACK expr TK_RBRACK lvalue_
-    { LVALUE_ACTION($$, $4, ast_sub_var($1, NULL, $2)); }
-
-id:
-    TK_ID
-    { $$ = symbol($1); }
+%start _program
 
 %%
 
+_program:
+	declaration
+	{
+		fprintf(stdout,"\n*************************\nparsing okay! a  del\n*************************\n");
+        pp_decl(stdout,20,$1);
+	}
+    |
+	block_item
+	{
+		fprintf(stdout,"\n*************************\nparsing okay! a block item_list\n*************************\n");
+        _program=$1;
+	}
+	;
+
+primary_expression
+	: ID
+	{
+        fprintf(stdout,"exp: a id %s\n",$1);
+        pp_var(stdout,20,$$);
+        $$ = ast_var_expr(em_tok_pos, ast_simple_var(em_tok_pos, $1));
+	}
+	| CONSTANT
+	{
+        fprintf(stdout,"exp: a constant %f\n",$1);
+		$$=ast_num_expr(em_tok_pos,$1);
+	}
+	| STRING_LITERAL
+	{
+	}
+	| LPAREN expression RPAREN { $$=$2; }
+	;
+
+postfix_expression
+	: primary_expression { $$=$1;}
+	| postfix_expression LBRACK expression RBRACK
+	{
+	}
+	| postfix_expression LPAREN RPAREN
+	| postfix_expression LPAREN argument_expression_list RPAREN
+	| postfix_expression DOT ID
+	{
+	}
+	| postfix_expression PTR_OP ID
+	{
+	}
+	| postfix_expression INC_OP
+    {
+
+    }
+	| postfix_expression DEC_OP
+	| LPAREN type_name RPAREN LBRACE initializer_list RBRACE
+	| LPAREN type_name RPAREN LBRACE initializer_list COMMA RBRACE
+	;
+
+argument_expression_list
+	: assignment_expression
+	| argument_expression_list COMMA assignment_expression
+	;
+
+unary_expression
+	: postfix_expression
+	{
+		$$=$1;
+	}
+	| INC_OP unary_expression
+	| DEC_OP unary_expression
+	| unary_operator cast_expression
+	| SIZEOF unary_expression
+	| SIZEOF LPAREN type_name RPAREN
+	;
+
+unary_operator
+	: AMPERSAND {}
+	| ASTERISK {}
+	| PLUS {}
+	| MINUS {}
+	| TILDE
+	| EXCLAMATION
+	;
+
+cast_expression
+	: unary_expression { $$=$1; }
+	| LPAREN type_name RPAREN cast_expression { fprintf(stdout,"cast(not done yet)"); }
+	;
+
+multiplicative_expression
+	: cast_expression { $$=$1; }
+	| multiplicative_expression ASTERISK cast_expression
+	{
+	}
+	| multiplicative_expression DIVIDE cast_expression
+	{
+	}
+	| multiplicative_expression MOD cast_expression
+	{
+	}
+	;
+
+additive_expression
+	: multiplicative_expression { $$=$1; }
+	| additive_expression PLUS multiplicative_expression
+	{
+	}
+	| additive_expression MINUS multiplicative_expression
+	{
+	}
+	;
+
+shift_expression
+	: additive_expression { $$=$1; }
+	| shift_expression LEFT_OP additive_expression
+	{
+	}
+	| shift_expression RIGHT_OP additive_expression
+	{
+	}
+	;
+
+relational_expression
+	: shift_expression { $$=$1; }
+	| relational_expression LT_OP shift_expression
+	{
+	}
+	| relational_expression GT_OP shift_expression
+	{
+	}
+	| relational_expression LE_OP shift_expression
+	{
+	}
+	| relational_expression GE_OP shift_expression
+	{
+	}
+	;
+
+equality_expression
+	: relational_expression { $$=$1; }
+	| equality_expression EQ_OP relational_expression
+	{
+	}
+	| equality_expression NEQ_OP relational_expression
+	{
+	}
+	;
+
+and_expression
+	: equality_expression { $$=$1; }
+	| and_expression AMPERSAND equality_expression
+	{
+	}
+	;
+
+exclusive_or_expression
+	: and_expression { $$=$1; }
+	| exclusive_or_expression POW and_expression
+	{
+	}
+	;
+
+inclusive_or_expression
+	: exclusive_or_expression { $$=$1; }
+	| inclusive_or_expression VERTICAL_BAR exclusive_or_expression
+	{
+	}
+	;
+
+logical_and_expression
+	: inclusive_or_expression { $$=$1; }
+	| logical_and_expression AND_OP inclusive_or_expression
+	{
+	}
+	;
+
+logical_or_expression
+	: logical_and_expression { $$=$1; }
+	| logical_or_expression OR_OP logical_and_expression
+	{
+	}
+	;
+
+conditional_expression
+	: logical_or_expression { $$=$1; }
+	| logical_or_expression QUESTION expression COLON conditional_expression
+	{
+	}
+	;
+
+assignment_expression
+	: conditional_expression { $$=$1; }
+	| unary_expression assignment_operator assignment_expression
+	{
+	}
+	;
+
+assignment_operator
+	: ASSIGN
+	| MUL_ASSIGN
+	| DIV_ASSIGN
+	| MOD_ASSIGN
+	| ADD_ASSIGN
+	| SUB_ASSIGN
+	| LEFT_ASSIGN
+	| RIGHT_ASSIGN
+	| AND_ASSIGN
+	| XOR_ASSIGN
+	| OR_ASSIGN
+	;
+
+expression
+	: assignment_expression
+	{
+		$$=$1;
+	}
+	| expression COMMA assignment_expression
+	{
+	}
+	;
+
+constant_expression
+	: conditional_expression
+	;
+
+declaration
+	: declaration_specifiers SEMICOLON
+    {
+        //$$ = ast_var_decl(em_tok_pos, $1->id, $1->ty, NULL);
+        print("null declaratior");
+    }
+	| declaration_specifiers init_declarator_list SEMICOLON
+	{
+        print("declaratior with initial\n");
+        $$ = $2;
+        list_t p=$2;
+	}
+	;
+
+declaration_specifiers
+	: storage_class_specifier
+	| storage_class_specifier declaration_specifiers
+	| type_specifier
+	{
+        print("a type specifier\n");
+        $$=$1;
+	}
+	| type_specifier declaration_specifiers
+	| type_qualifier
+	| type_qualifier declaration_specifiers
+	| function_specifier
+	| function_specifier declaration_specifiers
+	;
+
+init_declarator_list
+	: init_declarator
+	{
+        print("a declarator\n");
+		LIST_ACTION($$,NULL,$1);
+	}
+	| init_declarator_list COMMA init_declarator
+	{
+        print("another declarator\n");
+		LIST_ACTION($$,$1,$3);
+	}
+	;
+
+init_declarator
+	: declarator
+	{
+        print("A declarator\n");
+        $$ = ast_var_decl(em_tok_pos, $1, NULL, NULL);
+	}
+	| declarator ASSIGN initializer
+	{
+        $$ = ast_var_decl(em_tok_pos, $1, NULL, $3);
+	}
+	;
+
+storage_class_specifier
+	: TYPEDEF
+	| EXTERN
+	| STATIC
+	| AUTO
+	| REGISTER
+	;
+
+type_specifier
+	: VOID
+	{
+	 	$$=symbol("VOID");
+		//fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
+	| CHAR
+	{
+		$$=symbol("CHAR");
+		//fprintf(stdout, "Type name(%s) not done yet", S_name($$));
+	}
+	| SHORT
+	{
+	}
+	| INT
+	{
+		$$=symbol("INT");
+	}
+	| LONG
+	{
+	}
+	| FLOAT
+	{
+	}
+	| DOUBLE
+	{
+	}
+	| SIGNED
+	{
+	}
+	| UNSIGNED
+	{
+	}
+	| BOOL
+	{
+	}
+	| COMPLEX
+	{
+	}
+	| IMAGINARY
+	{
+	}
+	| struct_or_union_specifier
+	{
+	}
+	| enum_specifier
+	{
+	}
+	| TYPE_NAME
+	{
+	}
+	;
+
+struct_or_union_specifier
+	: struct_or_union ID LBRACE struct_declaration_list RBRACE
+	| struct_or_union LBRACE struct_declaration_list RBRACE
+	| struct_or_union ID
+	;
+
+struct_or_union
+	: STRUCT
+	| UNION
+	;
+
+struct_declaration_list
+	: struct_declaration
+	| struct_declaration_list struct_declaration
+	;
+
+struct_declaration
+	: specifier_qualifier_list struct_declarator_list SEMICOLON
+	;
+
+specifier_qualifier_list
+	: type_specifier specifier_qualifier_list
+	| type_specifier
+	| type_qualifier specifier_qualifier_list
+	| type_qualifier
+	;
+
+struct_declarator_list
+	: struct_declarator
+	| struct_declarator_list COMMA struct_declarator
+	;
+
+struct_declarator
+	: declarator
+	| COLON constant_expression
+	| declarator COLON constant_expression
+	;
+
+enum_specifier
+	: ENUM LBRACE enumerator_list RBRACE
+	| ENUM ID LBRACE enumerator_list RBRACE
+	| ENUM LBRACE enumerator_list COMMA RBRACE
+	| ENUM ID LBRACE enumerator_list COMMA RBRACE
+	| ENUM ID
+	;
+
+enumerator_list
+	: enumerator
+	| enumerator_list COMMA enumerator
+	;
+
+enumerator
+	: ID
+	| ID ASSIGN constant_expression
+	;
+
+type_qualifier
+	: CONST
+	| RESTRICT
+	| VOLATILE
+	;
+
+function_specifier
+	: INLINE
+	;
+
+declarator
+	: pointer direct_declarator
+	| direct_declarator
+		{
+			$$=$1;
+		}
+	;
+
+direct_declarator
+	: ID
+	{
+	}
+	| LPAREN declarator RPAREN
+	| direct_declarator LBRACK type_qualifier_list assignment_expression RBRACK
+	| direct_declarator LBRACK type_qualifier_list RBRACK
+	| direct_declarator LBRACK assignment_expression RBRACK
+	| direct_declarator LBRACK STATIC type_qualifier_list assignment_expression RBRACK
+	| direct_declarator LBRACK type_qualifier_list STATIC assignment_expression RBRACK
+	| direct_declarator LBRACK type_qualifier_list ASTERISK RBRACK
+	| direct_declarator LBRACK ASTERISK RBRACK
+	| direct_declarator LBRACK RBRACK
+	| direct_declarator LPAREN parameter_type_list RPAREN
+	{
+	}
+	| direct_declarator LPAREN identifier_list RPAREN
+	{
+	}
+	| direct_declarator LPAREN RPAREN
+	;
+
+pointer
+	: ASTERISK
+	| ASTERISK type_qualifier_list
+	| ASTERISK pointer
+	| ASTERISK type_qualifier_list pointer
+	;
+
+type_qualifier_list
+	: type_qualifier
+	| type_qualifier_list type_qualifier
+	;
+
+parameter_type_list
+	: parameter_list { $$=$1; }
+	| parameter_list COMMA ELLIPSIS
+	;
+
+parameter_list
+	: parameter_declaration
+	{
+	}
+	| parameter_list COMMA parameter_declaration
+	{
+	}
+	;
+
+parameter_declaration
+	: declaration_specifiers declarator
+	{
+	}
+	| declaration_specifiers abstract_declarator
+	| declaration_specifiers
+	;
+
+identifier_list
+	: ID
+	| identifier_list COMMA ID
+	;
+
+type_name
+	: specifier_qualifier_list
+	| specifier_qualifier_list abstract_declarator
+	;
+
+abstract_declarator
+	: pointer
+	| direct_abstract_declarator
+	| pointer direct_abstract_declarator
+	;
+
+direct_abstract_declarator
+	: LPAREN abstract_declarator RPAREN
+	| LBRACK RBRACK
+	| LBRACK assignment_expression RBRACK
+	| direct_abstract_declarator LBRACK RBRACK
+	| direct_abstract_declarator LBRACK assignment_expression RBRACK
+	| LBRACK ASTERISK RBRACK
+	| direct_abstract_declarator LBRACK ASTERISK RBRACK
+	| LPAREN RPAREN
+	| LPAREN parameter_type_list RPAREN
+	| direct_abstract_declarator LPAREN RPAREN
+	| direct_abstract_declarator LPAREN parameter_type_list RPAREN
+	;
+
+initializer
+	: assignment_expression { $$=$1; }
+	| LBRACE initializer_list RBRACE
+	| LBRACE initializer_list COMMA RBRACE
+	;
+
+initializer_list
+	: initializer
+	| designation initializer
+	| initializer_list COMMA initializer
+	| initializer_list COMMA designation initializer
+	;
+
+designation
+	: designator_list ASSIGN
+	;
+
+designator_list
+	: designator
+	| designator_list designator
+	;
+
+designator
+	: LBRACK constant_expression RBRACK
+	| DOT ID
+	;
+
+statement
+	: labeled_statement
+	| compound_statement
+	| expression_statement { $$=$1;}
+	| selection_statement
+	| iteration_statement
+	| jump_statement
+	;
+
+labeled_statement
+	: ID COLON statement
+	| CASE constant_expression COLON statement
+	| DEFAULT COLON statement
+	;
+
+compound_statement
+	: LBRACE RBRACE
+	| LBRACE block_item_list RBRACE
+	{
+        $$=ast_seq_expr(em_tok_pos,$2);
+	}
+	;
+
+block_item_list
+	: block_item
+	{
+		LIST_ACTION($$,NULL,$1);
+	}
+	| block_item_list block_item
+	{
+		LIST_ACTION($$,$1,$2);
+	}
+	;
+
+block_item
+	: declaration
+	{
+		print("\n*************************\na declaration\n");
+	}
+	| function_definition
+	{
+		print("\n*************************\na function definition\n");
+	}
+	| statement
+	{
+		$$=$1;
+	}
+	;
+
+expression_statement
+	: SEMICOLON
+	| expression SEMICOLON
+	{
+		$$=$1;
+	}
+	;
+
+selection_statement
+	: IF LPAREN expression RPAREN statement
+	| IF LPAREN expression RPAREN statement ELSE statement
+	| SWITCH LPAREN expression RPAREN statement
+	;
+
+iteration_statement
+	: WHILE LPAREN expression RPAREN statement
+	| DO statement WHILE LPAREN expression RPAREN SEMICOLON
+	| FOR LPAREN expression_statement expression_statement RPAREN statement
+	| FOR LPAREN expression_statement expression_statement expression RPAREN statement
+	| FOR LPAREN declaration expression_statement RPAREN statement
+	| FOR LPAREN declaration expression_statement expression RPAREN statement
+	;
+
+jump_statement
+	: GOTO ID SEMICOLON
+	| CONTINUE SEMICOLON
+	| BREAK SEMICOLON
+	| RETURN SEMICOLON
+	| RETURN expression SEMICOLON
+	{
+		$$=$2;
+	}
+	;
+
+translation_unit
+	: external_declaration
+	| translation_unit external_declaration
+	;
+
+external_declaration
+	: function_definition
+	| declaration
+	;
+
+function_definition
+	: declaration_specifiers declarator declaration_list compound_statement
+	| declaration_specifiers declarator compound_statement
+	{
+	}
+	;
+
+declaration_list
+	: declaration
+	| declaration_list declaration
+	;
+
+%%
 void yyerror(char *msg)
 {
     em_error(em_tok_pos, "%s", msg);
@@ -269,11 +750,11 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value)
 {
     switch (type)
     {
-        case TK_ID:
-        case TK_STRING:
+        case ID:
+        case STRING_LITERAL:
             fprintf(fp, "%s", value.str);
             break;
-        case TK_INT:
+        case CONSTANT:
             fprintf(fp, "%d", value.num);
             break;
     }

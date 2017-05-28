@@ -1,0 +1,14 @@
+int a=5,i=2+3;
+
+
+a = a[2]+1,4,5;
+a = *i+2;
+
+int t(int a)
+{
+	return 5;
+}
+int f(int i)
+{
+	return i+t();
+}

@@ -16,7 +16,7 @@ struct env_entry_s
         {
             tr_access_t access;
             type_t type;
-            bool for_;
+            booll for_;
         } var;
 
         struct
@@ -28,7 +28,7 @@ struct env_entry_s
         } func;
     } u;
 };
-env_entry_t env_var_entry(tr_access_t access, type_t type, bool for_);
+env_entry_t env_var_entry(tr_access_t access, type_t type, booll for_);
 env_entry_t env_func_entry(tr_level_t level,
                            tmp_label_t label,
                            list_t formals,

@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.0)
-project(tiger-c)
+project(lucc-c)
 
 include(FindFLEX)
 include(FindBISON)
 
 flex_target(LEXER lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
-bison_target(PARSER grammar.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c)
+bison_target(PARSER parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c)
 add_flex_bison_dependency(LEXER PARSER)
 
-set_source_files_properties(lexer.l grammar.y PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties(lexer.l parser.y PROPERTIES HEADER_FILE_ONLY TRUE)
 
-add_executable(tiger
+add_executable(lucc
     ast.c
     ast.h
     env.c

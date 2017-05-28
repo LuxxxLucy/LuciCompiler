@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-extern bool em_any_errors;
+extern booll em_any_errors;
 extern int em_tok_pos;
 
 void em_newline(void);

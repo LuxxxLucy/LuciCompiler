@@ -11,7 +11,7 @@ typedef struct fr_access_s *fr_access_t;
 frame_t frame(tmp_label_t name, list_t formals);
 tmp_label_t fr_name(frame_t fr);
 list_t fr_formals(frame_t fr);
-fr_access_t fr_alloc_local(frame_t fr, bool escape);
+fr_access_t fr_alloc_local(frame_t fr, booll escape);
 int fr_offset(fr_access_t access);
 
 typedef struct fr_frag_s *fr_frag_t;

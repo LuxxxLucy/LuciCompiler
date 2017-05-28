@@ -48,10 +48,10 @@ RM = /usr/local/Cellar/cmake/3.8.1/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/lucy/Desktop/tiger-c-master
+CMAKE_SOURCE_DIR = /Users/lucy/Desktop/doing/compile_principle/LuciCompiler
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/lucy/Desktop/tiger-c-master
+CMAKE_BINARY_DIR = /Users/lucy/Desktop/doing/compile_principle/LuciCompiler
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lucy/Desktop/tiger-c-master/CMakeFiles /Users/lucy/Desktop/tiger-c-master/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lucy/Desktop/doing/compile_principle/LuciCompiler/CMakeFiles /Users/lucy/Desktop/doing/compile_principle/LuciCompiler/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lucy/Desktop/tiger-c-master/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lucy/Desktop/doing/compile_principle/LuciCompiler/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named tiger
+# Target rules for targets named lucc
 
 # Build rule for target.
-tiger: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 tiger
-.PHONY : tiger
+lucc: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 lucc
+.PHONY : lucc
 
 # fast build rule for target.
-tiger/fast:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/build
-.PHONY : tiger/fast
+lucc/fast:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/build
+.PHONY : lucc/fast
 
 ast.o: ast.c.o
 
@@ -129,7 +129,7 @@ ast.o: ast.c.o
 
 # target to build an object file
 ast.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ast.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ast.c.o
 .PHONY : ast.c.o
 
 ast.i: ast.c.i
@@ -138,7 +138,7 @@ ast.i: ast.c.i
 
 # target to preprocess a source file
 ast.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ast.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ast.c.i
 .PHONY : ast.c.i
 
 ast.s: ast.c.s
@@ -147,7 +147,7 @@ ast.s: ast.c.s
 
 # target to generate assembly for a file
 ast.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ast.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ast.c.s
 .PHONY : ast.c.s
 
 env.o: env.c.o
@@ -156,7 +156,7 @@ env.o: env.c.o
 
 # target to build an object file
 env.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/env.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/env.c.o
 .PHONY : env.c.o
 
 env.i: env.c.i
@@ -165,7 +165,7 @@ env.i: env.c.i
 
 # target to preprocess a source file
 env.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/env.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/env.c.i
 .PHONY : env.c.i
 
 env.s: env.c.s
@@ -174,7 +174,7 @@ env.s: env.c.s
 
 # target to generate assembly for a file
 env.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/env.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/env.c.s
 .PHONY : env.c.s
 
 errmsg.o: errmsg.c.o
@@ -183,7 +183,7 @@ errmsg.o: errmsg.c.o
 
 # target to build an object file
 errmsg.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/errmsg.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/errmsg.c.o
 .PHONY : errmsg.c.o
 
 errmsg.i: errmsg.c.i
@@ -192,7 +192,7 @@ errmsg.i: errmsg.c.i
 
 # target to preprocess a source file
 errmsg.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/errmsg.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/errmsg.c.i
 .PHONY : errmsg.c.i
 
 errmsg.s: errmsg.c.s
@@ -201,7 +201,7 @@ errmsg.s: errmsg.c.s
 
 # target to generate assembly for a file
 errmsg.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/errmsg.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/errmsg.c.s
 .PHONY : errmsg.c.s
 
 escape.o: escape.c.o
@@ -210,7 +210,7 @@ escape.o: escape.c.o
 
 # target to build an object file
 escape.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/escape.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/escape.c.o
 .PHONY : escape.c.o
 
 escape.i: escape.c.i
@@ -219,7 +219,7 @@ escape.i: escape.c.i
 
 # target to preprocess a source file
 escape.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/escape.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/escape.c.i
 .PHONY : escape.c.i
 
 escape.s: escape.c.s
@@ -228,7 +228,7 @@ escape.s: escape.c.s
 
 # target to generate assembly for a file
 escape.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/escape.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/escape.c.s
 .PHONY : escape.c.s
 
 frame-mips.o: frame-mips.c.o
@@ -237,7 +237,7 @@ frame-mips.o: frame-mips.c.o
 
 # target to build an object file
 frame-mips.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/frame-mips.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame-mips.c.o
 .PHONY : frame-mips.c.o
 
 frame-mips.i: frame-mips.c.i
@@ -246,7 +246,7 @@ frame-mips.i: frame-mips.c.i
 
 # target to preprocess a source file
 frame-mips.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/frame-mips.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame-mips.c.i
 .PHONY : frame-mips.c.i
 
 frame-mips.s: frame-mips.c.s
@@ -255,7 +255,7 @@ frame-mips.s: frame-mips.c.s
 
 # target to generate assembly for a file
 frame-mips.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/frame-mips.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame-mips.c.s
 .PHONY : frame-mips.c.s
 
 ir.o: ir.c.o
@@ -264,7 +264,7 @@ ir.o: ir.c.o
 
 # target to build an object file
 ir.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ir.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ir.c.o
 .PHONY : ir.c.o
 
 ir.i: ir.c.i
@@ -273,7 +273,7 @@ ir.i: ir.c.i
 
 # target to preprocess a source file
 ir.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ir.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ir.c.i
 .PHONY : ir.c.i
 
 ir.s: ir.c.s
@@ -282,7 +282,7 @@ ir.s: ir.c.s
 
 # target to generate assembly for a file
 ir.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ir.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ir.c.s
 .PHONY : ir.c.s
 
 lexer.o: lexer.c.o
@@ -291,7 +291,7 @@ lexer.o: lexer.c.o
 
 # target to build an object file
 lexer.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/lexer.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/lexer.c.o
 .PHONY : lexer.c.o
 
 lexer.i: lexer.c.i
@@ -300,7 +300,7 @@ lexer.i: lexer.c.i
 
 # target to preprocess a source file
 lexer.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/lexer.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/lexer.c.i
 .PHONY : lexer.c.i
 
 lexer.s: lexer.c.s
@@ -309,7 +309,7 @@ lexer.s: lexer.c.s
 
 # target to generate assembly for a file
 lexer.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/lexer.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/lexer.c.s
 .PHONY : lexer.c.s
 
 main.o: main.c.o
@@ -318,7 +318,7 @@ main.o: main.c.o
 
 # target to build an object file
 main.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/main.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/main.c.o
 .PHONY : main.c.o
 
 main.i: main.c.i
@@ -327,7 +327,7 @@ main.i: main.c.i
 
 # target to preprocess a source file
 main.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/main.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/main.c.i
 .PHONY : main.c.i
 
 main.s: main.c.s
@@ -336,7 +336,7 @@ main.s: main.c.s
 
 # target to generate assembly for a file
 main.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/main.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/main.c.s
 .PHONY : main.c.s
 
 parser.o: parser.c.o
@@ -345,7 +345,7 @@ parser.o: parser.c.o
 
 # target to build an object file
 parser.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/parser.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/parser.c.o
 .PHONY : parser.c.o
 
 parser.i: parser.c.i
@@ -354,7 +354,7 @@ parser.i: parser.c.i
 
 # target to preprocess a source file
 parser.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/parser.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/parser.c.i
 .PHONY : parser.c.i
 
 parser.s: parser.c.s
@@ -363,7 +363,7 @@ parser.s: parser.c.s
 
 # target to generate assembly for a file
 parser.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/parser.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/parser.c.s
 .PHONY : parser.c.s
 
 ppast.o: ppast.c.o
@@ -372,7 +372,7 @@ ppast.o: ppast.c.o
 
 # target to build an object file
 ppast.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ppast.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppast.c.o
 .PHONY : ppast.c.o
 
 ppast.i: ppast.c.i
@@ -381,7 +381,7 @@ ppast.i: ppast.c.i
 
 # target to preprocess a source file
 ppast.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ppast.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppast.c.i
 .PHONY : ppast.c.i
 
 ppast.s: ppast.c.s
@@ -390,7 +390,7 @@ ppast.s: ppast.c.s
 
 # target to generate assembly for a file
 ppast.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ppast.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppast.c.s
 .PHONY : ppast.c.s
 
 ppir.o: ppir.c.o
@@ -399,7 +399,7 @@ ppir.o: ppir.c.o
 
 # target to build an object file
 ppir.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ppir.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppir.c.o
 .PHONY : ppir.c.o
 
 ppir.i: ppir.c.i
@@ -408,7 +408,7 @@ ppir.i: ppir.c.i
 
 # target to preprocess a source file
 ppir.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ppir.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppir.c.i
 .PHONY : ppir.c.i
 
 ppir.s: ppir.c.s
@@ -417,7 +417,7 @@ ppir.s: ppir.c.s
 
 # target to generate assembly for a file
 ppir.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/ppir.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/ppir.c.s
 .PHONY : ppir.c.s
 
 semantic.o: semantic.c.o
@@ -426,7 +426,7 @@ semantic.o: semantic.c.o
 
 # target to build an object file
 semantic.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/semantic.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/semantic.c.o
 .PHONY : semantic.c.o
 
 semantic.i: semantic.c.i
@@ -435,7 +435,7 @@ semantic.i: semantic.c.i
 
 # target to preprocess a source file
 semantic.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/semantic.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/semantic.c.i
 .PHONY : semantic.c.i
 
 semantic.s: semantic.c.s
@@ -444,7 +444,7 @@ semantic.s: semantic.c.s
 
 # target to generate assembly for a file
 semantic.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/semantic.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/semantic.c.s
 .PHONY : semantic.c.s
 
 symbol.o: symbol.c.o
@@ -453,7 +453,7 @@ symbol.o: symbol.c.o
 
 # target to build an object file
 symbol.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/symbol.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/symbol.c.o
 .PHONY : symbol.c.o
 
 symbol.i: symbol.c.i
@@ -462,7 +462,7 @@ symbol.i: symbol.c.i
 
 # target to preprocess a source file
 symbol.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/symbol.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/symbol.c.i
 .PHONY : symbol.c.i
 
 symbol.s: symbol.c.s
@@ -471,7 +471,7 @@ symbol.s: symbol.c.s
 
 # target to generate assembly for a file
 symbol.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/symbol.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/symbol.c.s
 .PHONY : symbol.c.s
 
 table.o: table.c.o
@@ -480,7 +480,7 @@ table.o: table.c.o
 
 # target to build an object file
 table.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/table.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/table.c.o
 .PHONY : table.c.o
 
 table.i: table.c.i
@@ -489,7 +489,7 @@ table.i: table.c.i
 
 # target to preprocess a source file
 table.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/table.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/table.c.i
 .PHONY : table.c.i
 
 table.s: table.c.s
@@ -498,7 +498,7 @@ table.s: table.c.s
 
 # target to generate assembly for a file
 table.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/table.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/table.c.s
 .PHONY : table.c.s
 
 temp.o: temp.c.o
@@ -507,7 +507,7 @@ temp.o: temp.c.o
 
 # target to build an object file
 temp.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/temp.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/temp.c.o
 .PHONY : temp.c.o
 
 temp.i: temp.c.i
@@ -516,7 +516,7 @@ temp.i: temp.c.i
 
 # target to preprocess a source file
 temp.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/temp.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/temp.c.i
 .PHONY : temp.c.i
 
 temp.s: temp.c.s
@@ -525,7 +525,7 @@ temp.s: temp.c.s
 
 # target to generate assembly for a file
 temp.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/temp.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/temp.c.s
 .PHONY : temp.c.s
 
 translate.o: translate.c.o
@@ -534,7 +534,7 @@ translate.o: translate.c.o
 
 # target to build an object file
 translate.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/translate.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/translate.c.o
 .PHONY : translate.c.o
 
 translate.i: translate.c.i
@@ -543,7 +543,7 @@ translate.i: translate.c.i
 
 # target to preprocess a source file
 translate.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/translate.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/translate.c.i
 .PHONY : translate.c.i
 
 translate.s: translate.c.s
@@ -552,7 +552,7 @@ translate.s: translate.c.s
 
 # target to generate assembly for a file
 translate.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/translate.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/translate.c.s
 .PHONY : translate.c.s
 
 types.o: types.c.o
@@ -561,7 +561,7 @@ types.o: types.c.o
 
 # target to build an object file
 types.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/types.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/types.c.o
 .PHONY : types.c.o
 
 types.i: types.c.i
@@ -570,7 +570,7 @@ types.i: types.c.i
 
 # target to preprocess a source file
 types.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/types.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/types.c.i
 .PHONY : types.c.i
 
 types.s: types.c.s
@@ -579,7 +579,7 @@ types.s: types.c.s
 
 # target to generate assembly for a file
 types.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/types.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/types.c.s
 .PHONY : types.c.s
 
 utils.o: utils.c.o
@@ -588,7 +588,7 @@ utils.o: utils.c.o
 
 # target to build an object file
 utils.c.o:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/utils.c.o
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/utils.c.o
 .PHONY : utils.c.o
 
 utils.i: utils.c.i
@@ -597,7 +597,7 @@ utils.i: utils.c.i
 
 # target to preprocess a source file
 utils.c.i:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/utils.c.i
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/utils.c.i
 .PHONY : utils.c.i
 
 utils.s: utils.c.s
@@ -606,7 +606,7 @@ utils.s: utils.c.s
 
 # target to generate assembly for a file
 utils.c.s:
-	$(MAKE) -f CMakeFiles/tiger.dir/build.make CMakeFiles/tiger.dir/utils.c.s
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/utils.c.s
 .PHONY : utils.c.s
 
 # Help Target
@@ -617,7 +617,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... tiger"
+	@echo "... lucc"
 	@echo "... ast.o"
 	@echo "... ast.i"
 	@echo "... ast.s"

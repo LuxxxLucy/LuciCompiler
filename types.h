@@ -32,7 +32,7 @@ struct ty_field_s
 ty_field_t ty_field(symbol_t name, type_t type);
 
 type_t ty_actual(type_t type);
-bool ty_match(type_t type1, type_t type2);
+booll ty_match(type_t type1, type_t type2);
 
 void ty_print(type_t type);
 void ty_print_types(list_t types);

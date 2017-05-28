@@ -74,7 +74,7 @@ list_t fr_formals(frame_t fr)
     return fr->formals;
 }
 
-fr_access_t fr_alloc_local(frame_t fr, bool escape)
+fr_access_t fr_alloc_local(frame_t fr, booll escape)
 {
     fr_access_t access;
 

@@ -13,6 +13,8 @@ int main(int argc, char **argv)
 {
     ast_expr_t prog;
 
+    print("parsing the code...\n");
+
     if (argc != 2)
     {
         fprintf(stderr, "Usage: %s filename\n", argv[0]);
@@ -20,10 +22,13 @@ int main(int argc, char **argv)
     }
 
     /* yydebug = 1; */
-    if (!(prog = parse(argv[1])) || em_any_errors)
+    prog = parse(argv[1]);
+    if (em_any_errors)
     {
-        exit(1);
+        print("error happend\n");
     }
+    pp_expr(stdout,20,prog);
+    print("abstract syntax tree okay\n");
 
     esc_find_escape(prog);
     // pp_expr(stdout, 0, prog);

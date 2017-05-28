@@ -65,7 +65,7 @@ list_t tr_formals(tr_level_t level)
     return level->formals;
 }
 
-tr_access_t tr_alloc_local(tr_level_t level, bool escape)
+tr_access_t tr_alloc_local(tr_level_t level, booll escape)
 {
     fr_access_t fr_access = fr_alloc_local(level->frame, escape);
     tr_access_t access = tr_access(level, fr_access);

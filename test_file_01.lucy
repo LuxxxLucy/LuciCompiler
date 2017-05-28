@@ -1,0 +1,15 @@
+int i=3;
+//int i=3;
+
+// int f(int i)
+// {
+//     if(i>=2)
+//         return 0;
+//     else
+//     {
+//         print("能年玲奈 = 可爱 \n");
+//         return 1;
+//     }
+// }
+
+//int a=1+f(i);

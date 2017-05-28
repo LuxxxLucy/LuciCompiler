@@ -4,7 +4,7 @@
 
 #include "errmsg.h"
 
-bool em_any_errors = false;
+booll em_any_errors = false;
 int em_tok_pos = 0;
 
 extern FILE *yyin;
