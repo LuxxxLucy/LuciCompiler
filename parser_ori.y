@@ -64,25 +64,25 @@ static ast_expr_t _program;
 
 %debug
 
-%token <str> TK_ID TK_STRING
-%token <num> TK_INT
+%token <str> ID STRING
+%token <num> INT
 
 %token <pos>
-    TK_COMMA TK_COLON TK_LPARAN TK_RPARAN TK_LBRACK TK_RBRACK
-    TK_LBRACE TK_RBRACE TK_DOT
-    TK_ARRAY TK_IF TK_THEN TK_ELSE TK_WHILE TK_FOR TK_TO TK_LET TK_IN
-    TK_END TK_OF TK_BREAK TK_NIL
-    TK_FUNCTION TK_VAR TK_TYPE
+    COMMA COLON LPARAN RPARAN LBRACK RBRACK
+    LBRACE RBRACE DOT
+    ARRAY IF THEN ELSE WHILE FOR TO LET IN
+    END OF BREAK NIL
+    FUNCTION VAR TYPE
 
-%left <pos> TK_SEMICOLON
-%nonassoc <pos> TK_DO
-%nonassoc <pos> TK_ASSIGN
-%left <pos> TK_OR
-%left <pos> TK_AND
-%nonassoc <pos> TK_EQ TK_NEQ TK_LT TK_LE TK_GT TK_GE
-%left <pos> TK_PLUS TK_MINUS
-%left <pos> TK_TIMES TK_DIVIDE
-%left <pos> TK_UMINUS
+%left <pos> SEMICOLON
+%nonassoc <pos> DO
+%nonassoc <pos> ASSIGN
+%left <pos> OR_OP
+%left <pos> AND_OP
+%nonassoc <pos> EQ_OP NEQ_OP LT_OP LE_OP GT_OP GE_OP
+%left <pos> PLUS MINUS
+%left <pos> TIMES DIVIDE
+%left <pos> UMINUS
 
 %type <decl> decl var_decl
 %type <expr> program expr
@@ -104,67 +104,67 @@ program:
 expr:
     lvalue
     { $$ = ast_var_expr($1->pos, $1); }
-|   TK_NIL
+|   NIL
     { $$ = ast_nil_expr($1); }
 |   expr expr_seq
     { $$ = ast_seq_expr($1->pos, list($1, $2)); }
-|   TK_LPARAN TK_RPARAN
+|   LPAREN RPAREN
     { $$ = ast_seq_expr($1, NULL); }
-|   TK_LPARAN expr TK_RPARAN
+|   LPAREN expr RPAREN
     { $$ = $2; }
-|   TK_INT
+|   INT
     { $$ = ast_num_expr(em_tok_pos, $1); }
-|   TK_STRING
+|   STRING
     { $$ = ast_string_expr(em_tok_pos, $1); }
-|   TK_MINUS expr %prec TK_UMINUS
+|   MINUS expr %prec UMINUS
     { $$ = ast_op_expr($1, ast_num_expr($1, 0), AST_MINUS, $2); }
-|   id TK_LPARAN TK_RPARAN
+|   id LPARAN RPARAN
     { $$ = ast_call_expr($2, $1, NULL); }
-|   id TK_LPARAN expr arg_seq TK_RPARAN
+|   id LPARAN expr arg_seq RPARAN
     { $$ = ast_call_expr($2, $1, list($3, $4)); }
-|   expr TK_PLUS expr
+|   expr PLUS expr
     { $$ = ast_op_expr($2, $1, AST_PLUS, $3); }
-|   expr TK_MINUS expr
+|   expr MINUS expr
     { $$ = ast_op_expr($2, $1, AST_MINUS, $3); }
-|   expr TK_TIMES expr
+|   expr TIMES expr
     { $$ = ast_op_expr($2, $1, AST_TIMES, $3); }
-|   expr TK_DIVIDE expr
+|   expr DIVIDE expr
     { $$ = ast_op_expr($2, $1, AST_DIVIDE, $3); }
-|   expr TK_EQ expr
+|   expr EQ_OP expr
     { $$ = ast_op_expr($2, $1, AST_EQ, $3); }
-|   expr TK_NEQ expr
+|   expr NEQ_OP expr
     { $$ = ast_op_expr($2, $1, AST_NEQ, $3); }
-|   expr TK_LT expr
+|   expr LT_OP expr
     { $$ = ast_op_expr($2, $1, AST_LT, $3); }
-|   expr TK_LE expr
+|   expr LE_OP expr
     { $$ = ast_op_expr($2, $1, AST_LE, $3); }
-|   expr TK_GT expr
+|   expr GT_OP expr
     { $$ = ast_op_expr($2, $1, AST_GT, $3); }
-|   expr TK_GE expr
+|   expr GE_OP expr
     { $$ = ast_op_expr($2, $1, AST_GE, $3); }
-|   expr TK_AND expr
+|   expr AND_OP expr
     { $$ = ast_if_expr($2, $1, $3, ast_num_expr($2, 0)); }
-|   expr TK_OR expr
+|   expr OR_OP expr
     { $$ = ast_if_expr($2, $1, ast_num_expr($2, 1), $3); }
-|   id TK_LBRACE TK_RBRACE
+|   id LBRACE RBRACE
     { $$ = ast_record_expr($2, $1, NULL); }
-|   id TK_LBRACE id TK_EQ expr efield_seq TK_RBRACE
+|   id LBRACE id EQ_OP expr efield_seq RBRACE
     { $$ = ast_record_expr($2, $1, list(ast_efield($4, $3, $5), $6)); }
-|   id TK_LBRACK expr TK_RBRACK TK_OF expr
+|   id LBRACK expr RBRACK OF expr
     { $$ = ast_array_expr($2, $1, $3, $6); }
-|   lvalue TK_ASSIGN expr
+|   lvalue ASSIGN expr
     { $$ = ast_assign_expr($2, $1, $3); }
-|   TK_IF expr TK_THEN expr
+|   IF expr THEN expr
     { $$ = ast_if_expr($1, $2, $4, NULL); }
-|   TK_IF expr TK_THEN expr TK_ELSE expr
+|   IF expr THEN expr ELSE expr
     { $$ = ast_if_expr($1, $2, $4, $6); }
-|   TK_WHILE expr TK_DO expr
+|   WHILE expr DO expr
     { $$ = ast_while_expr($1, $2, $4); }
-|   TK_FOR id TK_ASSIGN expr TK_TO expr TK_DO expr
+|   FOR id ASSIGN expr TO expr DO expr
     { $$ = ast_for_expr($1, $2, $4, $6, $8); }
-|   TK_BREAK
+|   BREAK
     { $$ = ast_break_expr($1); }
-|   TK_LET decls TK_IN expr TK_END
+|   LET decls IN expr END
     { $$ = ast_let_expr($1, $2, $4); }
 
 decls:
@@ -181,29 +181,29 @@ decl:
     { $$ = ast_funcs_decl(((ast_func_t) $1->data)->pos, $1); }
 
 types_decl:
-    TK_TYPE id TK_EQ type
+    TYPE id EQ_OP type
     { $$ = list(ast_nametype($2, $4), NULL); }
-|   types_decl TK_TYPE id TK_EQ type
+|   types_decl TYPE id EQ_OP type
     { LIST_ACTION($$, $1, ast_nametype($3, $5)); }
 
 type:
     id
     { $$ = ast_name_type(em_tok_pos, $1); }
-|   TK_LBRACE fields TK_RBRACE
+|   LBRACE fields RBRACE
     { $$ = ast_record_type($1, $2); }
-|   TK_ARRAY TK_OF id
+|   ARRAY OF id
     { $$ = ast_array_type($1, $3); }
 
 fields:
     /* empty */
     { $$ = NULL; }
-|   id TK_COLON id field_seq
+|   id COLON id field_seq
     { $$ = list(ast_field($1, $3), $4); }
 
 var_decl:
-    TK_VAR id TK_ASSIGN expr
+    VAR id ASSIGN expr
     { $$ = ast_var_decl($1, $2, NULL, $4); }
-|   TK_VAR id TK_COLON id TK_ASSIGN expr
+|   VAR id COLON id ASSIGN expr
     { $$ = ast_var_decl($1, $2, $4, $6); }
 
 funcs_decl:
@@ -213,33 +213,33 @@ funcs_decl:
     { LIST_ACTION($$, $1, $2); }
 
 func_decl:
-    TK_FUNCTION id TK_LPARAN fields TK_RPARAN TK_EQ expr
+    FUNCTION id LPARAN fields RPARAN EQ_OP expr
     { $$ = ast_func($1, $2, $4, NULL, $7); }
-|   TK_FUNCTION id TK_LPARAN fields TK_RPARAN TK_COLON id TK_EQ expr
+|   FUNCTION id LPARAN fields RPARAN COLON id EQ_OP expr
     { $$ = ast_func($1, $2, $4, $7, $9); }
 
 expr_seq:
-    TK_SEMICOLON expr
+    SEMICOLON expr
     { $$ = list($2, NULL); }
-|   expr_seq TK_SEMICOLON expr
+|   expr_seq SEMICOLON expr
     { LIST_ACTION($$, $1, $3); }
 
 arg_seq:
     /* empty */
     { $$ = NULL; }
-|   arg_seq TK_COMMA expr
+|   arg_seq COMMA expr
     { LIST_ACTION($$, $1, $3); }
 
 efield_seq:
     /* empty */
     { $$ = NULL; }
-|   efield_seq TK_COMMA id TK_EQ expr
+|   efield_seq COMMA id EQ_OP expr
     { LIST_ACTION($$, $1, ast_efield($4, $3, $5)); }
 
 field_seq:
     /* empty */
     { $$ = NULL; }
-|   field_seq TK_COMMA id TK_COLON id
+|   field_seq COMMA id COLON id
     { LIST_ACTION($$, $1, ast_field($3, $5)); }
 
 lvalue:
@@ -249,13 +249,13 @@ lvalue:
 lvalue_:
     /* empty */
     { $$ = NULL; }
-|   TK_DOT id lvalue_
+|   DOT id lvalue_
     { LVALUE_ACTION($$, $3, ast_field_var($1, NULL, $2)); }
-|   TK_LBRACK expr TK_RBRACK lvalue_
+|   LBRACK expr RBRACK lvalue_
     { LVALUE_ACTION($$, $4, ast_sub_var($1, NULL, $2)); }
 
 id:
-    TK_ID
+    ID
     { $$ = symbol($1); }
 
 %%
@@ -269,11 +269,11 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value)
 {
     switch (type)
     {
-        case TK_ID:
-        case TK_STRING:
+        case ID:
+        case STRING:
             fprintf(fp, "%s", value.str);
             break;
-        case TK_INT:
+        case INT:
             fprintf(fp, "%d", value.num);
             break;
     }

@@ -69,20 +69,21 @@ static ast_expr_t _program;
 
 %type <exp> block_item translation_unit statement expression_statement
 
-%type <exp> init_declarator direct_declarator declarator initializer
+%type <exp>  direct_declarator declarator initializer
+%type <dec> init_declarator
+
 
 %type <exp> primary_expression expression postfix_expression assignment_expression unary_expression additive_expression multiplicative_expression cast_expression shift_expression relational_expression equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression conditional_expression compound_statement jump_statement
 
 %type <list>  init_declarator_list block_item_list
 
-%type <dec> declaration
+%type <list> declaration declaration_list
 
 %type <list> parameter_type_list parameter_list
 
 %type <fun> function_definition
 
-%type <ty> declaration_specifiers
-%type <sym> type_specifier
+%type <sym> type_specifier declaration_specifiers
 
 //%type <op> unary_operator
 
@@ -113,16 +114,13 @@ static ast_expr_t _program;
 %%
 
 _program:
-	declaration
-	{
-		fprintf(stdout,"\n*************************\nparsing okay! a  del\n*************************\n");
-        pp_decl(stdout,20,$1);
-	}
-    |
-	block_item
+	block_item_list
 	{
 		fprintf(stdout,"\n*************************\nparsing okay! a block item_list\n*************************\n");
-        _program=$1;
+
+
+        _program=ast_seq_expr(em_tok_pos,$1);
+		fprintf(stdout,"\n*************************\nparsing okay! a block item_list\n*************************\n");
 	}
 	;
 
@@ -341,9 +339,21 @@ declaration
     }
 	| declaration_specifiers init_declarator_list SEMICOLON
 	{
+        // dec_specifier is a symbol
+        // init dec list is a list of dec(type symbol of the dec is not determined yet )
+
+        //pp_decl(stdout,20, (ast_decl_t) $2->data);
+
         print("declaratior with initial\n");
-        $$ = $2;
+
         list_t p=$2;
+        ast_decl_t q;
+        for(;p;p=p->next)
+        {
+            q=(ast_decl_t) p->data;
+            q->u.var.type=$1;
+        }
+        $$=$2;
 	}
 	;
 
@@ -352,7 +362,7 @@ declaration_specifiers
 	| storage_class_specifier declaration_specifiers
 	| type_specifier
 	{
-        print("a type specifier\n");
+        fprintf(stdout,"a type specifier:%s\n",sym_name($1));
         $$=$1;
 	}
 	| type_specifier declaration_specifiers
@@ -365,7 +375,6 @@ declaration_specifiers
 init_declarator_list
 	: init_declarator
 	{
-        print("a declarator\n");
 		LIST_ACTION($$,NULL,$1);
 	}
 	| init_declarator_list COMMA init_declarator
@@ -378,12 +387,13 @@ init_declarator_list
 init_declarator
 	: declarator
 	{
-        print("A declarator\n");
+        print("A pure declarator\n");
         $$ = ast_var_decl(em_tok_pos, $1, NULL, NULL);
+        pp_decl(stdout,20,$$);
 	}
 	| declarator ASSIGN initializer
 	{
-        $$ = ast_var_decl(em_tok_pos, $1, NULL, $3);
+        $$ = ast_var_decl(em_tok_pos, $1->u.var->u.simple, NULL, $3);
 	}
 	;
 
@@ -525,6 +535,8 @@ declarator
 direct_declarator
 	: ID
 	{
+        fprintf(stdout,"exp: a id %s\n",$1);
+        $$ = ast_var_expr(em_tok_pos, ast_simple_var(em_tok_pos, symbol($1)));
 	}
 	| LPAREN declarator RPAREN
 	| direct_declarator LBRACK type_qualifier_list assignment_expression RBRACK
@@ -673,6 +685,8 @@ block_item
 	: declaration
 	{
 		print("\n*************************\na declaration\n");
+
+
 	}
 	| function_definition
 	{
@@ -737,7 +751,19 @@ function_definition
 
 declaration_list
 	: declaration
+    {
+        $$=$1;
+    }
 	| declaration_list declaration
+    {
+        list_t p = $2;
+        ast_decl_t q;
+        for(;p;p=p->next)
+        {
+            q= (ast_decl_t) p->data;
+            LIST_ACTION($1,$1,q);
+        }
+    }
 	;
 
 %%

@@ -4,10 +4,8 @@
 #include "symbol.h"
 #include "utils.h"
 
-static void pp_efield(FILE *fp, int d, ast_efield_t efield);
-static void pp_field(FILE *fp, int d, ast_field_t field);
-static void pp_func(FILE *fp, int d, ast_func_t func);
-static void pp_nametype(FILE *fp, int d, ast_nametype_t nametype);
+
+typedef void (*pp_func_t)(FILE *, int, void *);
 
 static void indent(FILE *fp, int d)
 {
@@ -25,9 +23,8 @@ static void pp_op(FILE *fp, ast_binop_t op)
     fprintf(fp, "%s\n", _ops[op]);
 }
 
-typedef void (*pp_func_t)(FILE *, int, void *);
 
-static void pp_list(FILE *fp, int d, list_t list, string_t name, pp_func_t func)
+void pp_list(FILE *fp, int d, list_t list, string_t name, pp_func_t func)
 {
     fprintf(fp, "%s(\n", name);
     for (; list; list = list->next)
@@ -215,7 +212,7 @@ void pp_var(FILE *fp, int d, ast_var_t var)
     }
 }
 
-static void pp_efield(FILE *fp, int d, ast_efield_t efield)
+void pp_efield(FILE *fp, int d, ast_efield_t efield)
 {
     indent(fp, d);
     if (efield)
@@ -229,7 +226,7 @@ static void pp_efield(FILE *fp, int d, ast_efield_t efield)
         fprintf(fp, "efield()\n");
 }
 
-static void pp_field(FILE *fp, int d, ast_field_t field)
+void pp_field(FILE *fp, int d, ast_field_t field)
 {
     indent(fp, d);
     fprintf(fp, "field(%s\n", sym_name(field->name));
@@ -241,7 +238,7 @@ static void pp_field(FILE *fp, int d, ast_field_t field)
     fprintf(fp, ")\n");
 }
 
-static void pp_func(FILE *fp, int d, ast_func_t func)
+void pp_func(FILE *fp, int d, ast_func_t func)
 {
     indent(fp, d);
     fprintf(fp, "func(%s\n", sym_name(func->name));
@@ -257,7 +254,7 @@ static void pp_func(FILE *fp, int d, ast_func_t func)
     fprintf(fp, ")\n");
 }
 
-static void pp_nametype(FILE *fp, int d, ast_nametype_t nametype)
+void pp_nametype(FILE *fp, int d, ast_nametype_t nametype)
 {
     indent(fp, d);
     fprintf(fp, "nametype(%s\n", sym_name(nametype->name));

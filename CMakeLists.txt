@@ -4,7 +4,7 @@ project(lucc-c)
 include(FindFLEX)
 include(FindBISON)
 
-flex_target(LEXER lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
+flex_target(LEXER syntax.lex ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
 bison_target(PARSER parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c)
 add_flex_bison_dependency(LEXER PARSER)
 
