@@ -1,5 +1,7 @@
 int i=3;
 int a=4;
+a=i+1;
+
 //int i=3;
 
 // int f(int i)

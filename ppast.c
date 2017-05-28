@@ -65,6 +65,7 @@ void pp_decl(FILE *fp, int d, ast_decl_t decl)
 void pp_expr(FILE *fp, int d, ast_expr_t expr)
 {
     indent(fp, d);
+    if(!expr){print("null value\n");return;}
     switch (expr->kind) {
         case AST_NIL_EXPR:
             fprintf(fp, "nil_expr()\n");

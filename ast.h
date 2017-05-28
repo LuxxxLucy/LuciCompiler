@@ -20,9 +20,10 @@ typedef enum ast_binop_e
     AST_EQ, AST_NEQ, AST_LT, AST_LE, AST_GT, AST_GE,
 }ast_binop_t ;
 
+typedef enum { AST_FUNCS_DECL, AST_TYPES_DECL, AST_VAR_DECL, } decKind;
 struct ast_decl_s
 {
-    enum { AST_FUNCS_DECL, AST_TYPES_DECL, AST_VAR_DECL, } kind;
+    decKind kind;
     int pos;
     union
     {
@@ -35,15 +36,16 @@ ast_decl_t ast_funcs_decl(int pos, list_t funcs);
 ast_decl_t ast_types_decl(int pos, list_t types);
 ast_decl_t ast_var_decl(int pos, symbol_t var, symbol_t type, ast_expr_t init);
 
-struct ast_expr_s
-{
-    enum
+typedef enum
     {
         AST_NIL_EXPR, AST_VAR_EXPR, AST_NUM_EXPR, AST_STRING_EXPR,
         AST_CALL_EXPR, AST_OP_EXPR, AST_RECORD_EXPR, AST_ARRAY_EXPR,
         AST_SEQ_EXPR, AST_IF_EXPR, AST_WHILE_EXPR, AST_FOR_EXPR,
         AST_BREAK_EXPR, AST_LET_EXPR, AST_ASSIGN_EXPR,
-    } kind;
+    } expKind;
+struct ast_expr_s
+{
+    expKind kind;
     int pos;
     union
     {
@@ -80,9 +82,10 @@ ast_expr_t ast_break_expr(int pos);
 ast_expr_t ast_let_expr(int pos, list_t decls, ast_expr_t body);
 ast_expr_t ast_assign_expr(int pos, ast_var_t var, ast_expr_t expr);
 
+typedef enum { AST_NAME_TYPE, AST_RECORD_TYPE, AST_ARRAY_TYPE } tyKind;
 struct ast_type_s
 {
-    enum { AST_NAME_TYPE, AST_RECORD_TYPE, AST_ARRAY_TYPE } kind;
+    tyKind kind;
     int pos;
     union
     {
@@ -95,9 +98,10 @@ ast_type_t ast_name_type(int pos, symbol_t name);
 ast_type_t ast_record_type(int pos, list_t record);
 ast_type_t ast_array_type(int pos, symbol_t array);
 
+typedef enum { AST_SIMPLE_VAR, AST_FIELD_VAR, AST_SUB_VAR } varKind;
 struct ast_var_s
 {
-    enum { AST_SIMPLE_VAR, AST_FIELD_VAR, AST_SUB_VAR } kind;
+    varKind kind;
     int pos;
     union
     {

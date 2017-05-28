@@ -65,7 +65,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 static ast_expr_t _program;
 %}
 
-%type <exp> _program
+%type <exp> program
 
 %type <exp> block_item translation_unit statement expression_statement
 
@@ -109,31 +109,28 @@ static ast_expr_t _program;
 %token THEN TO IN NIL
 
 
-%start _program
+%start program
 
 %%
 
-_program:
-	block_item_list
-	{
-		fprintf(stdout,"\n*************************\nparsing okay! a block item_list\n*************************\n");
-
-
-        _program=ast_seq_expr(em_tok_pos,$1);
-		fprintf(stdout,"\n*************************\nparsing okay! a block item_list\n*************************\n");
-	}
+program:
+	| block_item_list statement
+    {
+        print("all statements\n");
+        _program=ast_let_expr(em_tok_pos,$1,$2);
+    }
 	;
 
 primary_expression
 	: ID
 	{
         fprintf(stdout,"exp: a id %s\n",$1);
-        pp_var(stdout,20,$$);
-        $$ = ast_var_expr(em_tok_pos, ast_simple_var(em_tok_pos, $1));
+        $$ = ast_var_expr(em_tok_pos, ast_simple_var(em_tok_pos, symbol($1) ));
+        pp_expr(stdout,0,$$);
 	}
 	| CONSTANT
 	{
-        fprintf(stdout,"exp: a constant %f\n",$1);
+        fprintf(stdout,"exp: a constant value %f\n",$1);
 		$$=ast_num_expr(em_tok_pos,$1);
 	}
 	| STRING_LITERAL
@@ -192,13 +189,15 @@ unary_operator
 
 cast_expression
 	: unary_expression { $$=$1; }
-	| LPAREN type_name RPAREN cast_expression { fprintf(stdout,"cast(not done yet)"); }
+	| LPAREN type_name RPAREN cast_expression
+    { fprintf(stdout,"cast(not done yet)"); }
 	;
 
 multiplicative_expression
 	: cast_expression { $$=$1; }
 	| multiplicative_expression ASTERISK cast_expression
 	{
+
 	}
 	| multiplicative_expression DIVIDE cast_expression
 	{
@@ -212,6 +211,7 @@ additive_expression
 	: multiplicative_expression { $$=$1; }
 	| additive_expression PLUS multiplicative_expression
 	{
+        $$ = ast_op_expr(em_tok_pos, $1, AST_PLUS, $3);
 	}
 	| additive_expression MINUS multiplicative_expression
 	{
@@ -300,6 +300,7 @@ assignment_expression
 	: conditional_expression { $$=$1; }
 	| unary_expression assignment_operator assignment_expression
 	{
+        $$=ast_assign_expr(em_tok_pos,$1->u.var,$3);
 	}
 	;
 
@@ -352,6 +353,7 @@ declaration
         {
             q=(ast_decl_t) p->data;
             q->u.var.type=$1;
+            //pp_decl(stdout,20, q);
         }
         $$=$2;
 	}
@@ -376,9 +378,11 @@ init_declarator_list
 	: init_declarator
 	{
 		LIST_ACTION($$,NULL,$1);
+        pp_decl(stdout,20, $1);
 	}
 	| init_declarator_list COMMA init_declarator
 	{
+        pp_decl(stdout,20,  $3);
         print("another declarator\n");
 		LIST_ACTION($$,$1,$3);
 	}
@@ -389,7 +393,6 @@ init_declarator
 	{
         print("A pure declarator\n");
         $$ = ast_var_decl(em_tok_pos, $1, NULL, NULL);
-        pp_decl(stdout,20,$$);
 	}
 	| declarator ASSIGN initializer
 	{
@@ -421,7 +424,7 @@ type_specifier
 	}
 	| INT
 	{
-		$$=symbol("INT");
+		$$=symbol("int");
 	}
 	| LONG
 	{
@@ -650,7 +653,7 @@ designator
 statement
 	: labeled_statement
 	| compound_statement
-	| expression_statement { $$=$1;}
+	| expression_statement { $$=$1;  pp_expr(stdout,0,$$);}
 	| selection_statement
 	| iteration_statement
 	| jump_statement
@@ -684,18 +687,17 @@ block_item_list
 block_item
 	: declaration
 	{
-		print("\n*************************\na declaration\n");
-
-
+        pp_decl(stdout,20,$1->data);
+        $$=$1->data;
+        //$$=ast_seq_expr(em_tok_pos,$1);
+        //$$=$1->data;
 	}
 	| function_definition
 	{
+
 		print("\n*************************\na function definition\n");
 	}
-	| statement
-	{
-		$$=$1;
-	}
+	// | statement { $$=$1; }
 	;
 
 expression_statement
@@ -790,7 +792,13 @@ ast_expr_t parse(string_t filename)
 {
     em_reset(filename);
     if (yyparse() == 0)
+    {
+        print("no parsing error\n");
         return _program;
+    }
     else
+    {
+        print("parsing error\n");
         return NULL;
+    }
 }
