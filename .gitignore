@@ -1,28 +1,28 @@
-*.o
-parser.c
-*.out
-*.lucy
-grammar.*
-!grammar.y
-lex.c
-tokens.h
-parser.c
+.*.swp
+*.html
 
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+cmake_install.cmake
+*.dir
 
-translate.h
-translate.c
-canon.c
-canon.h
-frame.c
-frame.h
-assem.c
-assem.h
+.vs/
+.vscode/
 
-lexical_test
-parse_test
-main
-lucc
-lucc.dSYM
+lexer.c
+parser.[ch]
+tiger
 
-main.o.dSYM
+*.exe
+*.exe.stackdump
 
+*.sln
+*.sdf
+*.VC.opendb
+*.vcproj
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+Debug
+Release
