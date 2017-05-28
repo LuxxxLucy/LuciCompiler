@@ -1,106 +1,88 @@
-/*
- * table.c - Functions to manipulate generic tables.
- * Copyright (c) 1997 Andrew W. Appel.
- */
+#include <assert.h>
+#include <stdint.h>
+#include <stdlib.h>
 
-#include <stdio.h>
-#include "utility.h"
 #include "table.h"
+#include "utils.h"
 
-#define TABSIZE 127
-
-typedef struct binder_ *binder;
-
-struct binder_
+typedef struct binder_s *binder_t;
+struct binder_s
 {
     void *key;
     void *value;
-    binder next;
-    void *prevtop;
+    binder_t prev;
 };
 
-struct TAB_table_
+struct table_s
 {
-    binder table[TABSIZE];
-    void *top;
+    list_t table[HT_SIZE];
+    binder_t top;
 };
 
-
-static binder Binder(void *key, void *value, binder next, void *prevtop)
+static binder_t binder(void *key, void *value, binder_t prev)
 {
-    binder b = (binder) checked_malloc(sizeof(*b));
-    b->key = key;
-    b->value=value;
-    b->next=next;
-    b->prevtop = prevtop;
-    return b;
+    binder_t p = checked_malloc(sizeof(*p));
+    p->key = key;
+    p->value = value;
+    p->prev = prev;
+    return p;
 }
 
-TAB_table TAB_empty(void)
+table_t tab_empty(void)
 {
-    TAB_table t = (TAB_table) checked_malloc(sizeof(*t));
+    table_t p = checked_malloc(sizeof(*p));
     int i;
-    t->top = NULL;
-    for (i = 0; i < TABSIZE; i++)
-        t->table[i] = NULL;
-    return t;
+
+    p->top = NULL;
+    for (i = 0; i < HT_SIZE; i++)
+        p->table[i] = NULL;
+    return p;
 }
 
-/* The cast from pointer to integer in the expression
- *   ((unsigned)key) % TABSIZE
- * may lead to a warning message.  However, the code is safe,
- * and will still operate correctly.  This line is just hashing
- * a pointer value into an integer value, and no matter how the
- * conversion is done, as long as it is done consistently, a
- * reasonable and repeatable index into the table will result.
- */
-
-void TAB_enter(TAB_table t, void *key, void *value)
+void tab_enter(table_t tab, void *key, void *value)
 {
     int index;
-    assert(t && key);
-    index = ((unsigned long)key) % TABSIZE;
-    t->table[index] = Binder(key, value,t->table[index], t->top);
-    t->top = key;
+
+    assert(tab && key);
+    index = ((intptr_t) key) % HT_SIZE;
+    tab->table[index] = list(binder(key, value, tab->top), tab->table[index]);
+    tab->top = tab->table[index]->data;
 }
 
-void *TAB_look(TAB_table t, void *key)
+void *tab_lookup(table_t tab, void *key)
 {
     int index;
-    binder b;
-    assert(t && key);
-    index=((unsigned long)key) % TABSIZE;
-    for(b=t->table[index]; b; b=b->next)
-        if (b->key==key) return b->value;
+    list_t p;
+
+    assert(tab && key);
+    index = ((intptr_t) key) % HT_SIZE;
+    for (p = tab->table[index]; p; p = p->next)
+        if (((binder_t) p->data)->key == key)
+            return ((binder_t) p->data)->value;
     return NULL;
 }
 
-void *TAB_pop(TAB_table t)
+void *tab_pop(table_t tab)
 {
-    void *k; binder b; int index;
-    assert (t);
-    k = t->top;
-    assert (k);
-    index = ((unsigned long)k) % TABSIZE;
-    b = t->table[index];
-    assert(b);
-    t->table[index] = b->next;
-    t->top=b->prevtop;
-    return b->key;
+    binder_t bind;
+    list_t p;
+    int index;
+
+    assert(tab);
+    bind = tab->top;
+    assert(bind);
+    index = ((intptr_t) bind->key) % HT_SIZE;
+    p = tab->table[index];
+    assert(p);
+    tab->table[index] = p->next;
+    tab->top = bind->prev;
+    return bind->key;
 }
 
-void TAB_dump(TAB_table t, void (*show)(void *key, void *value))
+void tab_dump(table_t tab, tab_dump_func_t show)
 {
-    void *k = t->top;
-    int index = ((unsigned long)k) % TABSIZE;
-    binder b = t->table[index];
-    if (b==NULL)
-        return;
-    t->table[index]=b->next;
-    t->top=b->prevtop;
-    show(b->key,b->value);
-    TAB_dump(t,show);
-    assert(t->top == b->prevtop && t->table[index]==b->next);
-    t->top=k;
-    t->table[index]=b;
+    binder_t bind = tab->top;
+
+    for (; bind; bind = bind->prev)
+        show(bind->key, bind->value);
 }

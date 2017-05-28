@@ -17,6 +17,8 @@ tiger
 *.exe
 *.exe.stackdump
 
+tests/
+
 *.sln
 *.sdf
 *.VC.opendb

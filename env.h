@@ -1,29 +1,40 @@
-/*
- * env.c and env.h
- *
- * implementing the enviroment
- */
+#ifndef INCLUDE__ENV_H
+#define INCLUDE__ENV_H
 
-#include "frame.h"
-#include "types.h"
+#include "symbol.h"
+#include "temp.h"
 #include "translate.h"
-typedef TAB_table S_table;
+#include "types.h"
 
-typedef struct E_enventry_ *E_enventry;
-
-typedef enum { E_varEntry, E_funEntry} envKind;
-
-struct E_enventry_ {
-    envKind kind;
+typedef struct env_entry_s *env_entry_t;
+struct env_entry_s
+{
+    enum { ENV_VAR_ENTRY, ENV_FUNC_ENTRY } kind;
     union
     {
-        struct { Ty_ty type;tr_access_t access;} var;
-        struct { Ty_tyList formals; Ty_ty result;tr_level_t level;Temp_label label; } fun;
+        struct
+        {
+            tr_access_t access;
+            type_t type;
+            bool for_;
+        } var;
+
+        struct
+        {
+            tr_level_t level;
+            tmp_label_t label;
+            list_t formals;
+            type_t result;
+        } func;
     } u;
 };
+env_entry_t env_var_entry(tr_access_t access, type_t type, bool for_);
+env_entry_t env_func_entry(tr_level_t level,
+                           tmp_label_t label,
+                           list_t formals,
+                           type_t result);
 
-E_enventry E_VarEntry(Ty_ty ty);
-E_enventry E_FunEntry(Ty_tyList formals, Ty_ty result);
+table_t env_base_tenv(void);
+table_t env_base_venv(void);
 
-S_table E_base_tenv(void); /*Ty_ty environment*/
-S_table E_base_venv(void); /*E-enventry environment*/
+#endif

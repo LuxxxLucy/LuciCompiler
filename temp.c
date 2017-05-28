@@ -1,118 +1,112 @@
-/*
- * temp.c - functions to create and manipulate temporary variables which are
- *          used in the IR tree representation before it has been determined
- *          which variables are to go into registers.
- *
- */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "utility.h"
-#include "symbol.h"
 #include "temp.h"
-#include "table.h"
 
-struct Temp_temp_ {int num;};
-
-string Temp_labelstring(Temp_label s)
+struct temp_s
 {
-    return S_name(s);
+    int num;
+};
+
+string_t tmp_name(tmp_label_t label)
+{
+    return sym_name(label);
 }
 
-static int labels = 0;
+static int _labels = 0;
 
-Temp_label Temp_newlabel(void)
+tmp_label_t tmp_label(void)
 {
-    char buf[100];
-    sprintf(buf,"L%d",labels++);
-    return Temp_namedlabel(String(buf));
+    char buf[16];
+    snprintf(buf, sizeof(buf), ".L%d", _labels++);
+    return tmp_named_label(string(buf));
 }
 
-/* The label will be created only if it is not found. */
-Temp_label Temp_namedlabel(string s)
+tmp_label_t tmp_named_label(string_t str)
 {
-    return S_Symbol(s);
+    return symbol(str);
 }
 
-static int temps = 100;
+static int _temps = 100;
 
-Temp_temp Temp_newtemp(void)
+temp_t temp(void)
 {
-    Temp_temp p = (Temp_temp) checked_malloc(sizeof (*p));
-    p->num=temps++;
+    temp_t p = checked_malloc(sizeof(*p));
+    p->num = _temps++;
     {
-        char r[16];
-        sprintf(r, "%d", p->num);
-        Temp_enter(Temp_name(), p, String(r));
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%d", p->num);
+        tmp_enter(tmp_map(), p, string(buf));
     }
     return p;
 }
 
+struct tmp_map_s
+{
+    table_t table;
+    tmp_map_t under;
+};
 
-
-struct Temp_map_ {TAB_table tab; Temp_map under;};
-
-
-Temp_map Temp_name(void) {
- static Temp_map m = NULL;
- if (!m) m=  Temp_empty();
- return m;
+tmp_map_t tmp_map(void)
+{
+    static tmp_map_t map = NULL;
+    if (!map)
+        map = tmp_empty();
+    return map;
 }
 
-Temp_map newMap(TAB_table tab, Temp_map under) {
-  Temp_map m = (Temp_map) checked_malloc(sizeof(*m));
-  m->tab=tab;
-  m->under=under;
-  return m;
+static tmp_map_t new_map(table_t tab, tmp_map_t under)
+{
+    tmp_map_t p = checked_malloc(sizeof(*p));
+    p->table = tab;
+    p->under = under;
+    return p;
 }
 
-Temp_map Temp_empty(void) {
-  return newMap(TAB_empty(), NULL);
+tmp_map_t tmp_empty(void)
+{
+    return new_map(tab_empty(), NULL);
 }
 
-Temp_map Temp_layerMap(Temp_map over, Temp_map under) {
-  if (over==NULL)
-      return under;
-  else return newMap(over->tab, Temp_layerMap(over->under, under));
+tmp_map_t tmp_layer_map(tmp_map_t over, tmp_map_t under)
+{
+    if (over == NULL)
+        return under;
+    else
+        return new_map(over->table, tmp_layer_map(over->under, under));
 }
 
-void Temp_enter(Temp_map m, Temp_temp t, string s) {
-  assert(m && m->tab);
-  TAB_enter(m->tab,t,s);
+void tmp_enter(tmp_map_t map, temp_t tmp, string_t str)
+{
+    assert(map && map->table);
+    tab_enter(map->table, tmp, str);
 }
 
-string Temp_look(Temp_map m, Temp_temp t) {
-  string s;
-  assert(m && m->tab);
-  s = (string) TAB_look(m->tab, t);
-  if (s) return s;
-  else if (m->under) return Temp_look(m->under, t);
-  else return NULL;
+string_t tmp_lookup(tmp_map_t map, temp_t tmp)
+{
+    string_t str;
+
+    assert(map && map->table);
+    str = tab_lookup(map->table, tmp);
+    if (str)
+        return str;
+    else if (map->under)
+        return tmp_lookup(map->under, tmp);
+    else
+        return NULL;
 }
 
-Temp_tempList Temp_TempList(Temp_temp h, Temp_tempList t)
-{Temp_tempList p = (Temp_tempList) checked_malloc(sizeof (*p));
- p->head=h; p->tail=t;
- return p;
+static FILE *_fp;
+
+static void show(temp_t tmp, string_t str)
+{
+    fprintf(_fp, "t%d ->%s\n", tmp->num, str);
 }
 
-Temp_labelList Temp_LabelList(Temp_label h, Temp_labelList t)
-{Temp_labelList p = (Temp_labelList) checked_malloc(sizeof (*p));
- p->head=h; p->tail=t;
- return p;
-}
-
-static FILE *outfile;
-void showit(Temp_temp t, string r) {
-  fprintf(outfile, "t%d -> %s\n", t->num, r);
-}
-
-void Temp_dumpMap(FILE *out, Temp_map m) {
-  outfile=out;
-  TAB_dump(m->tab,(void (*)(void *, void*))showit);
-  if (m->under) {
-     fprintf(out,"---------\n");
-     Temp_dumpMap(out,m->under);
-  }
+void tmp_dump_map(FILE *fp, tmp_map_t map)
+{
+    _fp = fp;
+    tab_dump(map->table, (tab_dump_func_t) show);
+    if (map->under)
+    {
+        fprintf(fp, "-------\n");
+        tmp_dump_map(fp, map->under);
+    }
 }

@@ -1,84 +1,80 @@
-#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
 #include <string.h>
-#include "heading.h"
-#include "utility.h"
+
 #include "symbol.h"
-#include "table.h"
 
-struct S_symbol_
+static symbol_t _symbols[HT_SIZE];
+
+static symbol_t mk_symbol(string_t name, symbol_t next)
 {
-    string name; S_symbol next;
-};
-
-static S_symbol mksymbol(string name, S_symbol next){
-    S_symbol s= (S_symbol) checked_malloc(sizeof(*s));
-    std::string temp_s=std::string(name);
-    s->name= new char [temp_s.length()+1];
-    std::strcpy (s->name, temp_s.c_str());
-    s->next=next;
-    return s;
-}
-
-#define SIZE 109  /* should be prime */
-
-/* symbols with the same hash value shares the same symbol hash table */
-static S_symbol hashtable[SIZE];
-
-static unsigned int hash(char *s0){
-    /* simple hash function */
-    unsigned int h=0;
-    char *s;
-    for(s=s0; *s; s++)
-       h = h*65599 + *s;
-    return h;
-}
-
-static int streq(std::string a, std::string b){
-    return a==b;
-}
-
-S_symbol S_Symbol(string name){
-    int index= hash(name) % SIZE;
-    S_symbol syms = hashtable[index], sym;
-    for(sym=syms; sym; sym=sym->next)
-        if (streq(sym->name,std::string(name) ) )
-            return sym;
-    sym = mksymbol(name,syms);
-    hashtable[index]=sym;
+    symbol_t sym = checked_malloc(sizeof(*sym));
+    sym->data = name;
+    sym->next = next;
     return sym;
 }
 
-string S_name(S_symbol sym){
-    std::string temp_s=std::string(sym->name);
-    char * c = new char [temp_s.length()+1];
-    std::strcpy (c, temp_s.c_str());
-    return c;
+static unsigned int hash(string_t str)
+{
+    unsigned int h = 0;
+    char *p;
+
+    for (p = str; *p; p++)
+        h = 65599 * h + *p;
+    return h;
 }
 
-S_table S_empty(void){
-    return TAB_empty();
+symbol_t symbol(string_t name)
+{
+    int index = hash(name) % HT_SIZE;
+    symbol_t p;
+
+    for (p = _symbols[index]; p; p = p->next)
+        if (strcmp((string_t) p->data, name) == 0)
+            return p;
+    p = mk_symbol(name, _symbols[index]);
+    _symbols[index] = p;
+    return p;
 }
 
-void S_enter(S_table t, S_symbol sym, void *value){
-    TAB_enter(t,sym,value);
+string_t sym_name(symbol_t sym)
+{
+    return (string_t) sym->data;
 }
 
-void *S_look(S_table t, S_symbol sym) {
-  return TAB_look(t,sym);
+table_t sym_empty(void)
+{
+    return tab_empty();
 }
 
-static struct S_symbol_ marksym = {"<mark>",0};
-
-void S_beginScope(S_table t){
-    S_enter(t,&marksym,NULL);
+void sym_enter(table_t tab, symbol_t sym, void *value)
+{
+    tab_enter(tab, sym, value);
 }
 
-void S_endScope(S_table t){
-    S_symbol s;
-    do s= (S_symbol) TAB_pop(t);
-    while (s != &marksym);
+void *sym_lookup(table_t tab, symbol_t sym)
+{
+    return tab_lookup(tab, sym);
 }
 
-void S_dump(S_table t, void (*show)(S_symbol sym, void *binding)) {
-  TAB_dump(t, (void (*)(void *, void *)) show);
+static symbol_t _mark_sym = NULL;
+
+void sym_begin_scope(table_t tab)
+{
+    if (!_mark_sym)
+    {
+        _mark_sym = checked_malloc(sizeof(*_mark_sym));
+        _mark_sym->data = "<mark>";
+        _mark_sym->next = NULL;
+    }
+    sym_enter(tab, _mark_sym, NULL);
+}
+
+void sym_end_scope(table_t tab)
+{
+    symbol_t sym;
+
+    do
+        sym = tab_pop(tab);
+    while (sym != _mark_sym);
 }
