@@ -9,9 +9,9 @@ int em_tok_pos = 0;
 
 extern FILE *yyin;
 
-static string_t _filename = "";
+static string_ptr  _filename = "";
 static int _line_num = 1;
-static list_t _line_pos = NULL;
+static list_ptr  _line_pos = NULL;
 
 void em_newline(void)
 {
@@ -19,10 +19,10 @@ void em_newline(void)
     _line_pos = int_list(em_tok_pos, _line_pos);
 }
 
-void em_error(int pos, string_t msg, ...)
+void em_error(int pos, string_ptr  msg, ...)
 {
     va_list ap;
-    list_t lines = _line_pos;
+    list_ptr  lines = _line_pos;
     int line = _line_num;
 
     em_any_errors = true;
@@ -41,7 +41,7 @@ void em_error(int pos, string_t msg, ...)
     fprintf(stderr, "\n");
 }
 
-void em_reset(string_t filename)
+void em_reset(string_ptr  filename)
 {
     em_any_errors = false;
     _filename = filename;

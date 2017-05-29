@@ -231,32 +231,32 @@ escape.c.s:
 	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/escape.c.s
 .PHONY : escape.c.s
 
-frame-mips.o: frame-mips.c.o
+frame.o: frame.c.o
 
-.PHONY : frame-mips.o
+.PHONY : frame.o
 
 # target to build an object file
-frame-mips.c.o:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame-mips.c.o
-.PHONY : frame-mips.c.o
+frame.c.o:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame.c.o
+.PHONY : frame.c.o
 
-frame-mips.i: frame-mips.c.i
+frame.i: frame.c.i
 
-.PHONY : frame-mips.i
+.PHONY : frame.i
 
 # target to preprocess a source file
-frame-mips.c.i:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame-mips.c.i
-.PHONY : frame-mips.c.i
+frame.c.i:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame.c.i
+.PHONY : frame.c.i
 
-frame-mips.s: frame-mips.c.s
+frame.s: frame.c.s
 
-.PHONY : frame-mips.s
+.PHONY : frame.s
 
 # target to generate assembly for a file
-frame-mips.c.s:
-	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame-mips.c.s
-.PHONY : frame-mips.c.s
+frame.c.s:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/frame.c.s
+.PHONY : frame.c.s
 
 lexer.o: lexer.c.o
 
@@ -630,9 +630,9 @@ help:
 	@echo "... escape.o"
 	@echo "... escape.i"
 	@echo "... escape.s"
-	@echo "... frame-mips.o"
-	@echo "... frame-mips.i"
-	@echo "... frame-mips.s"
+	@echo "... frame.o"
+	@echo "... frame.i"
+	@echo "... frame.s"
 	@echo "... lexer.o"
 	@echo "... lexer.i"
 	@echo "... lexer.s"

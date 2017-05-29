@@ -3,6 +3,6 @@
 
 #include "abstract_syntax.h"
 
-void sem_trans_prog(AST_expr_t prog);
+void sem_trans_prog(AST_expr_ptr  prog);
 
 #endif

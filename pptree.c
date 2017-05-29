@@ -5,7 +5,7 @@
 #include "tree.h"
 #include "temp.h"
 
-static void pp_expr(FILE *out, int d, tree_expr_t expr);
+static void pp_expr(FILE *out, int d, tree_expr_ptr  expr);
 
 static void indent(FILE *out, int d)
 {
@@ -43,13 +43,13 @@ static char const* relops[] = {
     "UGE",
 };
 
-static void pp_stmt(FILE *out, int d, tree_stmt_t stmt)
+static void pp_stmt(FILE *out, int d, tree_stmt_ptr  stmt)
 {
     switch (stmt->kind)
     {
         case IR_SEQ:
         {
-            list_t p;
+            list_ptr  p;
 
             indent(out, d);
             fprintf(out, "SEQ(\n");
@@ -108,7 +108,7 @@ static void pp_stmt(FILE *out, int d, tree_stmt_t stmt)
     }
 }
 
-void pp_expr(FILE *out, int d, tree_expr_t expr)
+void pp_expr(FILE *out, int d, tree_expr_ptr  expr)
 {
     switch (expr->kind)
     {
@@ -155,7 +155,7 @@ void pp_expr(FILE *out, int d, tree_expr_t expr)
 
         case IR_CALL:
         {
-            list_t p;
+            list_ptr  p;
 
             indent(out, d);
             fprintf(out, "CALL(\n");
@@ -174,7 +174,7 @@ void pp_expr(FILE *out, int d, tree_expr_t expr)
     }
 }
 
-void pp_stmts(FILE *out, list_t stmts)
+void pp_stmts(FILE *out, list_ptr  stmts)
 {
     for (; stmts; stmts = stmts->next)
     {

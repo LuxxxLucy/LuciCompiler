@@ -5,7 +5,7 @@
 #include "utils.h"
 
 
-typedef void (*pp_func_t)(FILE *, int, void *);
+typedef void (*pp_func_ptr)(FILE *, int, void *);
 
 static void indent(FILE *fp, int d)
 {
@@ -18,13 +18,13 @@ static char _ops[][12] = {
     "AND", "OR"
 };
 
-static void pp_op(FILE *fp, AST_binop_t op)
+static void pp_op(FILE *fp, AST_binop_ptr  op)
 {
     fprintf(fp, "%s\n", _ops[op]);
 }
 
 
-void pp_list(FILE *fp, int d, list_t list, string_t name, pp_func_t func)
+void pp_list(FILE *fp, int d, list_ptr  list, string_ptr  name, pp_func_ptr  func)
 {
     fprintf(fp, "%s(\n", name);
     for (; list; list = list->next)
@@ -33,16 +33,16 @@ void pp_list(FILE *fp, int d, list_t list, string_t name, pp_func_t func)
     fprintf(fp, ")\n");
 }
 
-void pp_decl(FILE *fp, int d, AST_decl_t decl)
+void pp_decl(FILE *fp, int d, AST_decl_ptr  decl)
 {
     indent(fp, d);
     switch (decl->kind)
     {
         case AST_FUNCS_DECL:
-            pp_list(fp, d+1, decl->u.funcs, "funcs_decl", (pp_func_t) pp_func);
+            pp_list(fp, d+1, decl->u.funcs, "funcs_decl", (pp_func_ptr) pp_func);
             break;
         case AST_TYPES_DECL:
-            pp_list(fp, d+1, decl->u.types, "types_decl", (pp_func_t) pp_nametype);
+            pp_list(fp, d+1, decl->u.types, "types_decl", (pp_func_ptr) pp_nametype);
             break;
         case AST_VAR_DECL:
             fprintf(fp, "var_decl(%s\n", sym_name(decl->u.var.var));
@@ -62,7 +62,7 @@ void pp_decl(FILE *fp, int d, AST_decl_t decl)
     }
 }
 
-void pp_expr(FILE *fp, int d, AST_expr_t expr)
+void pp_expr(FILE *fp, int d, AST_expr_ptr  expr)
 {
     indent(fp, d);
     if(!expr){print("null value\n");return;}
@@ -85,7 +85,7 @@ void pp_expr(FILE *fp, int d, AST_expr_t expr)
         case AST_CALL_EXPR:
             fprintf(fp, "call_expr(%s\n", sym_name(expr->u.call.func));
             indent(fp, d+1);
-            pp_list(fp, d+2, expr->u.call.args, "call_args", (pp_func_t) pp_expr);
+            pp_list(fp, d+2, expr->u.call.args, "call_args", (pp_func_ptr) pp_expr);
             indent(fp, d);
             fprintf(fp, ")\n");
             break;
@@ -101,7 +101,7 @@ void pp_expr(FILE *fp, int d, AST_expr_t expr)
         case AST_RECORD_EXPR:
             fprintf(fp, "record_expr(%s\n", sym_name(expr->u.record.type));
             indent(fp, d+1);
-            pp_list(fp, d+2, expr->u.record.efields, "efields", (pp_func_t) pp_efield);
+            pp_list(fp, d+2, expr->u.record.efields, "efields", (pp_func_ptr) pp_efield);
             indent(fp, d);
             fprintf(fp, ")\n");
             break;
@@ -113,7 +113,7 @@ void pp_expr(FILE *fp, int d, AST_expr_t expr)
             fprintf(fp, ")\n");
             break;
         case AST_SEQ_EXPR:
-            pp_list(fp, d+1, expr->u.seq, "seq_exp", (pp_func_t) pp_expr);
+            pp_list(fp, d+1, expr->u.seq, "seq_exp", (pp_func_ptr) pp_expr);
             break;
         case AST_IF_EXPR:
             fprintf(fp, "if_expr(\n");
@@ -149,7 +149,7 @@ void pp_expr(FILE *fp, int d, AST_expr_t expr)
         case AST_LET_EXPR:
             fprintf(fp, "let_expr(\n");
             indent(fp, d+1);
-            pp_list(fp, d+2, expr->u.let.decls, "decls", (pp_func_t) pp_decl);
+            pp_list(fp, d+2, expr->u.let.decls, "decls", (pp_func_ptr) pp_decl);
             pp_expr(fp, d+1, expr->u.let.body);
             indent(fp, d);
             fprintf(fp, ")\n");
@@ -166,7 +166,7 @@ void pp_expr(FILE *fp, int d, AST_expr_t expr)
     }
 }
 
-void pp_type(FILE *fp, int d, AST_type_t type)
+void pp_type(FILE *fp, int d, AST_type_ptr  type)
 {
     indent(fp, d);
     switch (type->kind)
@@ -175,7 +175,7 @@ void pp_type(FILE *fp, int d, AST_type_t type)
             fprintf(fp, "name_type(%s)\n", sym_name(type->u.name));
             break;
         case AST_RECORD_TYPE:
-            pp_list(fp, d+1, type->u.record, "record_type", (pp_func_t) pp_field);
+            pp_list(fp, d+1, type->u.record, "record_type", (pp_func_ptr) pp_field);
             break;
         case AST_ARRAY_TYPE:
             fprintf(fp, "array_type(%s)\n", sym_name(type->u.array));
@@ -185,7 +185,7 @@ void pp_type(FILE *fp, int d, AST_type_t type)
     }
 }
 
-void pp_var(FILE *fp, int d, AST_var_t var)
+void pp_var(FILE *fp, int d, AST_var_ptr  var)
 {
     indent(fp, d);
     switch (var->kind)
@@ -213,7 +213,7 @@ void pp_var(FILE *fp, int d, AST_var_t var)
     }
 }
 
-void pp_efield(FILE *fp, int d, AST_efield_t efield)
+void pp_efield(FILE *fp, int d, AST_efield_ptr  efield)
 {
     indent(fp, d);
     if (efield)
@@ -227,7 +227,7 @@ void pp_efield(FILE *fp, int d, AST_efield_t efield)
         fprintf(fp, "efield()\n");
 }
 
-void pp_field(FILE *fp, int d, AST_field_t field)
+void pp_field(FILE *fp, int d, AST_field_ptr  field)
 {
     indent(fp, d);
     fprintf(fp, "field(%s\n", sym_name(field->name));
@@ -239,12 +239,12 @@ void pp_field(FILE *fp, int d, AST_field_t field)
     fprintf(fp, ")\n");
 }
 
-void pp_func(FILE *fp, int d, AST_func_t func)
+void pp_func(FILE *fp, int d, AST_func_ptr  func)
 {
     indent(fp, d);
     fprintf(fp, "func(%s\n", sym_name(func->name));
     indent(fp, d+1);
-    pp_list(fp, d+2, func->params, "params", (pp_func_t) pp_field);
+    pp_list(fp, d+2, func->params, "params", (pp_func_ptr) pp_field);
     if (func->result)
     {
         indent(fp, d+1);
@@ -255,7 +255,7 @@ void pp_func(FILE *fp, int d, AST_func_t func)
     fprintf(fp, ")\n");
 }
 
-void pp_nametype(FILE *fp, int d, AST_nametype_t nametype)
+void pp_nametype(FILE *fp, int d, AST_nametype_ptr  nametype)
 {
     indent(fp, d);
     fprintf(fp, "nametype(%s\n", sym_name(nametype->name));

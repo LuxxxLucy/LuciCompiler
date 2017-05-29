@@ -4,17 +4,17 @@
 
 #include "symbol.h"
 
-static symbol_t _symbols[HT_SIZE];
+static symbol_ptr  _symbols[HT_SIZE];
 
-static symbol_t mk_symbol(string_t name, symbol_t next)
+static symbol_ptr  mk_symbol(string_ptr  name, symbol_ptr  next)
 {
-    symbol_t sym = checked_malloc(sizeof(*sym));
+    symbol_ptr  sym = checked_malloc(sizeof(*sym));
     sym->data = name;
     sym->next = next;
     return sym;
 }
 
-static unsigned int hash(string_t str)
+static unsigned int hash(string_ptr  str)
 {
     unsigned int h = 0;
     char *p;
@@ -24,42 +24,42 @@ static unsigned int hash(string_t str)
     return h;
 }
 
-symbol_t symbol(string_t name)
+symbol_ptr  symbol(string_ptr  name)
 {
     int index = hash(name) % HT_SIZE;
-    symbol_t p;
+    symbol_ptr  p;
 
     for (p = _symbols[index]; p; p = p->next)
-        if (strcmp((string_t) p->data, name) == 0)
+        if (strcmp((string_ptr) p->data, name) == 0)
             return p;
     p = mk_symbol(name, _symbols[index]);
     _symbols[index] = p;
     return p;
 }
 
-string_t sym_name(symbol_t sym)
+string_ptr  sym_name(symbol_ptr  sym)
 {
-    return (string_t) sym->data;
+    return (string_ptr) sym->data;
 }
 
-table_t sym_empty(void)
+table_ptr  sym_empty(void)
 {
-    return tab_empty();
+    return TAB_empty();
 }
 
-void sym_enter(table_t tab, symbol_t sym, void *value)
+void sym_enter(table_ptr  tab, symbol_ptr  sym, void *value)
 {
-    tab_enter(tab, sym, value);
+    TAB_enter(tab, sym, value);
 }
 
-void *sym_lookup(table_t tab, symbol_t sym)
+void *sym_lookup(table_ptr  tab, symbol_ptr  sym)
 {
-    return tab_lookup(tab, sym);
+    return TAB_lookup(tab, sym);
 }
 
-static symbol_t _mark_sym = NULL;
+static symbol_ptr  _mark_sym = NULL;
 
-void sym_begin_scope(table_t tab)
+void sym_begin_scope(table_ptr  tab)
 {
     if (!_mark_sym)
     {
@@ -70,11 +70,11 @@ void sym_begin_scope(table_t tab)
     sym_enter(tab, _mark_sym, NULL);
 }
 
-void sym_end_scope(table_t tab)
+void sym_end_scope(table_ptr  tab)
 {
-    symbol_t sym;
+    symbol_ptr  sym;
 
     do
-        sym = tab_pop(tab);
+        sym = TAB_pop(tab);
     while (sym != _mark_sym);
 }

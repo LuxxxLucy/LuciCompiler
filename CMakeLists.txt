@@ -20,7 +20,7 @@ add_executable(lucc
     escape.c
     escape.h
     frame.h
-    frame-mips.c
+    frame.c
     tree.c
     tree.h
     lexer.l

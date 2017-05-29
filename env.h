@@ -6,35 +6,35 @@
 #include "translate.h"
 #include "types.h"
 
-typedef struct env_entry_s *env_entry_t;
-struct env_entry_s
+typedef struct E_entry_ *E_entry_ptr  ;
+struct E_entry_
 {
     enum { ENV_VAR_ENTRY, ENV_FUNC_ENTRY } kind;
     union
     {
         struct
         {
-            tr_access_t access;
-            type_t type;
+            tr_access_ptr  access;
+            type_ptr  type;
             booll for_;
         } var;
 
         struct
         {
-            tr_level_t level;
-            tmp_label_t label;
-            list_t formals;
-            type_t result;
+            tr_level_ptr  level;
+            tmp_label_ptr  label;
+            list_ptr  formals;
+            type_ptr  result;
         } func;
     } u;
 };
-env_entry_t env_var_entry(tr_access_t access, type_t type, booll for_);
-env_entry_t env_func_entry(tr_level_t level,
-                           tmp_label_t label,
-                           list_t formals,
-                           type_t result);
+E_entry_ptr  E_VarEntry(tr_access_ptr  access, type_ptr  type, booll for_);
+E_entry_ptr  E_FunEntry(tr_level_ptr  level,
+                           tmp_label_ptr  label,
+                           list_ptr  formals,
+                           type_ptr  result);
 
-table_t env_base_tenv(void);
-table_t env_base_venv(void);
+table_ptr  E_base_tenv(void);
+table_ptr  E_base_venv(void);
 
 #endif

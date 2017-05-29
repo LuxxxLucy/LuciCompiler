@@ -14,14 +14,14 @@ void yyerror(char *msg);
 %union {
     int pos;
     int num;
-    string_t str;
-    list_t list;
-    symbol_t sym;
-    AST_decl_t decl;
-    AST_expr_t expr;
-    AST_type_t type;
-    AST_var_t var;
-    AST_func_t func;
+    string_ptr  str;
+    list_ptr  list;
+    symbol_ptr  sym;
+    AST_decl_ptr  decl;
+    AST_expr_ptr  expr;
+    AST_type_ptr  type;
+    AST_var_ptr  var;
+    AST_func_ptr  func;
 }
 
 %{
@@ -31,7 +31,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 #define LIST_ACTION(target, prev, elem) \
     do \
     { \
-        list_t p, e = list((elem), NULL); \
+        list_ptr  p, e = list((elem), NULL); \
         (target) = p = (prev); \
         if (p) \
         { \
@@ -46,7 +46,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 #define LVALUE_ACTION(target, prev, elem) \
     do \
     { \
-        AST_var_t p, var = (elem); \
+        AST_var_ptr  p, var = (elem); \
         (target) = p = (prev); \
         if (p) \
         { \
@@ -59,7 +59,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
     } \
     while (false)
 
-static AST_expr_t _program;
+static AST_expr_ptr  _program;
 %}
 
 %debug
@@ -175,10 +175,10 @@ decls:
 
 decl:
     types_decl
-    { $$ = AST_types_decl(((AST_type_t) $1->data)->pos, $1); }
+    { $$ = AST_types_decl(((AST_type_ptr) $1->data)->pos, $1); }
 |   var_decl
 |   funcs_decl
-    { $$ = AST_funcs_decl(((AST_func_t) $1->data)->pos, $1); }
+    { $$ = AST_funcs_decl(((AST_func_ptr) $1->data)->pos, $1); }
 
 types_decl:
     TYPE id EQ_OP type
@@ -279,7 +279,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value)
     }
 }
 
-AST_expr_t parse(string_t filename)
+AST_expr_ptr  parse(string_ptr  filename)
 {
     em_reset(filename);
     if (yyparse() == 0)

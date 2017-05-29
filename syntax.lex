@@ -80,7 +80,7 @@ int check_type(void)
 /*
 *	it actually will only return IDENTIFIER
 */
-    yylval.str = (string_t) checked_malloc(32*sizeof(char));
+    yylval.str = (string_ptr) checked_malloc(32*sizeof(char));
     strcpy (yylval.str, yytext);
 	return ID;
 }

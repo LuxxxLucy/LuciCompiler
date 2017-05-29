@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-    AST_expr_t prog;
+    AST_expr_ptr  prog;
 
     print("parsing the code...\n");
 

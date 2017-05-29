@@ -5,32 +5,32 @@
 #include "table.h"
 #include "utils.h"
 
-typedef struct binder_s *binder_t;
-struct binder_s
+typedef struct binder_ *binder_ptr  ;
+struct binder_
 {
     void *key;
     void *value;
-    binder_t prev;
+    binder_ptr  prev;
 };
 
-struct table_s
+struct table_
 {
-    list_t table[HT_SIZE];
-    binder_t top;
+    list_ptr  table[HT_SIZE];
+    binder_ptr  top;
 };
 
-static binder_t binder(void *key, void *value, binder_t prev)
+static binder_ptr  binder(void *key, void *value, binder_ptr  prev)
 {
-    binder_t p = checked_malloc(sizeof(*p));
+    binder_ptr  p = checked_malloc(sizeof(*p));
     p->key = key;
     p->value = value;
     p->prev = prev;
     return p;
 }
 
-table_t tab_empty(void)
+table_ptr  TAB_empty(void)
 {
-    table_t p = checked_malloc(sizeof(*p));
+    table_ptr  p = checked_malloc(sizeof(*p));
     int i;
 
     p->top = NULL;
@@ -39,39 +39,39 @@ table_t tab_empty(void)
     return p;
 }
 
-void tab_enter(table_t tab, void *key, void *value)
+void TAB_enter(table_ptr  tab, void *key, void *value)
 {
     int index;
 
     assert(tab && key);
-    index = ((intptr_t) key) % HT_SIZE;
+    index = ((int) key) % HT_SIZE;
     tab->table[index] = list(binder(key, value, tab->top), tab->table[index]);
     tab->top = tab->table[index]->data;
 }
 
-void *tab_lookup(table_t tab, void *key)
+void *TAB_lookup(table_ptr  tab, void *key)
 {
     int index;
-    list_t p;
+    list_ptr  p;
 
     assert(tab && key);
-    index = ((intptr_t) key) % HT_SIZE;
+    index = ((int) key) % HT_SIZE;
     for (p = tab->table[index]; p; p = p->next)
-        if (((binder_t) p->data)->key == key)
-            return ((binder_t) p->data)->value;
+        if (((binder_ptr) p->data)->key == key)
+            return ((binder_ptr) p->data)->value;
     return NULL;
 }
 
-void *tab_pop(table_t tab)
+void *TAB_pop(table_ptr  tab)
 {
-    binder_t bind;
-    list_t p;
+    binder_ptr  bind;
+    list_ptr  p;
     int index;
 
     assert(tab);
     bind = tab->top;
     assert(bind);
-    index = ((intptr_t) bind->key) % HT_SIZE;
+    index = ((int) bind->key) % HT_SIZE;
     p = tab->table[index];
     assert(p);
     tab->table[index] = p->next;
@@ -79,9 +79,9 @@ void *tab_pop(table_t tab)
     return bind->key;
 }
 
-void tab_dump(table_t tab, tab_dump_func_t show)
+void TAB_dump(table_ptr  tab, TAB_dump_func_ptr  show)
 {
-    binder_t bind = tab->top;
+    binder_ptr  bind = tab->top;
 
     for (; bind; bind = bind->prev)
         show(bind->key, bind->value);

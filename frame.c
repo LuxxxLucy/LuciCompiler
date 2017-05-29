@@ -3,44 +3,44 @@
 #define K 4
 const int FR_WORD_SIZE = 4;
 
-struct frame_s
+struct frame_
 {
-    tmp_label_t name;
-    list_t formals;
-    list_t locals;
+    tmp_label_ptr  name;
+    list_ptr  formals;
+    list_ptr  locals;
     int local_count;
 };
 
-struct fr_access_s
+struct fr_access_
 {
     enum { FR_IN_FRAME, FR_IN_REG } kind;
     union
     {
         int offset;
-        temp_t reg;
+        temp_ptr  reg;
     } u;
 };
 
-static fr_access_t in_frame(int offset)
+static fr_access_ptr  in_frame(int offset)
 {
-    fr_access_t p = checked_malloc(sizeof(*p));
+    fr_access_ptr  p = checked_malloc(sizeof(*p));
     p->kind = FR_IN_FRAME;
     p->u.offset = offset;
     return p;
 }
 
-static fr_access_t in_reg(temp_t reg)
+static fr_access_ptr  in_reg(temp_ptr  reg)
 {
-    fr_access_t p = checked_malloc(sizeof(*p));
+    fr_access_ptr  p = checked_malloc(sizeof(*p));
     p->kind = FR_IN_REG;
     p->u.reg = reg;
     return p;
 }
 
-frame_t frame(tmp_label_t name, list_t formals)
+frame_ptr  frame(tmp_label_ptr  name, list_ptr  formals)
 {
-    frame_t p = checked_malloc(sizeof(*p));
-    list_t formal = formals, q = NULL;
+    frame_ptr  p = checked_malloc(sizeof(*p));
+    list_ptr  formal = formals, q = NULL;
     int i = 0;
 
     p->name = name;
@@ -48,7 +48,7 @@ frame_t frame(tmp_label_t name, list_t formals)
     p->local_count = 0;
     for (; formal; formal = formal->next, i++)
     {
-        fr_access_t access;
+        fr_access_ptr  access;
         if (formal->b || i >= K)
             access = in_frame(i * FR_WORD_SIZE);
         else
@@ -64,19 +64,19 @@ frame_t frame(tmp_label_t name, list_t formals)
     return p;
 }
 
-tmp_label_t fr_name(frame_t fr)
+tmp_label_ptr  fr_name(frame_ptr  fr)
 {
     return fr->name;
 }
 
-list_t fr_formals(frame_t fr)
+list_ptr  fr_formals(frame_ptr  fr)
 {
     return fr->formals;
 }
 
-fr_access_t fr_alloc_local(frame_t fr, booll escape)
+fr_access_ptr  fr_alloc_local(frame_ptr  fr, booll escape)
 {
-    fr_access_t access;
+    fr_access_ptr  access;
 
     if (escape)
     {
@@ -88,7 +88,7 @@ fr_access_t fr_alloc_local(frame_t fr, booll escape)
         access = in_reg(temp());
     if (fr->locals)
     {
-        list_t p = fr->locals;
+        list_ptr  p = fr->locals;
         while (p->next)
             p = p->next;
         p->next = list(access, NULL);
@@ -98,34 +98,34 @@ fr_access_t fr_alloc_local(frame_t fr, booll escape)
     return access;
 }
 
-int fr_offset(fr_access_t access)
+int fr_offset(fr_access_ptr  access)
 {
     assert(access && access->kind == FR_IN_FRAME);
     return access->u.offset;
 }
 
-fr_frag_t fr_string_frag(tmp_label_t label, string_t string)
+fr_frag_ptr  fr_string_frag(tmp_label_ptr  label, string_ptr  string)
 {
-    fr_frag_t p = checked_malloc(sizeof(*p));
+    fr_frag_ptr  p = checked_malloc(sizeof(*p));
     p->kind = FR_STRING_FRAG;
     p->u.string.label = label;
     p->u.string.string = string;
     return p;
 }
 
-fr_frag_t fr_proc_frag(tree_stmt_t stmt, frame_t frame)
+fr_frag_ptr  fr_proc_frag(tree_stmt_ptr  stmt, frame_ptr  frame)
 {
-    fr_frag_t p = checked_malloc(sizeof(*p));
+    fr_frag_ptr  p = checked_malloc(sizeof(*p));
     p->kind = FR_PROC_FRAG;
     p->u.proc.stmt = stmt;
     p->u.proc.frame = frame;
     return p;
 }
 
-static list_t _string_frags = NULL;
-static list_t _proc_frags = NULL;
+static list_ptr  _string_frags = NULL;
+static list_ptr  _proc_frags = NULL;
 
-void fr_add_frag(fr_frag_t frag)
+void fr_add_frag(fr_frag_ptr  frag)
 {
     switch (frag->kind)
     {
@@ -140,18 +140,18 @@ void fr_add_frag(fr_frag_t frag)
     }
 }
 
-temp_t fr_fp(void)
+temp_ptr  fr_fp(void)
 {
-    static temp_t _fp = NULL;
+    static temp_ptr  _fp = NULL;
 
     if (!_fp)
         _fp = temp();
     return _fp;
 }
 
-temp_t fr_rv(void)
+temp_ptr  fr_rv(void)
 {
-    static temp_t _rv = NULL;
+    static temp_ptr  _rv = NULL;
 
     if (!_rv)
     {
@@ -160,7 +160,7 @@ temp_t fr_rv(void)
     return _rv;
 }
 
-tree_expr_t fr_expr(fr_access_t access, tree_expr_t frame_ptr)
+tree_expr_ptr  fr_expr(fr_access_ptr  access, tree_expr_ptr  frame_ptr  )
 {
     switch (access->kind)
     {
@@ -168,7 +168,7 @@ tree_expr_t fr_expr(fr_access_t access, tree_expr_t frame_ptr)
             return tree_mem_expr(tree_binop_expr(
                 IR_PLUS,
                 tree_const_expr(access->u.offset),
-                frame_ptr));
+                frame_ptr  ));
 
         case FR_IN_REG:
             return tree_tmp_expr(access->u.reg);
@@ -178,19 +178,19 @@ tree_expr_t fr_expr(fr_access_t access, tree_expr_t frame_ptr)
     return NULL;
 }
 
-tree_expr_t fr_external_call(string_t name, list_t args)
+tree_expr_ptr  fr_external_call(string_ptr  name, list_ptr  args)
 {
     return tree_call_expr(tree_name_expr(tmp_named_label(name)), args);
 }
 
 void fr_pp_frags(FILE *out)
 {
-    list_t p;
+    list_ptr  p;
 
     fprintf(out, "STRING FRAGMENTS:\n");
     for (p = _string_frags; p; p = p->next)
     {
-        fr_frag_t frag = p->data;
+        fr_frag_ptr  frag = p->data;
         fprintf(out, "    %s: \"%s\"\n",
                 tmp_name(frag->u.string.label),
                 frag->u.string.string);
@@ -200,14 +200,14 @@ void fr_pp_frags(FILE *out)
     fprintf(out, "FUNCTION FRAGMENTS:\n");
     for (p = _proc_frags; p; p = p->next)
     {
-        fr_frag_t frag = p->data;
+        fr_frag_ptr  frag = p->data;
         fprintf(out, "    %s:\n", tmp_name(frag->u.proc.frame->name));
         fprintf(out, "\n");
     }
     fprintf(out, "\n");
 }
 
-tree_stmt_t fr_proc_entry_exit_1(frame_t fr, tree_stmt_t stmt)
+tree_stmt_ptr  fr_proc_entry_exit_1(frame_ptr  fr, tree_stmt_ptr  stmt)
 {
     return stmt;
 }

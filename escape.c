@@ -1,17 +1,17 @@
 #include "escape.h"
 #include "symbol.h"
 
-typedef struct escape_entry_s *escape_entry_t;
-struct escape_entry_s
+typedef struct escape_entry_ *escape_entry_ptr  ;
+struct escape_entry_
 {
     int depth;
     booll *escape;
 };
 
-static escape_entry_t escape_entry(int depth, booll *escape)
+static escape_entry_ptr  escape_entry(int depth, booll *escape)
 {
     assert(escape);
-    escape_entry_t p = checked_malloc(sizeof(*p));
+    escape_entry_ptr  p = checked_malloc(sizeof(*p));
     p->depth = depth;
     p->escape = escape;
     *escape = false;
@@ -19,28 +19,28 @@ static escape_entry_t escape_entry(int depth, booll *escape)
 }
 
 static int _depth;
-static table_t _env;
+static table_ptr  _env;
 
-static void traverse_decl(AST_decl_t decl);
-static void traverse_expr(AST_expr_t expr);
-static void traverse_var(AST_var_t var);
+static void traverse_decl(AST_decl_ptr  decl);
+static void traverse_expr(AST_expr_ptr  expr);
+static void traverse_var(AST_var_ptr  var);
 
-static void traverse_decl(AST_decl_t decl)
+static void traverse_decl(AST_decl_ptr  decl)
 {
     switch (decl->kind)
     {
         case AST_FUNCS_DECL: {
-            list_t p = decl->u.funcs;
+            list_ptr  p = decl->u.funcs;
             for (; p; p = p->next)
             {
-                AST_func_t func = p->data;
-                list_t q;
+                AST_func_ptr  func = p->data;
+                list_ptr  q;
 
                 _depth++;
                 sym_begin_scope(_env);
                 for (q = func->params; q; q = q->next)
                 {
-                    AST_field_t field = q->data;
+                    AST_field_ptr  field = q->data;
                     sym_enter(_env,
                               field->name,
                               escape_entry(_depth, &field->escape));
@@ -64,9 +64,9 @@ static void traverse_decl(AST_decl_t decl)
     }
 }
 
-static void traverse_expr(AST_expr_t expr)
+static void traverse_expr(AST_expr_ptr  expr)
 {
-    list_t p;
+    list_ptr  p;
 
     switch (expr->kind)
     {
@@ -93,7 +93,7 @@ static void traverse_expr(AST_expr_t expr)
 
         case AST_RECORD_EXPR:
             for (p = expr->u.record.efields; p; p = p->next)
-                traverse_expr(((AST_efield_t) p->data)->expr);
+                traverse_expr(((AST_efield_ptr) p->data)->expr);
             break;
 
         case AST_ARRAY_EXPR:
@@ -147,12 +147,12 @@ static void traverse_expr(AST_expr_t expr)
     }
 }
 
-static void traverse_var(AST_var_t var)
+static void traverse_var(AST_var_ptr  var)
 {
     switch (var->kind)
     {
         case AST_SIMPLE_VAR: {
-            escape_entry_t entry = sym_lookup(_env, var->u.simple);
+            escape_entry_ptr  entry = sym_lookup(_env, var->u.simple);
             if (entry && entry->depth < _depth)
                 *entry->escape = true;
             break;
@@ -169,7 +169,7 @@ static void traverse_var(AST_var_t var)
     }
 }
 
-void esc_find_escape(AST_expr_t expr)
+void esc_find_escape(AST_expr_ptr  expr)
 {
     _depth = 0;
     _env = sym_empty();

@@ -8,6 +8,6 @@
 
 extern int yydebug;
 
-AST_expr_t parse(string_t filename);
+AST_expr_ptr  parse(string_ptr  filename);
 
 #endif

@@ -16,15 +16,15 @@ void yyerror(char *msg);
     int pos;
     int num;
     double dval;
-    string_t str;
-    list_t list;
-    symbol_t sym;
-    AST_decl_t dec;
-    AST_expr_t exp;
-    AST_type_t ty;
-    AST_var_t var;
-    AST_func_t fun;
-    AST_binop_t op;
+    string_ptr  str;
+    list_ptr  list;
+    symbol_ptr  sym;
+    AST_decl_ptr  dec;
+    AST_expr_ptr  exp;
+    AST_type_ptr  ty;
+    AST_var_ptr  var;
+    AST_func_ptr  fun;
+    AST_binop_ptr  op;
 }
 
 %{
@@ -34,7 +34,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 #define LIST_ACTION(target, prev, elem) \
     do \
     { \
-        list_t p, e = list((elem), NULL); \
+        list_ptr  p, e = list((elem), NULL); \
         (target) = p = (prev); \
         if (p) \
         { \
@@ -49,7 +49,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
 #define LVALUE_ACTION(target, prev, elem) \
     do \
     { \
-        AST_var_t p, var = (elem); \
+        AST_var_ptr  p, var = (elem); \
         (target) = p = (prev); \
         if (p) \
         { \
@@ -62,7 +62,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value);
     } \
     while (false)
 
-static AST_expr_t _program;
+static AST_expr_ptr  _program;
 %}
 
 %type <exp> program
@@ -349,11 +349,11 @@ declaration
         // init dec list is a list of dec(type symbol of the dec is not determined yet )
         print("declaratior with initial\n");
 
-        list_t p=$2;
-        AST_decl_t q;
+        list_ptr  p=$2;
+        AST_decl_ptr  q;
         for(;p;p=p->next)
         {
-            q=(AST_decl_t) p->data;
+            q=(AST_decl_ptr) p->data;
             q->u.var.type=$1;
             //pp_decl(stdout,20, q);
         }
@@ -394,7 +394,7 @@ init_declarator
 	: declarator
 	{
         print("A pure declarator\n");
-        $$ = AST_var_decl(em_tok_pos, $1, NULL, NULL);
+        $$ = AST_var_decl(em_tok_pos, $1->u.var->u.simple, NULL, NULL);
 	}
 	| declarator ASSIGN initializer
 	{
@@ -773,11 +773,11 @@ declaration_list
     }
 	| declaration_list declaration
     {
-        list_t p = $2;
-        AST_decl_t q;
+        list_ptr  p = $2;
+        AST_decl_ptr  q;
         for(;p;p=p->next)
         {
-            q= (AST_decl_t) p->data;
+            q= (AST_decl_ptr) p->data;
             LIST_ACTION($1,$1,q);
         }
     }
@@ -803,7 +803,7 @@ static void print_token_value(FILE *fp, int type, YYSTYPE value)
     }
 }
 
-AST_expr_t parse(string_t filename)
+AST_expr_ptr  parse(string_ptr  filename)
 {
     em_reset(filename);
     if (yyparse() == 0)

@@ -26,7 +26,7 @@ while (0)
 static int _comment_level = 0;
 
 #define INIT_LEN 32
-static string_t _str_buf;
+static string_ptr  _str_buf;
 static int _str_len;
 static int _str_cap;
 static void init_buf(void);

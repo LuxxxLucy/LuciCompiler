@@ -5,6 +5,6 @@
 
 #include "utils.h"
 
-void pp_stmts(FILE *out, list_t stmts);
+void pp_stmts(FILE *out, list_ptr  stmts);
 
 #endif

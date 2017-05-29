@@ -4,66 +4,66 @@
 #include "types.h"
 #include "utils.h"
 
-static struct type_s _ty_nil = { TY_NIL };
-type_t ty_nil(void)
+static struct type_ _ty_nil = { TY_NIL };
+type_ptr  ty_nil(void)
 {
     return &_ty_nil;
 }
 
-static struct type_s _ty_int = { TY_INT };
-type_t ty_int(void)
+static struct type_ _ty_int = { TY_INT };
+type_ptr  ty_int(void)
 {
     return &_ty_int;
 }
 
-static struct type_s _ty_string = { TY_STRING };
-type_t ty_string(void)
+static struct type_ _ty_string = { TY_STRING };
+type_ptr  ty_string(void)
 {
     return &_ty_string;
 }
 
-static struct type_s _ty_void = { TY_VOID };
-type_t ty_void(void)
+static struct type_ _ty_void = { TY_VOID };
+type_ptr  ty_void(void)
 {
     return &_ty_void;
 }
 
-type_t ty_record(list_t fields)
+type_ptr  ty_record(list_ptr  fields)
 {
-    type_t p = checked_malloc(sizeof(*p));
+    type_ptr  p = checked_malloc(sizeof(*p));
     p->kind = TY_RECORD;
     p->u.record = fields;
     return p;
 }
 
-type_t ty_array(type_t type)
+type_ptr  ty_array(type_ptr  type)
 {
-    type_t p = checked_malloc(sizeof(*p));
+    type_ptr  p = checked_malloc(sizeof(*p));
     p->kind = TY_ARRAY;
     p->u.array = type;
     return p;
 }
 
-type_t ty_name(symbol_t name, type_t type)
+type_ptr  ty_name(symbol_ptr  name, type_ptr  type)
 {
-    type_t p = checked_malloc(sizeof(*p));
+    type_ptr  p = checked_malloc(sizeof(*p));
     p->kind = TY_NAME;
     p->u.name.name = name;
     p->u.name.type = type;
     return p;
 }
 
-ty_field_t ty_field(symbol_t name, type_t type)
+ty_field_ptr  ty_field(symbol_ptr  name, type_ptr  type)
 {
-    ty_field_t p = checked_malloc(sizeof(*p));
+    ty_field_ptr  p = checked_malloc(sizeof(*p));
     p->name = name;
     p->type = type;
     return p;
 }
 
-type_t ty_actual(type_t type)
+type_ptr  ty_actual(type_ptr  type)
 {
-    type_t origin = type;
+    type_ptr  origin = type;
     int counter = 0;
 
     assert(type);
@@ -76,7 +76,7 @@ type_t ty_actual(type_t type)
     return type;
 }
 
-booll ty_match(type_t type1, type_t type2)
+booll ty_match(type_ptr  type1, type_ptr  type2)
 {
     type1 = ty_actual(type1);
     type2 = ty_actual(type2);
@@ -94,7 +94,7 @@ static char _type_strs[][12] = {
     "ty_array", "ty_name", "ty_void",
 };
 
-void ty_print(type_t type)
+void ty_print(type_ptr  type)
 {
     if (type == NULL)
         printf("null");
@@ -106,7 +106,7 @@ void ty_print(type_t type)
     }
 }
 
-void ty_print_types(list_t types)
+void ty_print_types(list_ptr  types)
 {
     if (types == NULL)
         printf("null");

@@ -2,6 +2,14 @@
 
 > LU Jialin this was intended on demand of a course < Complier Principle > in Zhejiang University
 
+> According to the design of C99 standard design and implement the compiler to generate the IR tree.
+
+按照C语言写了编译器。 完成的有声明，定义，while if等loop。而且函数可嵌套定义。
+
+也做了生成机器码的部分。而且我想到了一种方法直接可以生成在自己的任何机器上直接调用的方法。但是这个IR树到中间代码的部分还没有写完。为了惊喜，会在展示的时候直接演示。
+
+真的我觉得我这个IR树到机器码的方法超级牛逼。等写完了一起再传一份。
+
 ## Syntactic sugars
 
 - all C grammar you need as a normal compiler in C
@@ -35,6 +43,12 @@ make lucc
 ```
 
 ### grammar and Syntactic sugars
+
+there are only 1 shift and reduce error. designed according to the c99 standard.
+
+```
+parser.y: conflicts: 1 shift/reduce
+```
 
 ### compile & run your own program.
 

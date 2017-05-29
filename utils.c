@@ -5,9 +5,9 @@
 
 #include "utils.h"
 
-string_t string(const char *str)
+string_ptr  string(const char *str)
 {
-    string_t p = checked_malloc(strlen(str) + 1);
+    string_ptr  p = checked_malloc(strlen(str) + 1);
     strcpy(p, str);
     return p;
 }
@@ -19,24 +19,24 @@ void *checked_malloc(int size)
     return p;
 }
 
-list_t list(void *data, list_t next)
+list_ptr  list(void *data, list_ptr  next)
 {
-    list_t p = checked_malloc(sizeof(*p));
+    list_ptr  p = checked_malloc(sizeof(*p));
     p->data = data;
     p->next = next;
     return p;
 }
 
-list_t vlist(int count, ...)
+list_ptr  vlist(int count, ...)
 {
-    list_t result = NULL, next = NULL;
+    list_ptr  result = NULL, next = NULL;
     va_list ap;
 
     va_start(ap, count);
     for (; count > 0; count--)
     {
         void *data = va_arg(ap, void *);
-        list_t p = list(data, NULL);
+        list_ptr  p = list(data, NULL);
         if (result)
             next = next->next = p;
         else
@@ -45,25 +45,25 @@ list_t vlist(int count, ...)
     return result;
 }
 
-list_t int_list(int i, list_t next)
+list_ptr  int_list(int i, list_ptr  next)
 {
-    list_t p = checked_malloc(sizeof(*p));
+    list_ptr  p = checked_malloc(sizeof(*p));
     p->i = i;
     p->next = next;
     return p;
 }
 
-list_t bool_list(booll b, list_t next)
+list_ptr  bool_list(booll b, list_ptr  next)
 {
-    list_t p = checked_malloc(sizeof(*p));
+    list_ptr  p = checked_malloc(sizeof(*p));
     p->b = b;
     p->next = next;
     return p;
 }
 
-list_t join_list(list_t list1, list_t list2)
+list_ptr  join_list(list_ptr  list1, list_ptr  list2)
 {
-    list_t p = list1;
+    list_ptr  p = list1;
     if (!p)
         return list2;
     while (p->next)
@@ -72,12 +72,12 @@ list_t join_list(list_t list1, list_t list2)
     return list1;
 }
 
-list_t list_append(list_t list1, void *data)
+list_ptr  list_append(list_ptr  list1, void *data)
 {
     return join_list(list1, list(data, NULL));
 }
 
-void print(string_t msg)
+void print(string_ptr  msg)
 {
     fprintf(stdout, "%s",msg );
 }

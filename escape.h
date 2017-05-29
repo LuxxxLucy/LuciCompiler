@@ -3,6 +3,6 @@
 
 #include "abstract_syntax.h"
 
-void esc_find_escape(AST_expr_t expr);
+void esc_find_escape(AST_expr_ptr  expr);
 
 #endif
