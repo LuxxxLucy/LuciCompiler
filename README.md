@@ -6,9 +6,15 @@
 
 按照C语言写了编译器。 完成的有声明，定义，while if等loop。而且函数可嵌套定义。
 
-也做了生成机器码的部分。而且我想到了一种方法直接可以生成在自己的任何机器上直接调用的方法。但是这个IR树到中间代码的部分还没有写完。为了惊喜，会在展示的时候直接演示。
+也做了生成机器码的部分。而且我想到了一种方法直接可以生成在自己的任何机器上直接调用的方法。
 
-真的我觉得我这个IR树到机器码的方法超级牛逼。等写完了一起再传一份。
+这个方法就是，将一个c 代码看作是一个拥有大量无限寄存器的抽象机器，将frame的数据和IR tree都翻译成一个c source code，然后只需要重写一个自己的标准函数库（我只是实现了最基本的malloc以及int和string的打印），然后接下来直接用gcc去编译这个暂时的c source code。
+
+The **lucc** complierfollow the C grammar.
+
+It can parse and build the code to IR tree, and then, using a special trick I interpreter the IR tree in reverse into a C source code and compile it using `gcc`.
+
+This seems very natural indeed, a C source code is just a abstract machine with many many (infinity) abstract registers. And I also write my own standard library, which is called `lucy_utility.c` and 'lucy_utility.h'. I only accomplished three primary standard usage: malloc memory, print a string and pring a integer.
 
 ## Syntactic sugars
 
