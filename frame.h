@@ -37,6 +37,26 @@ tree_expr_ptr  fr_external_call(string_ptr  name, list_ptr  args);
 
 tree_stmt_ptr  fr_proc_entry_exit_1(frame_ptr  fr, tree_stmt_ptr  stmt);
 
+
+struct frame_
+{
+    tmp_label_ptr  name;
+    list_ptr  formals;
+    list_ptr  locals;
+    int local_count;
+};
+
+struct fr_access_
+{
+    enum { FR_IN_FRAME, FR_IN_REG } kind;
+    union
+    {
+        int offset;
+        temp_ptr  reg;
+    } u;
+};
+
 void fr_pp_frags(FILE *out);
+void fr_pp_frags_abstract_machine(FILE *out);
 
 #endif

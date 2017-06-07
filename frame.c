@@ -3,24 +3,9 @@
 #define K 4
 const int FR_WORD_SIZE = 4;
 
-struct frame_
-{
-    tmp_label_ptr  name;
-    list_ptr  formals;
-    list_ptr  locals;
-    int local_count;
-};
 
-struct fr_access_
-{
-    enum { FR_IN_FRAME, FR_IN_REG } kind;
-    union
-    {
-        int offset;
-        temp_ptr  reg;
-    } u;
-};
-
+static list_ptr  _string_frags = NULL;
+static list_ptr  _proc_frags = NULL;
 static fr_access_ptr  in_frame(int offset)
 {
     fr_access_ptr  p = checked_malloc(sizeof(*p));
@@ -122,8 +107,6 @@ fr_frag_ptr  fr_proc_frag(tree_stmt_ptr  stmt, frame_ptr  frame)
     return p;
 }
 
-static list_ptr  _string_frags = NULL;
-static list_ptr  _proc_frags = NULL;
 
 void fr_add_frag(fr_frag_ptr  frag)
 {
@@ -198,6 +181,31 @@ void fr_pp_frags(FILE *out)
     fprintf(out, "\n");
 
     fprintf(out, "FUNCTION FRAGMENTS:\n");
+    for (p = _proc_frags; p; p = p->next)
+    {
+        fr_frag_ptr  frag = p->data;
+        fprintf(out, "    %s:\n", tmp_name(frag->u.proc.frame->name));
+        fprintf(out, "\n");
+    }
+    fprintf(out, "\n");
+}
+
+void fr_pp_frags_abstract_machine(FILE *out)
+{
+    list_ptr  p;
+
+    fprintf(out, "    // STRING FRAGMENTS as follows:\n");
+    for (p = _string_frags; p; p = p->next)
+    {
+        fr_frag_ptr  frag = p->data;
+        fprintf(out, "    string_ptr %s = (string_ptr) memory_malloc(sizeof(char)*100);\n    strcpy(%s,%s);\n",
+                tmp_name(frag->u.string.label)+1,
+                tmp_name(frag->u.string.label)+1,
+                frag->u.string.string);
+    }
+    fprintf(out, "\n");
+
+    fprintf(out, "    // FUNCTION FRAGMENTS:\n");
     for (p = _proc_frags; p; p = p->next)
     {
         fr_frag_ptr  frag = p->data;

@@ -49,6 +49,11 @@ table_ptr  E_base_venv(void)
                              tmp_label(),
                              list(ty_string(), NULL),
                              ty_void()));
+    sym_enter(tab, symbol("printint"),
+              E_FunEntry(tr_outermost(),
+                             tmp_label(),
+                             list(ty_int(), NULL),
+                             ty_void()));
     sym_enter(tab, symbol("chr"),
               E_FunEntry(tr_outermost(),
                              tmp_label(),

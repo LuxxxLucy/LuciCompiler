@@ -126,7 +126,11 @@ L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT); }
 0[xX]{H}+{P}{FS}?	{ count(); return(CONSTANT); }
 0[xX]{H}*"."{H}+{P}?{FS}?     { count(); return(CONSTANT); }
 0[xX]{H}+"."{H}*{P}?{FS}?     { count(); return(CONSTANT); }
-L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
+L?\"(\\.|[^\\"\n])*\"	{   count();
+                            yylval.str = (string_ptr) checked_malloc(32*sizeof(char));
+                            strcpy (yylval.str, yytext);
+                            return(STRING_LITERAL);
+                        }
 
 
 

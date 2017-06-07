@@ -81,3 +81,8 @@ void print(string_ptr  msg)
 {
     fprintf(stdout, "%s",msg );
 }
+
+void simple_print(int i,string_ptr  msg)
+{
+    fprintf(stdout, "%s",msg );
+}

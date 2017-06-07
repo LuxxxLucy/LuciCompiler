@@ -27,6 +27,22 @@ To run the program you need to install the following software
 2. `bison`
 3. `gcc`
 
+## key points
+
+### grammar design
+
+1 conflict on shift_reduce
+
+### data structure design
+
+a list module to usage
+
+### simulating an abstract machienranslate
+
+write a program to translate IR tree to C source code and compile it with gcc.
+
+a very robust abstract machine
+
 ### compile the compiler
 
 type the shell command to build

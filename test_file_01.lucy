@@ -1,20 +1,7 @@
-int i=3;
-int a=4;
+int i=1;
+int a=1;
 a=i+1;
-//print("能年玲奈=可爱");
-
-//print("dadas");
-//int i=3;
-
-// int f(int i)
-// {
-//     if(i>=2)
-//         return 0;
-//     else
-//     {
-//         print("能年玲奈 = 可爱 \n");
-//         return 1;
-//     }
-// }
-
-//int a=1+f(i);
+print("hello world\n");
+print("这个世界的基本事实\n");
+print("1+1="); printint(a); print("\n");
+print("能年玲奈==世界之光\n");

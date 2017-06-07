@@ -3,6 +3,14 @@
 
 #include "abstract_syntax.h"
 
-void sem_trans_prog(AST_expr_ptr  prog);
+struct expr_type_
+{
+    tr_expr_ptr  expr;
+    type_ptr  type;
+};
+
+typedef struct expr_type_ expr_type_ptr;
+
+expr_type_ptr sem_trans_prog(AST_expr_ptr  prog);
 
 #endif

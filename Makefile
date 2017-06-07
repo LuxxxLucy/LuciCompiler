@@ -123,6 +123,33 @@ lucc/fast:
 	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/build
 .PHONY : lucc/fast
 
+abstract_machine.o: abstract_machine.c.o
+
+.PHONY : abstract_machine.o
+
+# target to build an object file
+abstract_machine.c.o:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/abstract_machine.c.o
+.PHONY : abstract_machine.c.o
+
+abstract_machine.i: abstract_machine.c.i
+
+.PHONY : abstract_machine.i
+
+# target to preprocess a source file
+abstract_machine.c.i:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/abstract_machine.c.i
+.PHONY : abstract_machine.c.i
+
+abstract_machine.s: abstract_machine.c.s
+
+.PHONY : abstract_machine.s
+
+# target to generate assembly for a file
+abstract_machine.c.s:
+	$(MAKE) -f CMakeFiles/lucc.dir/build.make CMakeFiles/lucc.dir/abstract_machine.c.s
+.PHONY : abstract_machine.c.s
+
 abstract_syntax.o: abstract_syntax.c.o
 
 .PHONY : abstract_syntax.o
@@ -618,6 +645,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... lucc"
+	@echo "... abstract_machine.o"
+	@echo "... abstract_machine.i"
+	@echo "... abstract_machine.s"
 	@echo "... abstract_syntax.o"
 	@echo "... abstract_syntax.i"
 	@echo "... abstract_syntax.s"

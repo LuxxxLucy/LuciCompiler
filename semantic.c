@@ -12,14 +12,8 @@
 static table_ptr  _venv;
 static table_ptr  _tenv;
 
-typedef struct expr_type_ expr_type_ptr  ;
-struct expr_type_
-{
-    tr_expr_ptr  expr;
-    type_ptr  type;
-};
 
-static expr_type_ptr  expr_type(tr_expr_ptr  expr, type_ptr  type)
+expr_type_ptr  expr_type(tr_expr_ptr  expr, type_ptr  type)
 {
     expr_type_ptr  result;
     result.expr = expr;
@@ -705,7 +699,7 @@ static expr_type_ptr  trans_var(tr_level_ptr  level, AST_var_ptr  var)
     return _trans_var_funcs[var->kind](level, var);
 }
 
-void sem_trans_prog(AST_expr_ptr  prog)
+expr_type_ptr sem_trans_prog(AST_expr_ptr  prog)
 {
     expr_type_ptr  result;
 
@@ -717,7 +711,6 @@ void sem_trans_prog(AST_expr_ptr  prog)
         exit(1);
     }
 
-    fr_pp_frags(stdout);
-    fprintf(stdout, "MAIN PROGRAM:\n");
-    tr_pp_expr(result.expr);
+
+    return result;
 }

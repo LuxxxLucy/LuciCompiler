@@ -2,6 +2,8 @@
 #define INCLUDE__UTILS_H
 
 #include <assert.h>
+#include <string.h>
+#include <stdlib.h>
 
 typedef char *string_ptr  ;
 string_ptr  string(const char *);
@@ -33,5 +35,8 @@ list_ptr  join_list(list_ptr  list1, list_ptr  list2);
 list_ptr  list_append(list_ptr  list1, void *data);
 
 void print(string_ptr  msg);
+void simple_print(int i,string_ptr  msg);
+
+typedef int Abstract_Register;
 
 #endif

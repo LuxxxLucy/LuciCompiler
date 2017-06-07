@@ -45,6 +45,8 @@ add_executable(lucc
     types.h
     utils.c
     utils.h
+    abstract_machine.h
+    abstract_machine.c
     ${FLEX_LEXER_OUTPUTS}
     ${BISON_PARSER_OUTPUTS}
 )
