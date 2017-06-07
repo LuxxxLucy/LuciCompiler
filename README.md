@@ -1,8 +1,10 @@
-# **luci**: a simple compiler implement with C-like grammar
+# **lucc**: a simple compiler implement with C-like grammar
 
 > LU Jialin this was intended on demand of a course < Complier Principle > in Zhejiang University
 
 > According to the design of C99 standard design and implement the compiler to generate the IR tree.
+
+**LU** cy's **C**-like language **C** omplier
 
 按照C语言写了编译器。 完成的有声明，定义，while if等loop。而且函数可嵌套定义。
 
