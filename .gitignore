@@ -12,7 +12,8 @@ cmake_install.cmake
 
 lexer.c
 parser.[ch]
-tiger
+lucc
+out
 
 *.exe
 *.exe.stackdump
