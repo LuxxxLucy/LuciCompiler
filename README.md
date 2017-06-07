@@ -80,6 +80,10 @@ sample
 int i=3;
 int a=4;
 a=i+1;
+print("hello world\n");
+print("这个世界的基本事实\n");
+print("1+1="); printint(a); print("\n");
+print("能年玲奈==世界之光\n");
 ```
 
 the IR tree and fragments are like
@@ -101,9 +105,45 @@ SEQ(
               CONST 1
           )
       )
+      SEQ(
+            MOVE(
+                TEMP t102
+                BINOP(PLUS
+                    TEMP t100
+                    CONST 1
+                )
+            )
+            EXPR(
+                CALL(
+                    NAME .L3
+                    CONST 0
+                    NAME .L6
+                )
+            )
+            EXPR(
+                CALL(
+                    NAME .L3
+                    CONST 0
+                    NAME .L7
+                )
+            )
+            ......
+            .....
+            .....
   )
 ```
 
 and I even accomplish the print function using a special trick(which would be presented later in the class). It allows me to even
+
+```
+$ lucc yourcode.lucy;./out
+
+# the default output exe is named as ./out
+
+hello world
+这个世界的基本事实
+1+1=2
+能年玲奈==世界之光
+```
 
 then you can run your own C-like code as executable!(congrats!)
