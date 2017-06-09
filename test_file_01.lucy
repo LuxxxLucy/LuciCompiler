@@ -1,6 +1,6 @@
 int i=1;
 int a=1;
-a=i+1;
+a=(i==1)?i+1:0;
 print("hello world\n");
 print("这个世界的基本事实\n");
 print("1+1="); printint(a); print("\n");

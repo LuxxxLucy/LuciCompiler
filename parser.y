@@ -151,6 +151,7 @@ postfix_expression
 	: primary_expression { $$=$1;}
 	| postfix_expression LBRACK expression RBRACK
 	{
+        //$$=AST_sub_var(em_tok_pos, $1->u.var, $3r);
 	}
 	| postfix_expression LPAREN RPAREN
     {
@@ -161,15 +162,8 @@ postfix_expression
         $$ = AST_call_expr(em_tok_pos, $1->u.var->u.simple, $3);
     }
 	| postfix_expression DOT ID
-	{
-	}
 	| postfix_expression PTR_OP ID
-	{
-	}
 	| postfix_expression INC_OP
-    {
-
-    }
 	| postfix_expression DEC_OP
 	| LPAREN type_name RPAREN LBRACE initializer_list RBRACE
 	| LPAREN type_name RPAREN LBRACE initializer_list COMMA RBRACE
@@ -203,8 +197,8 @@ unary_operator
 	| ASTERISK {}
 	| PLUS {}
 	| MINUS {}
-	| TILDE
-	| EXCLAMATION
+	| TILDE {}
+	| EXCLAMATION {}
 	;
 
 cast_expression
@@ -217,13 +211,15 @@ multiplicative_expression
 	: cast_expression { $$=$1; }
 	| multiplicative_expression ASTERISK cast_expression
 	{
-
+        $$ = AST_op_expr(em_tok_pos, $1, AST_TIMES, $3);
 	}
 	| multiplicative_expression DIVIDE cast_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_DIVIDE, $3);
 	}
 	| multiplicative_expression MOD cast_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_MOD, $3);
 	}
 	;
 
@@ -235,6 +231,7 @@ additive_expression
 	}
 	| additive_expression MINUS multiplicative_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_MINUS, $3);
 	}
 	;
 
@@ -242,25 +239,31 @@ shift_expression
 	: additive_expression { $$=$1; }
 	| shift_expression LEFT_OP additive_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_LSHIFT, $3);
 	}
 	| shift_expression RIGHT_OP additive_expression
-	{
-	}
+    {
+        $$ = AST_op_expr(em_tok_pos, $1, AST_RSHIFT, $3);
+    }
 	;
 
 relational_expression
 	: shift_expression { $$=$1; }
 	| relational_expression LT_OP shift_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_LT, $3);
 	}
 	| relational_expression GT_OP shift_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_GT, $3);
 	}
 	| relational_expression LE_OP shift_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_LE, $3);
 	}
 	| relational_expression GE_OP shift_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_GE, $3);
 	}
 	;
 
@@ -268,9 +271,11 @@ equality_expression
 	: relational_expression { $$=$1; }
 	| equality_expression EQ_OP relational_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_EQ, $3);
 	}
 	| equality_expression NEQ_OP relational_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_NEQ, $3);
 	}
 	;
 
@@ -278,6 +283,7 @@ and_expression
 	: equality_expression { $$=$1; }
 	| and_expression AMPERSAND equality_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_AND, $3);
 	}
 	;
 
@@ -285,6 +291,7 @@ exclusive_or_expression
 	: and_expression { $$=$1; }
 	| exclusive_or_expression POW and_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_XOR, $3);
 	}
 	;
 
@@ -292,6 +299,7 @@ inclusive_or_expression
 	: exclusive_or_expression { $$=$1; }
 	| inclusive_or_expression VERTICAL_BAR exclusive_or_expression
 	{
+        $$ = AST_op_expr(em_tok_pos, $1, AST_OR, $3);
 	}
 	;
 
@@ -299,6 +307,7 @@ logical_and_expression
 	: inclusive_or_expression { $$=$1; }
 	| logical_and_expression AND_OP inclusive_or_expression
 	{
+        $$ = AST_if_expr(em_tok_pos, $1, $3, AST_num_expr(em_tok_pos, 0));
 	}
 	;
 
@@ -306,6 +315,7 @@ logical_or_expression
 	: logical_and_expression { $$=$1; }
 	| logical_or_expression OR_OP logical_and_expression
 	{
+        $$ = AST_if_expr(em_tok_pos, $1,  AST_num_expr(em_tok_pos, 1),$3);
 	}
 	;
 
@@ -314,6 +324,7 @@ conditional_expression
 	| logical_or_expression QUESTION expression COLON conditional_expression
 	{
         //TODO:? operator
+        $$ = AST_if_expr(em_tok_pos, $1, $3, $5);
 	}
 	;
 
@@ -346,6 +357,7 @@ expression
 	}
 	| expression COMMA assignment_expression
 	{
+        $$ = AST_seq_expr(em_tok_pos, list($3, $1->u.seq));
 	}
 	;
 

@@ -314,6 +314,13 @@ static expr_type_ptr  trans_op_expr(tr_level_ptr  level, AST_expr_ptr  expr)
         case AST_MINUS:
         case AST_TIMES:
         case AST_DIVIDE:
+        case AST_MOD:
+        case AST_AND:
+        case AST_OR:
+        case AST_XOR:
+        case AST_LSHIFT:
+        case AST_RSHIFT:
+        case AST_ARSHIFT:
             if (left.type->kind != TY_INT)
                 em_error(expr->u.op.left->pos, "integer requtreeed");
             if (right.type->kind != TY_INT)
@@ -323,7 +330,8 @@ static expr_type_ptr  trans_op_expr(tr_level_ptr  level, AST_expr_ptr  expr)
               ty_int());
 
         case AST_EQ:
-        case AST_NEQ: {
+        case AST_NEQ:
+        {
             tr_expr_ptr  result = NULL;
             if (!ty_match(left.type, right.type))
                 em_error(expr->pos,
