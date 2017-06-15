@@ -86,9 +86,8 @@ static AST_expr_ptr  _program;
 
 %type <sym> type_specifier declaration_specifiers
 
-//%type <op> unary_operator
 
-
+//%type <num> unary_operator
 
 %token <str> ID
 %token <dval> CONSTANT
@@ -330,10 +329,28 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression { $$=$1; }
-	| unary_expression assignment_operator assignment_expression
-	{
-        $$=AST_assign_expr(em_tok_pos,$1->u.var,$3);
-	}
+	| unary_expression ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,$3); }
+	| unary_expression MUL_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_TIMES, $3)   ); }
+	| unary_expression DIV_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_DIVIDE, $3)   ); }
+	| unary_expression MOD_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_MOD, $3)   ); }
+	| unary_expression ADD_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_PLUS, $3)   ); }
+	| unary_expression SUB_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_MINUS, $3)   ); }
+	| unary_expression LEFT_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_LSHIFT, $3)   ); }
+	| unary_expression RIGHT_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_RSHIFT, $3)   ); }
+	| unary_expression AND_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_AND, $3)   ); }
+	| unary_expression XOR_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_XOR, $3)   ); }
+	| unary_expression OR_ASSIGN assignment_expression
+	{ $$=AST_assign_expr(em_tok_pos,$1->u.var,AST_op_expr(em_tok_pos, $1, AST_OR, $3)   ); }
 	;
 
 assignment_operator

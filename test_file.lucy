@@ -1,14 +1,7 @@
-int a=5,i=2+3;
-
-
-a = a[2]+1,4,5;
-a = *i+2;
-
-int t(int a)
-{
-	return 5;
-}
-int f(int i)
-{
-	return i+t();
-}
+int i=1;
+int a=1;
+a=a+1;
+print("hello world\n");
+print("这个世界的基本事实\n");
+print("1+1="); printint(a); print("\n");
+print("能年玲奈==世界之光\n");

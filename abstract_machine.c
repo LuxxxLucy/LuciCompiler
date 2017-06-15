@@ -78,10 +78,12 @@ static void pp_stmt(FILE *out, int d, tree_stmt_ptr  stmt)
             break;
 
         case IR_CJUMP:
-            fprintf(out, "CJUMP(%s\n", relops[stmt->u.cjump.op]);
+            fprintf(out, "(");
             pp_expr(out, d + 1, stmt->u.cjump.left);
+            fprintf(out, "%s", relops[stmt->u.cjump.op]);
             pp_expr(out, d + 1, stmt->u.cjump.right);
-            fprintf(out, "%s, %s)\n",
+            fprintf(out, ")?\n");
+            fprintf(out, "(%s) : (%s)\n",
                     tmp_name(stmt->u.cjump.t),
                     tmp_name(stmt->u.cjump.f));
             break;
@@ -113,9 +115,7 @@ void pp_expr(FILE *out, int d, tree_expr_ptr  expr)
             break;
 
         case IR_MEM:
-            fprintf(out, "MEM(\n");
             pp_expr(out, d + 1, expr->u.mem);
-            fprintf(out, ")\n");
             break;
         case IR_TMP:
             strcpy(name,func_name(tmp_lookup(tmp_map(),expr->u.tmp)));
@@ -124,7 +124,6 @@ void pp_expr(FILE *out, int d, tree_expr_ptr  expr)
             break;
 
         case IR_ESEQ:
-            fprintf(out, "ESEQ(\n");
             pp_stmt(out, d + 1, expr->u.eseq.stmt);
             pp_expr(out, d + 1, expr->u.eseq.expr);
             break;
